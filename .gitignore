@@ -16,7 +16,7 @@ logs
 .DS_Store
 .fleet
 .idea
-
+busStops.json
 # Local env files
 .env
 .env.*
