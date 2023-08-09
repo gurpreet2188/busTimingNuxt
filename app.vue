@@ -3,12 +3,14 @@
 import { _AsyncData } from 'nuxt/dist/app/composables/asyncData';
 import { getCurrentLocation } from './helper/location'
 import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops';
-import { fetchData } from './helper/fetchData'
+import { fetchData } from './helper/fetchData' 
+import { useGeolocation } from '@vueuse/core'
 
 useHead({ bodyAttrs: { class: 'bg-gradient-to-br from-blue-200 to-orange-100 min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
 
-const getData = async(pos:{lat: number, lon: number })=>{
-    const res = await fetch(`${import.meta.env['VITE_APP_BASE_URL']}/api/find-nearest-stops`,{method:'POST',body:JSON.stringify(pos)})
+const getData = async (pos: { lat: number, lon: number }) => {
+    console.log(pos)
+    const res = await fetch(`${import.meta.env['VITE_APP_BASE_URL']}/api/find-nearest-stops`, { method: 'POST', body: JSON.stringify(pos) })
     const data = await res.json()
     return await data
 }
@@ -16,29 +18,27 @@ const getData = async(pos:{lat: number, lon: number })=>{
 const favsStops: Ref<BUS_STOP_TYPES | null> = useState('favsStops', () => null)
 const filterFavs: Ref<Boolean> = useState('filterFavs', () => false)
 const favs: Ref<Array<string> | undefined> = useState('favs', () => undefined)
-const pos: Ref<{ lat: number, lon: number }> = ref({ lat: 0, lon: 0 })
-const stops:Ref<BUS_STOP_TYPES>  = ref({stops:[]})
+const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] })
+const pos = useGeolocation()
 
-const stopsAwaited:Ref<Promise<BUS_STOP_TYPES>> = ref(getData(pos.value))
 
 onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
-    if (process.client) {
-        pos.value = getCurrentLocation()
-    }
-    // stops.value = await stopsAwaited.value
 })
 
-watch(pos, async()=>{ 
-    stopsAwaited.value = await getData(pos.value)
-    stops.value = await stopsAwaited.value
-    console.log(pos.value, stops.value)
+watch(pos.coords, async ()=>{
+    if (pos.coords.value.latitude !== 0 && pos.coords.value.longitude !== 0) {
+        pos.pause()
+        console.log(pos)
+        stops.value = await getData({lat:pos.coords.value.latitude, lon:pos.coords.value.longitude})
+        if (stops.value.stops.length > 0) {
+            stops.value = await fetchData(stops.value.stops)
+        }
+}
 })
 
 watchEffect(async () => {
-    if (stops.value.stops.length > 0) {
-    fetchData(stops.value.stops).then(d => console.log(d))
-}
+   
     const favs: Ref<Array<string> | undefined> = useState('favs')
     let tempfavStops: BUS_STOP_TYPES = { stops: [] }
     if (favs.value) {

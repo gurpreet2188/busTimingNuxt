@@ -13,6 +13,8 @@
     "@nuxt/devtools": "latest",
     "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/node": "^18.17.1",
+    "@vueuse/core": "^10.3.0",
+    "@vueuse/nuxt": "^10.3.0",
     "autoprefixer": "^10.4.14",
     "nuxt": "^3.6.5",
     "postcss": "^8.4.27"
@@ -21,7 +23,6 @@
     "vue": "latest"
   },
   "dependencies": {
-    "@vueuse/core": "^10.3.0",
     "lucide-vue-next": "^0.263.0",
     "pinia": "^2.1.6"
   }

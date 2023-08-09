@@ -3,7 +3,7 @@
 
 const size = {h:'24px', w:'24px'}
 
-const filterFavs = useState('filterFavs')
+const filterFavs:Ref<boolean> = useState('filterFavs')
 
 const clickHandle = (val:boolean) =>{
     return filterFavs.value = val
@@ -15,12 +15,12 @@ const clickHandle = (val:boolean) =>{
     <div class="flex justify-center items-center w-[100%] h-[100%] bg-blue-50">
         <div class="flex justify-center items-center w-[50%]">
             <button @click="()=>{clickHandle(false)}">
-                <IconsLocation :color="'#000'" :size="size"/>
+                <IconsLocation :color="'#000'" :size="size" :active="!filterFavs"/>
             </button>
         </div>
         <div class="flex justify-center items-center w-[50%]">
             <button @click="()=>{clickHandle(true)}">
-                <IconsFavs :color="'#000'" :size="size"/>
+                <IconsFavs :color="'#000'" :size="size" :active="filterFavs"/>
             </button>
         </div>
     </div>
