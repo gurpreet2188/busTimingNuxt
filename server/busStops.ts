@@ -1,5 +1,6 @@
 import { promises as fs } from "fs";
 import * as path from "path";
+import { fileURLToPath } from "url";
 
 const { readFile, writeFile } = fs
 const API_KEY: string | undefined = process.env.API_KEY
@@ -47,6 +48,7 @@ const writeNewFile =(filePath:string, data:Array<object>) =>{
 }
 
 const readNewFile = (filePath:string)=>{
+   
     return readFile(filePath, 'utf-8').then(d => {
         console.log('file found')
         try {
@@ -58,7 +60,10 @@ const readNewFile = (filePath:string)=>{
 }
 
 export const busStops = async () => {
-    const filePath = path.join(process.cwd(), '/busStops.json')
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = path.dirname(__filename)
+    const filePath = path.join(__dirname, 'busStops.json')
+    console.log(filePath)
 
 
     return readNewFile(filePath).catch(
