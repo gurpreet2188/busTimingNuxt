@@ -37,40 +37,38 @@ const fetchBusStops = async () => {
 }
 
 const writeNewFile =(filePath:string, data:Array<object>) =>{
+    console.log('writing new file')
     try {
-        writeFile(filePath, JSON.stringify(data))
+        writeFile(filePath, JSON.stringify(data), {flag:'w'})
     } catch (err) {
         console.log(err)
     }
     
 }
 
+const readNewFile = (filePath:string)=>{
+    return readFile(filePath, 'utf-8').then(d => {
+        console.log('file found')
+        try {
+            return JSON.parse(d)
+        } catch (err) {
+    
+        }
+    })
+}
+
 export const busStops = async () => {
     const filePath = path.join(process.cwd(), '/busStops.json')
 
 
-    try {
-        fs.access(filePath, fs.constants.F_OK)
-        return readFile(filePath, 'utf-8').then(d => {
-            console.log('file found')
-            try {
-                return JSON.parse(d)
-            } catch (err) {
-                fetchBusStops().then(d => {
-                    if (d) {
-                        writeNewFile(filePath,d)
-                        return d
-                    }
-                })
-            }
-        })
-    } catch (err) {
-        console.log('writing new file')
-        return fetchBusStops().then(d => {
-            if (d) {
-                writeNewFile(filePath,d)
-                return d
-            }
-        })
-    }
+    return readNewFile(filePath).catch(
+        ()=>{
+            return fetchBusStops().then(d => {
+                if (d) {
+                    writeNewFile(filePath,d)
+                    return d
+                }
+            })
+        }
+    )
 }
