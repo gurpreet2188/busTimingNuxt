@@ -60,9 +60,9 @@ const readNewFile = (filePath:string)=>{
 }
 
 export const busStops = async () => {
-    const __filename = fileURLToPath(import.meta.url)
-    const __dirname = path.dirname(__filename)
-    const filePath = path.join(__dirname, '/tmp/busStops.json')
+    // const __filename = fileURLToPath(import.meta.url)
+    // const __dirname = path.dirname(__filename)
+    const filePath = path.join('/tmp/busStops.json')
     console.log(filePath)
 
 
