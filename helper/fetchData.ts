@@ -20,19 +20,19 @@ export const fetchData = async (stops: BUS_STOP_TYPE[]) => {
             if (Object.keys(tempInfo).includes('Services')) {
                 if (stop.BusStopCode === tempInfo.BusStopCode) {
                     stop.Services = tempInfo.Services
-                    if (stop.Services) {
-                        if (stop.Services.length > 0) {
-                            for (const service of stop.Services) {
+                    // if (stop.Services) {
+                    //     if (stop.Services.length > 0) {
+                    //         for (const service of stop.Services) {
 
-                                const tempOrigin: { name: string } = await fetchPOST('/api/stop-name', { 'stopCode': service.NextBus.OriginCode })
-                                const tempDestination: { name: string } = await fetchPOST('/api/stop-name', { 'stopCode': service.NextBus.DestinationCode })
-                                if (tempOrigin['name'] && tempDestination['name']) {
-                                    service.NextBus.Origin = tempOrigin['name']
-                                    service.NextBus.Destination = tempDestination['name']
-                                }
-                            }
-                        }
-                    }
+                    //             const tempOrigin: { name: string } = await fetchPOST('/api/stop-name', { 'stopCode': service.NextBus.OriginCode })
+                    //             const tempDestination: { name: string } = await fetchPOST('/api/stop-name', { 'stopCode': service.NextBus.DestinationCode })
+                    //             if (tempOrigin['name'] && tempDestination['name']) {
+                    //                 service.NextBus.Origin = tempOrigin['name']
+                    //                 service.NextBus.Destination = tempDestination['name']
+                    //             }
+                    //         }
+                    //     }
+                    // }
                 }
             }
         }
