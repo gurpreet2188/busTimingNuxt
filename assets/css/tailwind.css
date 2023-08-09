@@ -1,0 +1,29 @@
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* html {
+    height: 100%;
+} */
+
+body {
+    /* height: 100%; */
+    /* width: 100%; */
+    box-sizing: border-box;
+    padding: 0rem;
+    margin: 0rem;
+}
+
+/* #__nuxt {
+    height: 100%;
+    width: 100%;
+} */
+
+html,body, #__nuxt, #__layout{
+    /* height:auto!important; */
+    width: 100%!important;
+    background-repeat: no-repeat;
+    /* overflow: hidden; */
+  }

@@ -1,0 +1,28 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@invictus.codes/nuxt-vuetify": "^0.3.0",
+    "@nuxt/devtools": "latest",
+    "@nuxtjs/tailwindcss": "^6.8.0",
+    "@types/node": "^18.17.1",
+    "autoprefixer": "^10.4.14",
+    "nuxt": "^3.6.5",
+    "postcss": "^8.4.27"
+  },
+  "overrides": {
+    "vue": "latest"
+  },
+  "dependencies": {
+    "@vueuse/core": "^10.3.0",
+    "lucide-vue-next": "^0.263.0",
+    "pinia": "^2.1.6"
+  }
+}
