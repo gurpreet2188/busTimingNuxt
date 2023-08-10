@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Service as BUS_INFO_SERVICE_TYPES, NextBus as NEXT_BUS_TYPE } from '../../types/bus'
 import type { PropType } from 'vue';
-import {fetchPOST} from '../../helper/fetchData'
+import { fetchPOST } from '../../helper/fetchData'
 
 const props = defineProps({ busCode: String, busTimings: Array<BUS_INFO_SERVICE_TYPES>, nextBus: Object as PropType<NEXT_BUS_TYPE>, nextBus2: Object as PropType<NEXT_BUS_TYPE>, nextBus3: Object as PropType<NEXT_BUS_TYPE> })
 
@@ -18,7 +18,7 @@ const showOriginDestination: Ref<boolean> = ref(false)
 
 watch(showOriginDestination, async () => {
 
-    if (showOriginDestination.value && props.nextBus && (!props.nextBus.Destination  || !props.nextBus.Origin)) {
+    if (showOriginDestination.value && props.nextBus && (!props.nextBus.Destination || !props.nextBus.Origin)) {
         const tempOrigin: { name: string } = await fetchPOST('/api/stop-name', { 'stopCode': props.nextBus.OriginCode })
         const tempDestination: { name: string } = await fetchPOST('/api/stop-name', { 'stopCode': props.nextBus.DestinationCode })
         if (tempOrigin['name'] && tempDestination['name']) {
@@ -30,26 +30,47 @@ watch(showOriginDestination, async () => {
 
 const clickHandle = () => {
     showOriginDestination.value = !showOriginDestination.value
+
+    setTimeout(()=>{
+        showOriginDestination.value = false
+    },5000)
+}
+
+const busLoadTextColor = (load: string | undefined) => {
+    console.log(load)
+    if (load) {
+        return load === 'SEA' ? 'text-green-500' : load === 'SDA' ? 'text-orange-600' : 'text-red-800'
+    }
 }
 
 </script>
 
 <template>
     <div class="flex flex-col justify-start items-start gap-[0.05rem] w-[100%]">
-
-        <div class="grid grid-cols-bus-info w-[100%]">
-            <button @click="clickHandle" class="text-left">{{ busCode }}</button>
-            <div v-show="!showOriginDestination" class="grid grid-cols-3">
-                <p v-show="nextBus">{{ nextBus && busUTCToMins(nextBus.EstimatedArrival) }}</p>
-                <p v-show="nextBus2">{{ nextBus2 && busUTCToMins(nextBus2.EstimatedArrival) }}</p>
-                <p v-show="nextBus3">{{ nextBus3 && busUTCToMins(nextBus3.EstimatedArrival) }}</p>
+        <span class="text-red-800 text-orange-600 text-green-500"></span>
+        <!-- <div class="grid grid-cols-bus-info w-[100%]"> -->
+        <button @click="clickHandle" class="grid grid-cols-4 w-[100%]">
+            <p class="text-left">{{ busCode }}</p>
+            <!-- <div class="grid grid-cols-3"> -->
+            <p v-show="nextBus" :class="busLoadTextColor(nextBus?.Load)">{{ nextBus &&
+                busUTCToMins(nextBus.EstimatedArrival) }}</p>
+            <p v-show="nextBus2" :class="busLoadTextColor(nextBus2?.Load)">{{ nextBus2 &&
+                busUTCToMins(nextBus2.EstimatedArrival) }}</p>
+            <p v-show="nextBus3" :class="busLoadTextColor(nextBus3?.Load)">{{ nextBus3 &&
+                busUTCToMins(nextBus3.EstimatedArrival) }}</p>
+            <!-- </div> -->
+        </button>
+        <div v-show="showOriginDestination" class="flex flex-col justify-between overflow-hidden w-[100%]">
+            <div class="grid grid-cols-4 justify-items-center">
+                <p class="text-left opacity-0">{{ busCode }}</p>
+                <CardBusTypeIcons :bus-type="nextBus?.Type" />
+                <CardBusTypeIcons :bus-type="nextBus2?.Type" />
+                <CardBusTypeIcons :bus-type="nextBus3?.Type" />
             </div>
-            <div v-show="showOriginDestination" class="flex justify-between overflow-hidden">
-                <p class="text-[0.75rem] text-gray-700/50">{{ nextBus && nextBus.Origin }} -> {{ nextBus &&
-                    nextBus.Destination
-                }}</p>
-            </div>
+            <p class="text-[0.7rem] text-gray-700/90">{{ nextBus && nextBus.Origin }} -> {{ nextBus &&
+                nextBus.Destination
+            }}</p>
         </div>
+        <!-- </div> -->
 
-    </div>
-</template>
+</div></template>

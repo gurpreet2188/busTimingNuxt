@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
             stops  = []
             for (const stop of busStopsList) {
                 const distance = calculateDistance(body.lat, body.lon, stop.Latitude, stop.Longitude, 'K')
-                if( distance < 0.3) {
+                if( distance < 0.4) {
                     stop['Distance'] = distance
                     stops = [...stops, stop]
                 }
