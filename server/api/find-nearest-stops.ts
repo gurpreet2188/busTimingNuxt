@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
             }
         }
     }
+    // console.log(stops)
     return { stops }
 })
 

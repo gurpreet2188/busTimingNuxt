@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // import('~/assets/css/tailwind.css')
 import { _AsyncData } from 'nuxt/dist/app/composables/asyncData';
-import { getCurrentLocation } from './helper/location'
+// import { getCurrentLocation } from './helper/location'
 import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops';
 import { fetchData } from './helper/fetchData' 
 import { useGeolocation } from '@vueuse/core'
@@ -30,6 +30,7 @@ watch(pos.coords, async ()=>{
     if (pos.coords.value.latitude !== 0 && pos.coords.value.longitude !== 0) {
         pos.pause()
         console.log(pos)
+        //1.281189, 103.838693
         stops.value = await getData({lat:pos.coords.value.latitude, lon:pos.coords.value.longitude})
         if (stops.value.stops.length > 0) {
             stops.value = await fetchData(stops.value.stops)
@@ -38,7 +39,7 @@ watch(pos.coords, async ()=>{
 })
 
 watchEffect(async () => {
-   
+   console.log(stops)
     const favs: Ref<Array<string> | undefined> = useState('favs')
     let tempfavStops: BUS_STOP_TYPES = { stops: [] }
     if (favs.value) {

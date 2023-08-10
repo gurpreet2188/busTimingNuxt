@@ -11,7 +11,11 @@ module.exports = {
    './helper/*.{js,ts}'
   ],
   theme: {
-    extend: {}
+    extend: {
+      gridTemplateColumns:{
+        'bus-info': '1fr 3fr'
+      }
+    }
   },
   plugins: []
 }
