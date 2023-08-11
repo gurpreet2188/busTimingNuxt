@@ -73,7 +73,7 @@ watchEffect(async () => {
 
 <template>
     <div
-        class="flex flex-col lg:flex-wrap lg:w-[40%] justify-start items-center gap-[1rem] first-letter:w-[100%] p-[1rem] pb-[4rem] overflow-hidden">
+        class="flex flex-col lg:w-[40%] md:w-[60%] justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden">
         <Navigation />
         <Transition name="fly-in">
             <div v-if="transitionLoad" class="flex flex-col justify-center items-center gap-[1rem] w-[100%]">
