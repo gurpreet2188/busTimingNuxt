@@ -17,6 +17,7 @@ const busUTCToMins = (UTCTime: string): string => {
 }
 
 const showOriginDestination: Ref<boolean> = ref(false)
+const darkTheme:Ref<boolean> = useState('darkTheme')
 
 watch(showOriginDestination, async () => {
 
@@ -36,16 +37,20 @@ const clickHandle = () => {
 }
 
 const busLoadTextColor = (load: string | undefined) => {
-    if (load) {
-        return load === 'SEA' ? '#84a98c' : load === 'SDA' ? '#ff7d00' : '#ae2012'
-    }
+    if (load ) {
+        // g - 99d98c , o- ffb600, 
+        if(darkTheme){
+            return load === 'SEA' ? '#99d98c' : load === 'SDA' ? '#ffb600' : '#ff4d6d'
+        } else {
+            return load === 'SEA' ? '#84a98c' : load === 'SDA' ? '#ff7d00' : '#ae2012'
+        }
+    } 
 }
 
 </script>
 
 <template>
-    <div class="flex flex-col justify-start items-start gap-[0.05rem] w-[100%] text-[#6d6875]">
-        <span class="text-red-800 text-orange-600 text-green-500"></span>
+    <div class="flex flex-col justify-start items-start gap-[0.05rem] w-[100%] text-[#6d6875] dark:text-[#ffcdb2]">
         <!-- <div class="grid grid-cols-bus-info w-[100%]"> -->
         <button @click="clickHandle" class="grid grid-cols-4 w-[100%]">
             <p class="text-left">{{ busCode }}</p>
@@ -67,7 +72,7 @@ const busLoadTextColor = (load: string | undefined) => {
                     <CardBusTypeIcons :bus-type="nextBus3?.Type" :color="busLoadTextColor(nextBus3?.Load)" />
                 </div>
 
-                <p v-if="nextBus?.Origin && nextBus?.Destination" class="text-[0.7rem] text-gray-700/90">{{ nextBus && nextBus.Origin }} -> {{ nextBus &&
+                <p v-if="nextBus?.Origin && nextBus?.Destination" class="text-[0.7rem]">{{ nextBus && nextBus.Origin }} -> {{ nextBus &&
                     nextBus.Destination
                 }}</p>
             </div>

@@ -4,7 +4,7 @@ import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops'
 import { fetchData } from './helper/fetchData'
 import { useGeolocation } from '@vueuse/core'
 
-useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
+useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] dark:bg-[#6d6875] min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
 
 const getData = async (pos: { lat: number, lon: number }) => {
 
@@ -19,7 +19,7 @@ const favsStops: Ref<BUS_STOP_TYPES | null> = useState('favsStops', () => null)
 const filterFavs: Ref<Boolean> = useState('filterFavs', () => false)
 const favs: Ref<Array<string> | undefined> = useState('favs', () => undefined)
 const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] })
-
+const darkTheme:Ref<boolean> = useState('darkTheme', ()=>false)
 
 onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
@@ -67,7 +67,14 @@ watchEffect(async () => {
     }
 })
 
+onMounted(()=>{
+    
+    darkTheme.value =  window.matchMedia('(prefers-color-scheme: dark)').matches
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)=>{
+        darkTheme.value = e.matches
+    })
 
+})
 
 </script>
 
@@ -90,13 +97,13 @@ watchEffect(async () => {
             <Footer />
         </div>
     </div>
-    <div v-if="!transitionLoad" class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] overflow-hidden">
-        <IconsBusStop :color="'#6d6875'" :size="{w:'48px',h:'48px'}"/>
-        <div class="relative flex flex-col  w-[90%] h-[2px] bg-[#6d6875]/50 ">
+    <div v-if="!transitionLoad" class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] overflow-hidden ">
+        <IconsBusStop :color="darkTheme ? '#e5989b': '#6d6875'" :size="{w:'48px',h:'48px'}"/>
+        <div class="relative flex flex-col  w-[90%] h-[2px] bg-[#e5989b]/50 ">
 
-            <span class="absolute w-[90%] h-[2px] bg-[#6d6875] loading-bar "></span>
+            <span class="absolute w-[90%] h-[2px] bg-[#e5989b] loading-bar "></span>
         </div>
-        <p class="text-center tracking-wider text-[#6d6875]">Finding nearest bus Stops</p>
+        <p class="text-center tracking-wider text-[#e5989b]">Finding nearest bus Stops</p>
         
     </div>
 </template>
