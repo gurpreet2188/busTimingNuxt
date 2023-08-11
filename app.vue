@@ -3,13 +3,13 @@
 import { _AsyncData } from 'nuxt/dist/app/composables/asyncData';
 // import { getCurrentLocation } from './helper/location'
 import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops';
-import { fetchData } from './helper/fetchData' 
+import { fetchData } from './helper/fetchData'
 import { useGeolocation } from '@vueuse/core'
 
 useHead({ bodyAttrs: { class: 'bg-gradient-to-br from-blue-200 to-orange-100 min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
 
 const getData = async (pos: { lat: number, lon: number }) => {
-    console.log(pos)
+   
     const res = await fetch(`${import.meta.env['VITE_APP_BASE_URL']}/api/find-nearest-stops`, { method: 'POST', body: JSON.stringify(pos) })
     const data = await res.json()
     return await data
@@ -26,17 +26,8 @@ onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
 })
 
-watchEffect(async () => {
-    if (pos.coords.value.latitude !== Infinity && pos.coords.value.longitude !== Infinity) {
-        pos.pause()
-        console.log(pos)
-        //1.281189, 103.838693
-        stops.value = await getData({lat:pos.coords.value.latitude, lon:pos.coords.value.longitude})
-        if (stops.value.stops.length > 0) {
-            stops.value = await fetchData(stops.value.stops)
-        }
-}
-    const favs: Ref<Array<string> | undefined> = useState('favs')
+
+watch(favs, async()=>{
     let tempfavStops: BUS_STOP_TYPES = { stops: [] }
     if (favs.value) {
         if ((favs.value?.length > 0) && process.client) {
@@ -55,6 +46,37 @@ watchEffect(async () => {
             favsStops.value = { stops: [] }
         }
     }
+})
+
+watchEffect(async () => {
+    if (pos.coords.value.latitude !== Infinity && pos.coords.value.longitude !== Infinity) {
+        pos.pause()
+       
+        //1.281189, 103.838693
+        stops.value = await getData({ lat: pos.coords.value.latitude, lon: pos.coords.value.longitude })
+        if (stops.value.stops.length > 0) {
+            stops.value = await fetchData(stops.value.stops)
+        }
+    }
+    // const favs: Ref<Array<string> | undefined> = useState('favs')
+    // let tempfavStops: BUS_STOP_TYPES = { stops: [] }
+    // if (favs.value) {
+    //     if ((favs.value?.length > 0) && process.client) {
+    //         for (const stop of favs.value) {
+    //             const res = await fetch('/api/stop-info', { method: 'POST', body: JSON.stringify({ 'stopCode': stop }) })
+    //             const data: BUS_STOP_TYPE = await res.json()
+    //             if (data['BusStopCode']) {
+    //                 tempfavStops.stops = [...tempfavStops.stops, data]
+    //             }
+    //         }
+
+    //         if (tempfavStops.stops.length > 0) {
+    //             fetchData(tempfavStops.stops).then(d => favsStops.value = d)
+    //         }
+    //     } else {
+    //         favsStops.value = { stops: [] }
+    //     }
+    // }
 })
 
 </script>

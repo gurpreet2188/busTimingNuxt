@@ -6,7 +6,7 @@ const titleRef: Ref<HTMLHRElement | null> = ref(null)
 onMounted(() => {
     if (divRef.value && titleRef.value) {
         // console.log(divRef.value.clientWidth, titleRef.value.clientWidth)
-        if (titleRef.value.clientWidth > divRef.value.clientWidth) {
+        if ((titleRef.value.clientWidth+4) >= divRef.value.clientWidth) {
             const diff = divRef.value.clientWidth / titleRef.value.clientWidth
             // formula to auto-resize text length for title, 
             // (defaultFontSize x 16) - ((defaultFontSize * 16) * (1 - difference of text length vs parent div length))

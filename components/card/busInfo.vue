@@ -38,7 +38,7 @@ const clickHandle = () => {
 
 const busLoadTextColor = (load: string | undefined) => {
     if (load) {
-        return load === 'SEA' ? 'text-green-500' : load === 'SDA' ? 'text-orange-600' : 'text-red-800'
+        return load === 'SEA' ? '#3bc200' : load === 'SDA' ? '#f39400' : '#ff5823'
     }
 }
 
@@ -51,20 +51,20 @@ const busLoadTextColor = (load: string | undefined) => {
         <button @click="clickHandle" class="grid grid-cols-4 w-[100%]">
             <p class="text-left">{{ busCode }}</p>
             <!-- <div class="grid grid-cols-3"> -->
-            <p v-show="nextBus" :class="busLoadTextColor(nextBus?.Load)">{{ nextBus &&
+            <p v-show="nextBus" >{{ nextBus &&
                 busUTCToMins(nextBus.EstimatedArrival) }}</p>
-            <p v-show="nextBus2" :class="busLoadTextColor(nextBus2?.Load)">{{ nextBus2 &&
+            <p v-show="nextBus2" >{{ nextBus2 &&
                 busUTCToMins(nextBus2.EstimatedArrival) }}</p>
-            <p v-show="nextBus3" :class="busLoadTextColor(nextBus3?.Load)">{{ nextBus3 &&
+            <p v-show="nextBus3" >{{ nextBus3 &&
                 busUTCToMins(nextBus3.EstimatedArrival) }}</p>
             <!-- </div> -->
         </button>
         <div v-show="showOriginDestination" class="flex flex-col justify-between overflow-hidden w-[100%]">
             <div class="grid grid-cols-4 justify-items-center">
                 <p class="text-left opacity-0">{{ busCode }}</p>
-                <CardBusTypeIcons :bus-type="nextBus?.Type" />
-                <CardBusTypeIcons :bus-type="nextBus2?.Type" />
-                <CardBusTypeIcons :bus-type="nextBus3?.Type" />
+                <CardBusTypeIcons :bus-type="nextBus?.Type" :color="busLoadTextColor(nextBus?.Load)"/>
+                <CardBusTypeIcons :bus-type="nextBus2?.Type" :color="busLoadTextColor(nextBus2?.Load)"/>
+                <CardBusTypeIcons :bus-type="nextBus3?.Type" :color="busLoadTextColor(nextBus3?.Load)"/>
             </div>
             <p class="text-[0.7rem] text-gray-700/90">{{ nextBus && nextBus.Origin }} -> {{ nextBus &&
                 nextBus.Destination

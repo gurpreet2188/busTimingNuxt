@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineProps({busType:String})
+defineProps({busType:String, color:String})
 const size = {
     w:'16px',
     h:'16px'
@@ -7,6 +7,7 @@ const size = {
 </script>
 
 <template>
-    <IconsBusSingle v-show="busType === 'SD'" :color="'#000'" :size="size" />
-    <IconsBusDouble v-show="busType === 'DD'" :color="'#000'"  :size="size"/>
+    <IconsBusSingle v-show="busType === 'SD'" :color="color" :size="size" />
+    <IconsBusDouble v-show="busType === 'DD'" :color="color"  :size="size"/>
+    <IconsBusBendy v-show="busType === 'BD'"  :color="color"  :size="size" />
 </template>
