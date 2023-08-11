@@ -37,7 +37,7 @@ const clickHandle = () => {
 
 const busLoadTextColor = (load: string | undefined) => {
     if (load) {
-        return load === 'SEA' ? '#3bc200' : load === 'SDA' ? '#f39400' : '#ff5823'
+        return load === 'SEA' ? '#84a98c' : load === 'SDA' ? '#ff7d00' : '#ae2012'
     }
 }
 
