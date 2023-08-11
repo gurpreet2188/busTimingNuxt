@@ -67,7 +67,7 @@ const busLoadTextColor = (load: string | undefined) => {
                     <CardBusTypeIcons :bus-type="nextBus3?.Type" :color="busLoadTextColor(nextBus3?.Load)" />
                 </div>
 
-                <p class="text-[0.7rem] text-gray-700/90">{{ nextBus && nextBus.Origin }} -> {{ nextBus &&
+                <p v-if="nextBus?.Origin && nextBus?.Destination" class="text-[0.7rem] text-gray-700/90">{{ nextBus && nextBus.Origin }} -> {{ nextBus &&
                     nextBus.Destination
                 }}</p>
             </div>
