@@ -12,7 +12,7 @@ const clickHandle = (val:boolean) =>{
 </script>
 
 <template>
-    <div class="flex justify-center items-center w-[100%] h-[100%] bg-blue-50">
+    <div class="flex justify-center items-center w-[100%] h-[100%] lg:shadow-lg  lg:rounded-lg bg-blue-50">
         <div class="flex justify-center items-center w-[50%]">
             <button @click="()=>{clickHandle(false)}">
                 <IconsLocation :color="'#000'" :size="size" :active="!filterFavs"/>

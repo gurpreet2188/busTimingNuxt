@@ -16,10 +16,12 @@ body {
     margin: 0rem;
 }
 
-/* #__nuxt {
-    height: 100%;
-    width: 100%;
-} */
+#__nuxt {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
 html,body, #__nuxt, #__layout{
     /* height:auto!important; */
