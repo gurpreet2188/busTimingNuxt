@@ -37,7 +37,6 @@ const clickHandle = () => {
 }
 
 const busLoadTextColor = (load: string | undefined) => {
-    console.log(load)
     if (load) {
         return load === 'SEA' ? 'text-green-500' : load === 'SDA' ? 'text-orange-600' : 'text-red-800'
     }
@@ -46,7 +45,7 @@ const busLoadTextColor = (load: string | undefined) => {
 </script>
 
 <template>
-    <div class="flex flex-col justify-start items-start gap-[0.05rem] w-[100%]">
+    <div class="flex flex-col justify-start items-start gap-[0.05rem] w-[100%] ">
         <span class="text-red-800 text-orange-600 text-green-500"></span>
         <!-- <div class="grid grid-cols-bus-info w-[100%]"> -->
         <button @click="clickHandle" class="grid grid-cols-4 w-[100%]">

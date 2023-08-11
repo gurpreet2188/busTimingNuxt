@@ -1,24 +1,24 @@
 import { busStops } from "../busStops"
-import type {Stop as BUS_STOP_TYPE} from '../../types/stops'
+import type { Stop as BUS_STOP_TYPE } from '../../types/stops'
 
 export default defineEventHandler(async (event) => {
     const body: null | { lat: number, lon: number } = await readBody(event)
-    let stops:Array<BUS_STOP_TYPE>| [] = []
+    let stops: Array<BUS_STOP_TYPE> | [] = []
     if (body && body['lat']) {
         const busStopsList = await busStops()
 
         if (busStopsList) {
-            stops  = []
+            stops = []
             for (const stop of busStopsList) {
                 const distance = calculateDistance(body.lat, body.lon, stop.Latitude, stop.Longitude, 'K')
-                if( distance < 0.4) {
+                if (distance < 0.4) {
                     stop['Distance'] = distance
                     stops = [...stops, stop]
                 }
             }
 
-            if(stops.length >0) {
-                stops.sort((a,b)=> a['Distance'] - b['Distance'])
+            if (stops.length > 0) {
+                stops.sort((a, b) => a['Distance'] - b['Distance'])
             }
         }
     }

@@ -15,19 +15,19 @@ const getData = async (pos: { lat: number, lon: number }) => {
     return await data
 }
 
+const pos = useGeolocation()
 const favsStops: Ref<BUS_STOP_TYPES | null> = useState('favsStops', () => null)
 const filterFavs: Ref<Boolean> = useState('filterFavs', () => false)
 const favs: Ref<Array<string> | undefined> = useState('favs', () => undefined)
 const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] })
-const pos = useGeolocation()
 
 
 onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
 })
 
-watch(pos.coords, async ()=>{
-    if (pos.coords.value.latitude !== 0 && pos.coords.value.longitude !== 0) {
+watchEffect(async () => {
+    if (pos.coords.value.latitude !== Infinity && pos.coords.value.longitude !== Infinity) {
         pos.pause()
         console.log(pos)
         //1.281189, 103.838693
@@ -36,10 +36,6 @@ watch(pos.coords, async ()=>{
             stops.value = await fetchData(stops.value.stops)
         }
 }
-})
-
-watchEffect(async () => {
-   console.log(stops)
     const favs: Ref<Array<string> | undefined> = useState('favs')
     let tempfavStops: BUS_STOP_TYPES = { stops: [] }
     if (favs.value) {

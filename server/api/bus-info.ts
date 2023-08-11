@@ -1,20 +1,20 @@
 const API_KEY: string | undefined = process.env.API_KEY
-import { busStops } from "../busStops"
+// import { busStops } from "../busStops"
 import type {Root as BUS_INFO_TYPE} from '../../types/bus'
 
-const findStopName = async (stopCode:string) => {
-    const busStopsList = await busStops()
+// const findStopName = async (stopCode:string) => {
+//     const busStopsList = await busStops()
 
-    if(busStopsList) {
-        for(const stop of busStopsList) {
-            if(stop['BusStopCode'] === stopCode) {
-                return stop['Description']
-            }
-        }
-    }
+//     if(busStopsList) {
+//         for(const stop of busStopsList) {
+//             if(stop['BusStopCode'] === stopCode) {
+//                 return stop['Description']
+//             }
+//         }
+//     }
 
-    return ''
-}
+//     return ''
+// }
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
