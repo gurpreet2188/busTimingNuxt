@@ -34,6 +34,6 @@ const clickHandle = () => {
 
 <template>
     <button @click="clickHandle" class="w-[100%] h-[100%]">
-        <IconsFavs :color="'#000'" :active="fav" :size="{w:'16px', h:'16px'}"/>
+        <IconsFavs :color="'#ffcdb2'" :active="fav" :size="{w:'16px', h:'16px'}"/>
     </button>
 </template>

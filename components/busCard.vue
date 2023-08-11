@@ -30,10 +30,10 @@ watchEffect(() => {
 })
 
 </script>
-
+<!-- :style="{ 'background-color': `hsl(${bgColorShift && colors[bgColorShift]},100%,98%)` } -->
 <template>
-    <div :style="{ 'background-color': `hsl(${bgColorShift && colors[bgColorShift]},100%,98%)` }"
-        class="relative flex flex-col justify-center items-start gap-[2.5rem] p-[1rem] rounded-lg shadow-lg w-[100%]">
+    <div
+        class="relative flex flex-col justify-center items-start gap-[2.5rem] p-[1rem] rounded-lg shadow-lg w-[100%] bg-[#ffb4a2]">
         <div class="absolute w-[1.2rem] h-[1.2rem] top-[1rem] bottom-auto right-[1rem] left-auto">
             <CardFavs :fav="fav" :stop-code="stopCode" />
         </div>

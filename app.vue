@@ -4,7 +4,7 @@ import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops'
 import { fetchData } from './helper/fetchData'
 import { useGeolocation } from '@vueuse/core'
 
-useHead({ bodyAttrs: { class: 'bg-gradient-to-br from-blue-200 to-orange-100 min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
+useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
 
 const getData = async (pos: { lat: number, lon: number }) => {
 
@@ -86,9 +86,18 @@ watchEffect(async () => {
         <div v-show="filterFavs && (favsStops?.stops.length === 0)" class="w-[100%] justify-self-center">
             <p>No Favs :( </p>
         </div>
-        <div class="fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2  h-[5%]">
+        <div v-if="transitionLoad" class="fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2  h-[5%]">
             <Footer />
         </div>
+    </div>
+    <div v-if="!transitionLoad" class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] overflow-hidden">
+        <IconsBusStop :color="'#6d6875'" :size="{w:'48px',h:'48px'}"/>
+        <div class="relative flex flex-col  w-[90%] h-[2px] bg-[#6d6875]/50 ">
+
+            <span class="absolute w-[90%] h-[2px] bg-[#6d6875] loading-bar "></span>
+        </div>
+        <p class="text-center tracking-wider text-[#6d6875]">Finding nearest bus Stops</p>
+        
     </div>
 </template>
 
@@ -110,5 +119,18 @@ watchEffect(async () => {
 .fly-in-leave-to {
     opacity: 0;
     transform: translateY(40%)
+}
+
+.loading-bar {
+    animation: loadingAnimation 2s linear infinite;
+}
+
+@keyframes loadingAnimation {
+    0%, 100% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(100%);
+    }
 }
 </style>
