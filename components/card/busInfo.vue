@@ -2,6 +2,8 @@
 import type { Service as BUS_INFO_SERVICE_TYPES, NextBus as NEXT_BUS_TYPE } from '../../types/bus'
 import type { PropType } from 'vue';
 import { fetchPOST } from '../../helper/fetchData'
+import { clearTimeout } from 'timers';
+import { browser } from 'process';
 
 const props = defineProps({ busCode: String, busTimings: Array<BUS_INFO_SERVICE_TYPES>, nextBus: Object as PropType<NEXT_BUS_TYPE>, nextBus2: Object as PropType<NEXT_BUS_TYPE>, nextBus3: Object as PropType<NEXT_BUS_TYPE> })
 
@@ -30,12 +32,7 @@ watch(showOriginDestination, async () => {
 
 const clickHandle = () => {
     showOriginDestination.value = !showOriginDestination.value
-
-    setTimeout(() => {
-        if (showOriginDestination.value) {
-            showOriginDestination.value = false
-        }
-    }, 5000)
+   
 }
 
 const busLoadTextColor = (load: string | undefined) => {
