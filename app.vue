@@ -98,8 +98,10 @@ onMounted(()=>{
                     :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }" />
             </div>
         </Transition>
-        <div v-show="filterFavs && (favsStops?.stops.length === 0)" class="w-[100%] justify-self-center">
-            <p>No Favs :( </p>
+        <div v-show="filterFavs && (favsStops?.stops.length === 0)" class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center">
+            <IconsBusStop :color="darkTheme ? '#e5989b': '#6d6875'" :size="{w:'48px',h:'48px'}"/>
+        <p class="text-center tracking-wider text-[#e5989b]">There are no saved Bus Stops.</p>
+        
         </div>
         <div v-if="transitionLoad" class="fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2  h-[5%]">
             <Footer />
@@ -111,7 +113,7 @@ onMounted(()=>{
 
             <span class="absolute w-[90%] h-[2px] bg-[#e5989b] loading-bar "></span>
         </div>
-        <p class="text-center tracking-wider text-[#e5989b]">Finding nearest bus Stops</p>
+        <p class="text-center tracking-wider text-[#e5989b] ">Finding nearest bus Stops</p>
         
     </div>
 </template>
