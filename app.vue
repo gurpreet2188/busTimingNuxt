@@ -25,7 +25,7 @@ onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
 })
 
-
+const favsInterval:Ref<NodeJS.Timer | null> = ref(null)
 watch(favs, async () => {
     let tempfavStops: BUS_STOP_TYPES = { stops: [] }
     if (favs.value) {
@@ -40,14 +40,21 @@ watch(favs, async () => {
 
             if (tempfavStops.stops.length > 0) {
                 fetchData(tempfavStops.stops).then(d => favsStops.value = d)
-                setInterval(() => {
-                    console.log('fetching data in interval')
-                    fetchData(tempfavStops.stops).then(d => favsStops.value = d)
+                favsInterval.value = setInterval(() => {
+                    console.log('fetching data in interval, favs')
+                        fetchData(tempfavStops.stops).then(d => favsStops.value = d)
                 }, 60000)
             }
         } else {
             favsStops.value = { stops: [] }
         }
+    }
+})
+
+watch(favs, ()=>{
+    if(favsInterval.value) {
+        console.log('clearing interval')
+        clearInterval(favsInterval.value)
     }
 })
 
@@ -60,6 +67,7 @@ watchEffect(async () => {
         if (stops.value.stops.length > 0) {
             stops.value = await fetchData(stops.value.stops)
             setInterval(async () => {
+                console.log('fetching data in interval, main')
                 stops.value = await fetchData(stops.value.stops)
             }, 60000)
         }
