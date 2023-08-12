@@ -21,7 +21,7 @@ const favs: Ref<Array<string> | undefined> = useState('favs', () => undefined)
 const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] })
 const darkTheme: Ref<boolean> = useState('darkTheme', () => false)
 const localStorageLocation: Ref<{ lat: number, lon: number } | null> = ref(null)
-const location:Ref<{ lat: number, lon: number } | null> = ref(null)
+const location: Ref<{ lat: number, lon: number } | null> = ref(null)
 onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
     if (localStorage.getItem('location')) {
@@ -75,7 +75,7 @@ watchEffect(async () => {
 })
 
 watchEffect(() => {
-    const loadData = async (lat:number, lon:number)=> {
+    const loadData = async (lat: number, lon: number) => {
         stops.value = await getData({ lat: lat, lon: lon })
         if (stops.value.stops.length > 0) {
             stops.value = await fetchData(stops.value.stops)
@@ -89,12 +89,12 @@ watchEffect(() => {
         }
     }
     if (localStorageLocation.value) {
-        loadData(localStorageLocation.value.lat,localStorageLocation.value.lon)
-    } else if(location.value && localStorageLocation.value) {
-        if(location.value !== localStorageLocation.value) {
+        loadData(localStorageLocation.value.lat, localStorageLocation.value.lon)
+    } else if (location.value && localStorageLocation.value) {
+        if (location.value !== localStorageLocation.value) {
             loadData(location.value.lat, location.value.lon)
         }
-    } else if(location.value){
+    } else if (location.value) {
         loadData(location.value.lat, location.value.lon)
     }
 })
@@ -133,12 +133,19 @@ onMounted(() => {
         </div>
     </div>
     <div v-if="!transitionLoad" class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] overflow-hidden ">
-        <IconsBusStop :color="darkTheme ? '#e5989b' : '#6d6875'" :size="{ w: '48px', h: '48px' }" />
+        <div class="relative h-[48px] w-[48px]">
+           <div class="absolute">
+            <IconsBusStop v-if="location || localStorageLocation" :color="darkTheme ? '#e5989b' : '#6d6875'"
+                :size="{ w: '48px', h: '48px' }" />
+                <IconsLocation v-if="!(location || localStorageLocation)" :color="darkTheme ? '#e5989b' : '#6d6875'"
+                    :size="{ w: '48px', h: '48px' }" />
+           </div>
+        </div>
         <div class="relative flex flex-col  w-[90%] h-[2px] bg-[#e5989b]/50 ">
 
             <span class="absolute w-[90%] h-[2px] bg-[#e5989b] loading-bar "></span>
         </div>
-        <p class="text-center tracking-wider text-[#e5989b] ">Finding nearest bus Stops</p>
+        <p class="text-center tracking-wider text-[#e5989b] ">{{ location || localStorageLocation ? 'Finding nearest bus Stops' : 'Waiting for device Location' }}</p>
 
     </div>
 </template>
