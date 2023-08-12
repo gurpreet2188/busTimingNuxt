@@ -1,20 +1,19 @@
-import { busStops } from "../busStops"
-import type { Stop as BUS_STOP_TYPE } from '../../types/stops'
+import { HashMapSingleton } from "../busInfoHashMap"
 
-globalThis.stopInfo = new Map()
-
-busStops().then(d => d.forEach((obj: BUS_STOP_TYPE) => {
-    // console.log('hashmap')
-    return globalThis.stopInfo.set(obj.BusStopCode, obj)
-}))
+const hashmap = HashMapSingleton.getInstance()
 
 
 export default defineEventHandler(async (event)=>{
     const body =  await readBody(event)
 
     if(body['stopCode']) {
+        if(hashmap.stopInfoHashMap.size === 0) {
+            await hashmap.loadHashMap()
+        }
+
         const target = body['stopCode']
-        const stop:BUS_STOP_TYPE|undefined = globalThis.stopInfo.get(target)  
+        // const stop:BUS_STOP_TYPE|undefined = globalThis.stopInfo.get(target)  
+        const stop = hashmap.stopInfoHashMap.get(target)
         if(stop){
             return stop
         }

@@ -1,27 +1,10 @@
-import { busStops } from "../busStops"
-import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from '../../types/stops'
-import { HashMapSingleton } from "../globalVar"
-
-
-globalThis.stopNameHashMap = new Map<string, string>()
+import { HashMapSingleton } from "../busInfoHashMap"
 
 const hashmap = HashMapSingleton.getInstance()
 
-
-
-// if(busStopsList) {
-busStops().then(d => d.forEach((obj: BUS_STOP_TYPE) => {
-    // hashmap.stopNameHasMap.set(obj.BusStopCode, obj.Description)
-    return globalThis.stopNameHashMap.set(obj.BusStopCode, obj.Description)
-}))
-
-
-// console.log(hashmap.stopNameHasMap, 'class')
-// }
-
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    if(hashmap.stopNameHasMap.size === 0) {
+    if(hashmap.stopNameHashMap.size === 0) {
         await hashmap.loadHashMap()
     }
     if (body['stopCode']) {
@@ -34,8 +17,7 @@ export default defineEventHandler(async (event) => {
         //     }
         // }
         const targetStop = body['stopCode']
-        // const stop = globalThis.stopNameHashMap.get(targetStop)
-        const stop = hashmap.stopNameHasMap.get(targetStop)
+        const stop = hashmap.stopNameHashMap.get(targetStop)
         return { 'name': stop }
     }
 })
