@@ -4,7 +4,7 @@ import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops'
 import { fetchData } from './helper/fetchData'
 import { useGeolocation } from '@vueuse/core'
 
-useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] dark:bg-[#6d6875] min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
+useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
 
 const getData = async (pos: { lat: number, lon: number }) => {
 
@@ -61,7 +61,6 @@ watch(favs, () => {
         clearInterval(favsInterval.value)
     }
 })
-
 
 
 watchEffect(async () => {
@@ -132,7 +131,7 @@ onMounted(() => {
             <Footer />
         </div>
     </div>
-    <div v-if="!transitionLoad" class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] overflow-hidden ">
+    <div v-if="!transitionLoad" class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] lg:w-[40%] overflow-hidden ">
         <div class="relative h-[48px] w-[48px]">
            <div class="absolute">
             <IconsBusStop v-if="location || localStorageLocation" :color="darkTheme ? '#e5989b' : '#6d6875'"

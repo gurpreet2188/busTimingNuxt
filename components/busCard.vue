@@ -28,12 +28,12 @@ watchEffect(() => {
         }
     }
 })
-
+//3f403f
 </script>
 <!-- :style="{ 'background-color': `hsl(${bgColorShift && colors[bgColorShift]},100%,98%)` } -->
 <template>
     <div
-        class="relative flex flex-col justify-center items-start gap-[2.5rem] p-[1rem] rounded-lg shadow-lg w-[100%] bg-[#ffb4a2] dark:bg-[#b5838d]/80">
+        class="relative flex flex-col justify-center items-start gap-[2.5rem] p-[1rem] rounded-lg shadow-lg dark:shadow-none w-[100%] bg-[#ffb4a2] dark:bg-[#1b263b] dark:border dark:border-[#6d6875]/0">
         <div class="absolute w-[1.2rem] h-[1.2rem] top-[1rem] bottom-auto right-[1rem] left-auto">
             <CardFavs :fav="fav" :stop-code="stopCode" />
         </div>

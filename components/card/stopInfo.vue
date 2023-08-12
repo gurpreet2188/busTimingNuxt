@@ -21,7 +21,7 @@ onMounted(() => {
 
 <template>
     <div ref="divRef"
-        class="flex flex-col justify-center items-start gap-[0.5rem] p-[1rem] w-[100%] border-b-[1px] border-black/10 bg-[#b5838d] rounded-lg text-[#ffcdb2]">
+        class="flex flex-col justify-center items-start gap-[0.5rem] p-[1rem] w-[100%] border-b-[1px] border-black/10 dark:border-[#6d6875]/50 dark:rounded-none bg-[#b5838d] dark:bg-[#1b263b]/0 rounded-lg text-[#ffcdb2]">
         <h2 ref="titleRef" class="text-[1.3rem] whitespace-nowrap ">{{stopName}} ({{
             stopCode }})</h2>
         <div class="flex justify-between items-center w-[100%]">
