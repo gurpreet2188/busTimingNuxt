@@ -22,14 +22,56 @@ const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] })
 const darkTheme: Ref<boolean> = useState('darkTheme', () => false)
 const localStorageLocation: Ref<{ lat: number, lon: number } | null> = ref(null)
 const location: Ref<{ lat: number, lon: number } | null> = ref(null)
+const windowBlur: Ref<boolean> = ref(false)
+
 onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
     if (localStorage.getItem('location')) {
         localStorageLocation.value = JSON.parse(localStorage.getItem('location') as string)
     }
+
+    darkTheme.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        darkTheme.value = e.matches
+    })
+
+    window.addEventListener('blur', (e) => {
+
+        windowBlur.value = true
+    })
+
+    window.addEventListener('focus', (e) => {
+
+        windowBlur.value = false
+    })
 })
 
+const mainInterval: Ref<NodeJS.Timer | null> = ref(null)
 const favsInterval: Ref<NodeJS.Timer | null> = ref(null)
+
+watch(windowBlur, () => {
+    console.log(windowBlur.value)
+    const timeout = setTimeout(() => {
+            if (favsInterval.value && windowBlur.value) {
+                console.log('clearing interval')
+                clearInterval(favsInterval.value)
+            }
+
+            if (mainInterval.value && windowBlur.value) {
+                clearInterval(mainInterval.value)
+            }
+        }, 60000)
+   
+    if(!windowBlur.value) {
+        if(timeout) {
+            console.log('clearing blur timeout')
+            clearTimeout(timeout)
+        }
+
+    }
+
+})
+
 watch(favs, async () => {
     let tempfavStops: BUS_STOP_TYPES = { stops: [] }
     if (favs.value) {
@@ -79,7 +121,7 @@ watchEffect(() => {
         if (stops.value.stops.length > 0) {
             stops.value = await fetchData(stops.value.stops)
             console.log('fetching data')
-            setInterval(async () => {
+            mainInterval.value = setInterval(async () => {
                 console.log('fetching data in interval, main')
                 stops.value = await fetchData(stops.value.stops)
             }, 60000)
@@ -98,13 +140,16 @@ watchEffect(() => {
     }
 })
 
-onMounted(() => {
 
-    darkTheme.value = window.matchMedia('(prefers-color-scheme: dark)').matches
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        darkTheme.value = e.matches
-    })
+onBeforeUnmount(() => {
+    if (favsInterval.value) {
+        console.log('clearing interval')
+        clearInterval(favsInterval.value)
+    }
 
+    if (mainInterval.value) {
+        clearInterval(mainInterval.value)
+    }
 })
 
 </script>
@@ -131,14 +176,15 @@ onMounted(() => {
             <Footer />
         </div>
     </div>
-    <div v-if="!transitionLoad" class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] lg:w-[40%] overflow-hidden ">
+    <div v-if="!transitionLoad"
+        class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] lg:w-[40%] overflow-hidden ">
         <div class="relative h-[48px] w-[48px]">
-           <div class="absolute">
-            <IconsBusStop v-if="location || localStorageLocation" :color="darkTheme ? '#e5989b' : '#6d6875'"
-                :size="{ w: '48px', h: '48px' }" />
+            <div class="absolute">
+                <IconsBusStop v-if="location || localStorageLocation" :color="darkTheme ? '#e5989b' : '#6d6875'"
+                    :size="{ w: '48px', h: '48px' }" />
                 <IconsLocation v-if="!(location || localStorageLocation)" :color="darkTheme ? '#e5989b' : '#6d6875'"
                     :size="{ w: '48px', h: '48px' }" />
-           </div>
+            </div>
         </div>
         <div class="relative flex flex-col  w-[90%] h-[2px] bg-[#e5989b]/50 ">
 
