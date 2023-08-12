@@ -1,9 +1,9 @@
 import { HashMapSingleton } from "../busInfoHashMap"
 
-const hashmap = HashMapSingleton.getInstance()
 
 
 export default defineEventHandler(async (event)=>{
+    const hashmap = HashMapSingleton.getInstance()
     const body =  await readBody(event)
 
     if(body['stopCode']) {
