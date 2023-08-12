@@ -13,19 +13,23 @@ const getData = async (pos: { lat: number, lon: number }) => {
     return await data
 }
 
-const transitionLoad:Ref<boolean> = ref(false)
+const transitionLoad: Ref<boolean> = ref(false)
 const pos = useGeolocation()
 const favsStops: Ref<BUS_STOP_TYPES | null> = useState('favsStops', () => null)
 const filterFavs: Ref<Boolean> = useState('filterFavs', () => false)
 const favs: Ref<Array<string> | undefined> = useState('favs', () => undefined)
 const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] })
-const darkTheme:Ref<boolean> = useState('darkTheme', ()=>false)
-
+const darkTheme: Ref<boolean> = useState('darkTheme', () => false)
+const localStorageLocation: Ref<{ lat: number, lon: number } | null> = ref(null)
+const location:Ref<{ lat: number, lon: number } | null> = ref(null)
 onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
+    if (localStorage.getItem('location')) {
+        localStorageLocation.value = JSON.parse(localStorage.getItem('location') as string)
+    }
 })
 
-const favsInterval:Ref<NodeJS.Timer | null> = ref(null)
+const favsInterval: Ref<NodeJS.Timer | null> = ref(null)
 watch(favs, async () => {
     let tempfavStops: BUS_STOP_TYPES = { stops: [] }
     if (favs.value) {
@@ -42,7 +46,7 @@ watch(favs, async () => {
                 fetchData(tempfavStops.stops).then(d => favsStops.value = d)
                 favsInterval.value = setInterval(() => {
                     console.log('fetching data in interval, favs')
-                        fetchData(tempfavStops.stops).then(d => favsStops.value = d)
+                    fetchData(tempfavStops.stops).then(d => favsStops.value = d)
                 }, 60000)
             }
         } else {
@@ -51,34 +55,54 @@ watch(favs, async () => {
     }
 })
 
-watch(favs, ()=>{
-    if(favsInterval.value) {
+watch(favs, () => {
+    if (favsInterval.value) {
         console.log('clearing interval')
         clearInterval(favsInterval.value)
     }
 })
 
+
+
 watchEffect(async () => {
     if (pos.coords.value.latitude !== Infinity && pos.coords.value.longitude !== Infinity) {
         pos.pause()
+        console.log('found location')
+        window.localStorage.setItem('location', JSON.stringify({ lat: pos.coords.value.latitude, lon: pos.coords.value.longitude }))
+        location.value = { lat: pos.coords.value.latitude, lon: pos.coords.value.longitude }
+    }
 
-        //1.281189, 103.838693
-        stops.value = await getData({ lat: pos.coords.value.latitude, lon: pos.coords.value.longitude })
+})
+
+watchEffect(() => {
+    const loadData = async (lat:number, lon:number)=> {
+        stops.value = await getData({ lat: lat, lon: lon })
         if (stops.value.stops.length > 0) {
             stops.value = await fetchData(stops.value.stops)
+            console.log('fetching data')
             setInterval(async () => {
                 console.log('fetching data in interval, main')
                 stops.value = await fetchData(stops.value.stops)
             }, 60000)
+
+            transitionLoad.value = true
         }
-        transitionLoad.value = true
+    }
+    if (localStorageLocation.value) {
+        loadData(localStorageLocation.value.lat,localStorageLocation.value.lon)
+    } else if(location.value && localStorageLocation.value) {
+        if(location.value !== localStorageLocation.value) {
+            loadData(location.value.lat, location.value.lon)
+        }
+    } else if(location.value){
+        loadData(location.value.lat, location.value.lon)
     }
 })
 
-onMounted(()=>{
-    
-    darkTheme.value =  window.matchMedia('(prefers-color-scheme: dark)').matches
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)=>{
+onMounted(() => {
+
+    darkTheme.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         darkTheme.value = e.matches
     })
 
@@ -98,33 +122,34 @@ onMounted(()=>{
                     :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }" />
             </div>
         </Transition>
-        <div v-show="filterFavs && (favsStops?.stops.length === 0)" class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center">
-            <IconsBusStop :color="darkTheme ? '#e5989b': '#6d6875'" :size="{w:'48px',h:'48px'}"/>
-        <p class="text-center tracking-wider text-[#e5989b]">There are no saved Bus Stops.</p>
-        
+        <div v-show="filterFavs && (favsStops?.stops.length === 0)"
+            class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center">
+            <IconsBusStop :color="darkTheme ? '#e5989b' : '#6d6875'" :size="{ w: '48px', h: '48px' }" />
+            <p class="text-center tracking-wider text-[#e5989b]">There are no saved Bus Stops.</p>
+
         </div>
         <div v-if="transitionLoad" class="fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2  h-[5%]">
             <Footer />
         </div>
     </div>
     <div v-if="!transitionLoad" class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] overflow-hidden ">
-        <IconsBusStop :color="darkTheme ? '#e5989b': '#6d6875'" :size="{w:'48px',h:'48px'}"/>
+        <IconsBusStop :color="darkTheme ? '#e5989b' : '#6d6875'" :size="{ w: '48px', h: '48px' }" />
         <div class="relative flex flex-col  w-[90%] h-[2px] bg-[#e5989b]/50 ">
 
             <span class="absolute w-[90%] h-[2px] bg-[#e5989b] loading-bar "></span>
         </div>
         <p class="text-center tracking-wider text-[#e5989b] ">Finding nearest bus Stops</p>
-        
+
     </div>
 </template>
 
 <style>
-
 .fly-in-enter-active {
     transform: translateY(0%);
     opacity: 1;
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
+
 .fly-in-leave-active {
     transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
@@ -133,6 +158,7 @@ onMounted(()=>{
     transform: translateY(60%);
     opacity: 0;
 }
+
 .fly-in-leave-to {
     opacity: 0;
     transform: translateY(40%)
@@ -143,11 +169,13 @@ onMounted(()=>{
 }
 
 @keyframes loadingAnimation {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(-100%);
     }
+
     50% {
         transform: translateX(100%);
     }
-}
-</style>
+}</style>

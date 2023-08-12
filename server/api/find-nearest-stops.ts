@@ -1,6 +1,10 @@
 import { busStops } from "../busStops"
 import type { Stop as BUS_STOP_TYPE } from '../../types/stops'
 
+// globalThis.busStopsHashMap = new Map()
+
+// busStops().then((d) => d.foreach((obj:BUS_STOP_TYPE)=> globalThis.busStopHashMap.set(obj.))) 
+
 export default defineEventHandler(async (event) => {
     const body: null | { lat: number, lon: number } = await readBody(event)
     let stops: Array<BUS_STOP_TYPE> | [] = []
@@ -8,10 +12,11 @@ export default defineEventHandler(async (event) => {
         const busStopsList = await busStops()
 
         if (busStopsList) {
-            stops = []
+            
             for (const stop of busStopsList) {
                 const distance = calculateDistance(body.lat, body.lon, stop.Latitude, stop.Longitude, 'K')
-                if (distance < 0.4) {
+                if (distance < 0.3) {
+                    console.log('finding stops')
                     stop['Distance'] = distance
                     stops = [...stops, stop]
                 }
