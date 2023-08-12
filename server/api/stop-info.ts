@@ -4,7 +4,7 @@ import type { Stop as BUS_STOP_TYPE } from '../../types/stops'
 globalThis.stopInfo = new Map()
 
 busStops().then(d => d.forEach((obj: BUS_STOP_TYPE) => {
-    console.log('hashmap')
+    // console.log('hashmap')
     return globalThis.stopInfo.set(obj.BusStopCode, obj)
 }))
 
