@@ -15,35 +15,36 @@ const busUTCToMins = (UTCTime: string): string => {
 }
 
 const showOriginDestination: Ref<boolean> = ref(false)
-const darkTheme:Ref<boolean> = useState('darkTheme')
+const darkTheme: Ref<boolean> = useState('darkTheme')
+
+const busOriginDestination: Ref<{ origin: string | undefined, destination: string | undefined }>  = ref({origin:undefined, destination:undefined});
 
 watch(showOriginDestination, async () => {
 
     if (showOriginDestination.value && props.nextBus && (!props.nextBus.Destination || !props.nextBus.Origin)) {
         const tempOrigin: { name: string } = await fetchPOST('/api/stop-name', { 'stopCode': props.nextBus.OriginCode })
         const tempDestination: { name: string } = await fetchPOST('/api/stop-name', { 'stopCode': props.nextBus.DestinationCode })
-        console.log(tempOrigin,tempDestination)
         if (tempOrigin['name'] && tempDestination['name']) {
-            props.nextBus.Origin = tempOrigin['name']
-            props.nextBus.Destination = tempDestination['name']
+            busOriginDestination.value.origin = tempOrigin['name']
+            busOriginDestination.value.destination = tempDestination['name']
         }
     }
 })
 
 const clickHandle = () => {
     showOriginDestination.value = !showOriginDestination.value
-   
+
 }
 
 const busLoadTextColor = (load: string | undefined) => {
-    if (load ) {
+    if (load) {
         // g - 99d98c , o- ffb600, 
-        if(darkTheme.value){
+        if (darkTheme.value) {
             return load === 'SEA' ? '#99d98c' : load === 'SDA' ? '#ffb600' : '#ff4d6d'
         } else {
             return load === 'SEA' ? '#84a98c' : load === 'SDA' ? '#ff7d00' : '#ae2012'
         }
-    } 
+    }
 }
 
 </script>
@@ -70,9 +71,10 @@ const busLoadTextColor = (load: string | undefined) => {
                     <CardBusTypeIcons :bus-type="nextBus2?.Type" :color="busLoadTextColor(nextBus2?.Load)" />
                     <CardBusTypeIcons :bus-type="nextBus3?.Type" :color="busLoadTextColor(nextBus3?.Load)" />
                 </div>
-                <p v-if="nextBus?.Origin && nextBus?.Destination" class="text-[0.7rem]">{{ nextBus && nextBus.Origin }} -> {{ nextBus &&
-                    nextBus.Destination
-                }}</p>
+                <p v-if="busOriginDestination.origin && busOriginDestination.destination" class="text-[0.7rem]">{{ 
+                    busOriginDestination.origin }} -> {{ 
+        busOriginDestination.destination
+    }}</p>
 
             </div>
         </Transition>
