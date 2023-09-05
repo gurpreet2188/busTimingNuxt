@@ -5,8 +5,8 @@ const divRef: Ref<HTMLDivElement | null> = ref(null)
 const titleRef: Ref<HTMLHRElement | null> = ref(null)
 onMounted(() => {
     if (divRef.value && titleRef.value) {
-        // console.log(divRef.value.clientWidth, titleRef.value.clientWidth)
-        if ((titleRef.value.clientWidth+4) >= divRef.value.clientWidth) {
+        console.log(divRef.value.clientWidth, titleRef.value.clientWidth)
+        if ((titleRef.value.clientWidth+32) >= divRef.value.clientWidth) {
             const diff = divRef.value.clientWidth / titleRef.value.clientWidth
             // formula to auto-resize text length for title, 
             // (defaultFontSize x 16) - ((defaultFontSize * 16) * (1 - difference of text length vs parent div length))
@@ -22,7 +22,7 @@ onMounted(() => {
 <template>
     <div ref="divRef"
         class="flex flex-col justify-center items-start gap-[0.5rem] p-[1rem] w-[100%] border-b-[1px] border-black/10 dark:border-[#6d6875]/50 dark:rounded-none bg-[#b5838d] dark:bg-[#1b263b]/0 rounded-lg text-[#ffcdb2]">
-        <h2 ref="titleRef" class="text-[1.3rem] whitespace-nowrap ">{{stopName}} ({{
+        <h2 ref="titleRef" class="text-[1.3rem] whitespace-nowrap ">{{"asdasd asd asd asd asdssss"}} ({{
             stopCode }})</h2>
         <div class="flex justify-between items-center w-[100%]">
             <div class="w-[50%]">
