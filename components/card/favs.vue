@@ -33,7 +33,9 @@ const clickHandle = () => {
 </script>
 
 <template>
-    <button @click="clickHandle" class="w-[100%] h-[100%]">
-        <IconsFavs :color="'#ffcdb2'" :active="fav" :size="{w:'16px', h:'16px'}"/>
+    <button @click="clickHandle" class=" flex justify-center items-center rounded-full w-[100%] h-[100%] p-4 bg-[#b5838d] dark:bg-[#1b263b]">
+        <div>
+            <IconsFavs :color="'#ffcdb2'" :active="fav" :size="{w:'16px', h:'16px'}"/>
+        </div>
     </button>
 </template>

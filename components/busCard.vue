@@ -6,7 +6,7 @@ import type { Service as BUS_SERVICE_TYPES } from '../types/bus'
 
 const props = defineProps({ stopName: String, stopCode: String, streetName: String, stopPos: Object, services: Array<BUS_SERVICE_TYPES>, distanceToStop:Number, bgColorShift: Number })
 // console.log(props.bgColorShift && 10 * props.bgColorShift)
-const colors = [0, 20, 50, 80, 120, 140, 180, 220, 250, 280, 300, 320, 360]
+// const colors = [0, 20, 50, 80, 120, 140, 180, 220, 250, 280, 300, 320, 360]
 
 const fav: Ref<boolean> = ref(false)
 
@@ -33,8 +33,8 @@ watchEffect(() => {
 <!-- :style="{ 'background-color': `hsl(${bgColorShift && colors[bgColorShift]},100%,98%)` } -->
 <template>
     <div
-        class="relative flex flex-col justify-center items-start gap-[2.5rem] p-[1rem] rounded-lg shadow-lg dark:shadow-none w-[100%] bg-[#ffb4a2] dark:bg-[#1b263b] dark:border dark:border-[#6d6875]/0">
-        <div class="absolute w-[1.2rem] h-[1.2rem] top-[1rem] bottom-auto right-[1rem] left-auto">
+        class="relative flex flex-col justify-center items-start gap-[2.5rem] p-[1rem] rounded-lg dark:shadow-none w-[100%] bg-[#ffb4a2] dark:bg-[#1b263b]">
+        <div class="absolute w-[2rem] h-[2rem] top-[2.05rem] bottom-auto right-[1rem] left-auto">
             <CardFavs :fav="fav" :stop-code="stopCode" />
         </div>
         <StopInfo :stop-name="stopName" :stop-code="stopCode" :street-name="streetName" :stop-pos="stopPos" :distance-to-stop="distanceToStop" />
