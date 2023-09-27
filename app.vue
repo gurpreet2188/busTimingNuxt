@@ -163,7 +163,7 @@ onBeforeUnmount(() => {
                 <BusCard v-for="stop, index in filterFavs === true ? favsStops?.stops : stops.stops"
                     :stop-name="stop.Description" :stop-code="stop.BusStopCode" :bg-color-shift="index"
                     :street-name="stop.RoadName" :services="stop.Services" :distance-to-stop="stop.Distance"
-                    :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }" />
+                    :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }" :key="stop.BusStopCode + new Date().getTime()" /> <!-- add unix time to bustopcode to have an uniquq key -->
             </div>
         </Transition>
         <div v-show="filterFavs && (favsStops?.stops.length === 0)"
