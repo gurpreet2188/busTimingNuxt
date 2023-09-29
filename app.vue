@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { _AsyncData } from 'nuxt/dist/app/composables/asyncData';
 import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops';
+
 import { fetchData } from './helper/fetchData'
 import { useGeolocation } from '@vueuse/core'
 
 useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
+
+
 
 const getData = async (pos: { lat: number, lon: number }) => {
 
@@ -52,18 +55,18 @@ const favsInterval: Ref<NodeJS.Timer | null> = ref(null)
 watch(windowBlur, () => {
     console.log(windowBlur.value)
     const timeout = setTimeout(() => {
-            if (favsInterval.value && windowBlur.value) {
-                console.log('clearing interval')
-                clearInterval(favsInterval.value)
-            }
+        if (favsInterval.value && windowBlur.value) {
+            console.log('clearing interval')
+            clearInterval(favsInterval.value)
+        }
 
-            if (mainInterval.value && windowBlur.value) {
-                clearInterval(mainInterval.value)
-            }
-        }, 60000)
-   
-    if(!windowBlur.value) {
-        if(timeout) {
+        if (mainInterval.value && windowBlur.value) {
+            clearInterval(mainInterval.value)
+        }
+    }, 60000)
+
+    if (!windowBlur.value) {
+        if (timeout) {
             console.log('clearing blur timeout')
             clearTimeout(timeout)
         }
@@ -152,6 +155,14 @@ onBeforeUnmount(() => {
     }
 })
 
+const touchStartHandle =(e:string)=>{
+    if(e === 'left') {
+        filterFavs.value = true
+    } else if (e === 'right'){
+        filterFavs.value = false
+    }
+}
+
 </script>
 
 <template>
@@ -159,19 +170,33 @@ onBeforeUnmount(() => {
         class="flex flex-col lg:w-[40%] md:w-[60%] justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden">
         <Navigation />
         <Transition name="fly-in">
-            <div v-if="transitionLoad" class="flex flex-col justify-center items-center gap-[1rem] w-[100%]">
-                <BusCard v-for="stop, index in filterFavs === true ? favsStops?.stops : stops.stops"
+            <div v-if="transitionLoad" class="flex justify-center items-start gap-[2%] w-[200%]" v-touch:swipe="touchStartHandle">
+                <div class="w-[100%] flex flex-col justify-start items-center gap-[1rem]  transition-all ease-in-out duration-700" :class="filterFavs ? 'hide-left' : 'show-left'">
+                    <BusCard v-for="stop, index in stops.stops"
+                        :stop-name="stop.Description" :stop-code="stop.BusStopCode" :bg-color-shift="index"
+                        :street-name="stop.RoadName" :services="stop.Services" :distance-to-stop="stop.Distance"
+                        :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
+                        :key="stop.BusStopCode + new Date().getTime()" />
+                </div>
+                <div class="w-[100%]  transition-all ease-in-out duration-700" :class="filterFavs ? 'show-right' : 'hide-right'">
+                    <div v-show="favsStops?.stops.length === 0"
+                        class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center">
+                        <IconsBusStop :color="darkTheme ? '#e5989b' : '#6d6875'" :size="{ w: '48px', h: '48px' }" />
+                        <p class="text-center tracking-wider text-[#e5989b]">There are no saved Bus Stops.</p>
+
+                    </div>
+
+                    <div v-show="favsStops?.stops.length !== 0">
+                        <BusCard v-for="stop, index in favsStops?.stops "
                     :stop-name="stop.Description" :stop-code="stop.BusStopCode" :bg-color-shift="index"
                     :street-name="stop.RoadName" :services="stop.Services" :distance-to-stop="stop.Distance"
-                    :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }" :key="stop.BusStopCode + new Date().getTime()" /> <!-- add unix time to bustopcode to have an uniquq key -->
+                    :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
+                    :key="stop.BusStopCode + new Date().getTime()" />
+                    </div>
+                </div>
             </div>
         </Transition>
-        <div v-show="filterFavs && (favsStops?.stops.length === 0)"
-            class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center">
-            <IconsBusStop :color="darkTheme ? '#e5989b' : '#6d6875'" :size="{ w: '48px', h: '48px' }" />
-            <p class="text-center tracking-wider text-[#e5989b]">There are no saved Bus Stops.</p>
 
-        </div>
         <div v-if="transitionLoad" class="fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2  h-[5%]">
             <Footer />
         </div>
@@ -190,12 +215,32 @@ onBeforeUnmount(() => {
 
             <span class="absolute w-[90%] h-[2px] bg-[#e5989b] loading-bar "></span>
         </div>
-        <p class="text-center tracking-wider text-[#e5989b] ">{{ location || localStorageLocation ? 'Finding nearest bus Stops' : 'Waiting for device Location' }}</p>
+        <p class="text-center tracking-wider text-[#e5989b] ">
+            {{ location || localStorageLocation ? 'Finding nearest busStops' : 'Waiting for device Location' }}</p>
 
     </div>
 </template>
 
 <style>
+
+.show-left {
+    transform: translateX(52%);
+}
+
+.hide-left {
+    transform: translateX(-54%);
+}
+
+.hide-right {
+    transform: translateX(100%);
+}
+
+.show-right {
+    transform: translateX(-52%);
+}
+
+
+
 .fly-in-enter-active {
     transform: translateY(0%);
     opacity: 1;
@@ -230,4 +275,5 @@ onBeforeUnmount(() => {
     50% {
         transform: translateX(100%);
     }
-}</style>
+}
+</style>
