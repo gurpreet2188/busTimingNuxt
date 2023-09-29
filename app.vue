@@ -229,10 +229,12 @@ const touchStartHandle =(e:string)=>{
 
 .hide-left {
     transform: translateX(-54%);
+    opacity: 0;
 }
 
 .hide-right {
     transform: translateX(100%);
+    opacity: 0;
 }
 
 .show-right {
