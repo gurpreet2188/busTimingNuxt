@@ -17,21 +17,21 @@ const getData = async (pos: { lat: number, lon: number }) => {
 }
 
 const transitionLoad: Ref<boolean> = ref(false)
-const pos = useGeolocation()
+const { coords, locatedAt, error, resume, pause } = useGeolocation()
 const favsStops: Ref<BUS_STOP_TYPES | null> = useState('favsStops', () => null)
 const filterFavs: Ref<Boolean> = useState('filterFavs', () => false)
 const favs: Ref<Array<string> | undefined> = useState('favs', () => undefined)
 const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] })
 const darkTheme: Ref<boolean> = useState('darkTheme', () => false)
-const localStorageLocation: Ref<{ lat: number, lon: number } | null> = ref(null)
+// const localStorageLocation: Ref<{ lat: number, lon: number } | null> = ref(null)
 const location: Ref<{ lat: number, lon: number } | null> = ref(null)
 const windowBlur: Ref<boolean> = ref(false)
 
 onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
-    if (localStorage.getItem('location')) {
-        localStorageLocation.value = JSON.parse(localStorage.getItem('location') as string)
-    }
+    // if (localStorage.getItem('location')) {
+    //     localStorageLocation.value = JSON.parse(localStorage.getItem('location') as string)
+    // }
 
     darkTheme.value = window.matchMedia('(prefers-color-scheme: dark)').matches
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
@@ -47,6 +47,8 @@ onMounted(async () => {
 
         windowBlur.value = false
     })
+
+
 })
 
 const mainInterval: Ref<NodeJS.Timer | null> = ref(null)
@@ -109,11 +111,12 @@ watch(favs, () => {
 
 
 watchEffect(async () => {
-    if (pos.coords.value.latitude !== Infinity && pos.coords.value.longitude !== Infinity) {
-        pos.pause()
+
+    if (coords.value.latitude !== Infinity && coords.value.longitude !== Infinity) {
+        pause()
         console.log('found location')
-        window.localStorage.setItem('location', JSON.stringify({ lat: pos.coords.value.latitude, lon: pos.coords.value.longitude }))
-        location.value = { lat: pos.coords.value.latitude, lon: pos.coords.value.longitude }
+        // window.localStorage.setItem('location', JSON.stringify({ lat: coords.value.latitude, lon: coords.value.longitude }))
+        location.value = { lat: coords.value.latitude, lon: coords.value.longitude }
     }
 
 })
@@ -132,15 +135,18 @@ watchEffect(() => {
             transitionLoad.value = true
         }
     }
-    if (localStorageLocation.value) {
-        loadData(localStorageLocation.value.lat, localStorageLocation.value.lon)
-    } else if (location.value && localStorageLocation.value) {
-        if (location.value !== localStorageLocation.value) {
-            loadData(location.value.lat, location.value.lon)
-        }
-    } else if (location.value) {
+    if (location.value) {
         loadData(location.value.lat, location.value.lon)
     }
+    // if (localStorageLocation.value) {
+    //     loadData(localStorageLocation.value.lat, localStorageLocation.value.lon)
+    // } else if (location.value && localStorageLocation.value) {
+    //     if (location.value !== localStorageLocation.value) {
+    //         loadData(location.value.lat, location.value.lon)
+    //     }
+    // } else if (location.value) {
+    //     loadData(location.value.lat, location.value.lon)
+    // }
 })
 
 
@@ -155,10 +161,10 @@ onBeforeUnmount(() => {
     }
 })
 
-const touchStartHandle =(e:string)=>{
-    if(e === 'left') {
+const touchStartHandle = (e: string) => {
+    if (e === 'left') {
         filterFavs.value = true
-    } else if (e === 'right'){
+    } else if (e === 'right') {
         filterFavs.value = false
     }
 }
@@ -166,19 +172,20 @@ const touchStartHandle =(e:string)=>{
 </script>
 
 <template>
-    <div
-        class="flex flex-col lg:w-[40%] md:w-[60%] justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden min-h-[100svh]" v-touch:swipe="touchStartHandle">
+    <div class="flex flex-col lg:w-[40%] md:w-[60%] justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden min-h-[100svh]"
+        v-touch:swipe="touchStartHandle">
         <Navigation />
         <Transition name="fly-in">
-            <div v-if="transitionLoad" class="flex justify-center items-start gap-[2%] w-[200%]" >
-                <div class="w-[100%] flex flex-col justify-start items-center gap-[1rem]  transition-all ease-in-out duration-700" :class="filterFavs ? 'hide-left' : 'show-left'">
-                    <BusCard v-for="stop, index in stops.stops"
-                        :stop-name="stop.Description" :stop-code="stop.BusStopCode" :bg-color-shift="index"
-                        :street-name="stop.RoadName" :services="stop.Services" :distance-to-stop="stop.Distance"
-                        :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
+            <div v-if="transitionLoad" class="flex justify-center items-start gap-[2%] w-[200%]">
+                <div class="w-[100%] flex flex-col justify-start items-center gap-[1rem]  transition-all ease-in-out duration-700"
+                    :class="filterFavs ? 'hide-left' : 'show-left'">
+                    <BusCard v-for="stop, index in stops.stops" :stop-name="stop.Description" :stop-code="stop.BusStopCode"
+                        :bg-color-shift="index" :street-name="stop.RoadName" :services="stop.Services"
+                        :distance-to-stop="stop.Distance" :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
                         :key="stop.BusStopCode + new Date().getTime()" />
                 </div>
-                <div class="w-[100%] transition-all ease-in-out duration-700" :class="filterFavs ? 'show-right' : 'hide-right'">
+                <div class="w-[100%] transition-all ease-in-out duration-700"
+                    :class="filterFavs ? 'show-right' : 'hide-right'">
                     <div v-show="favsStops?.stops.length === 0 || favsStops === null"
                         class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center">
                         <IconsBusStop :color="darkTheme ? '#e5989b' : '#6d6875'" :size="{ w: '48px', h: '48px' }" />
@@ -187,11 +194,11 @@ const touchStartHandle =(e:string)=>{
                     </div>
 
                     <div class="flex flex-col justify-start items-center gap-[1rem]" v-show="favsStops?.stops.length !== 0">
-                        <BusCard v-for="stop, index in favsStops?.stops "
-                    :stop-name="stop.Description" :stop-code="stop.BusStopCode" :bg-color-shift="index"
-                    :street-name="stop.RoadName" :services="stop.Services" :distance-to-stop="stop.Distance"
-                    :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
-                    :key="stop.BusStopCode + new Date().getTime()" />
+                        <BusCard v-for="stop, index in favsStops?.stops " :stop-name="stop.Description"
+                            :stop-code="stop.BusStopCode" :bg-color-shift="index" :street-name="stop.RoadName"
+                            :services="stop.Services" :distance-to-stop="stop.Distance"
+                            :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
+                            :key="stop.BusStopCode + new Date().getTime()" />
                     </div>
                 </div>
             </div>
@@ -200,29 +207,15 @@ const touchStartHandle =(e:string)=>{
         <div v-if="transitionLoad" class="fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2  h-[5%]">
             <Footer />
         </div>
-    </div>
-    <div v-if="!transitionLoad"
-        class="flex flex-col gap-2 justify-center items-center w-[80%] h-[80vh] lg:w-[40%] overflow-hidden ">
-        <div class="relative h-[48px] w-[48px]">
-            <div class="absolute">
-                <IconsBusStop v-if="location || localStorageLocation" :color="darkTheme ? '#e5989b' : '#6d6875'"
-                    :size="{ w: '48px', h: '48px' }" />
-                <IconsLocation v-if="!(location || localStorageLocation)" :color="darkTheme ? '#e5989b' : '#6d6875'"
-                    :size="{ w: '48px', h: '48px' }" />
-            </div>
-        </div>
-        <div class="relative flex flex-col  w-[90%] h-[2px] bg-[#e5989b]/50 ">
+        <div v-if="!transitionLoad"
+            class="flex flex-col gap-2 justify-center items-center w-[80%] lg:w-[40%] min-h-[80svh] overflow-hidden ">
+            <LoadingPage :dark-theme="darkTheme" :location="location" :error="error" />
 
-            <span class="absolute w-[90%] h-[2px] bg-[#e5989b] loading-bar "></span>
         </div>
-        <p class="text-center tracking-wider text-[#e5989b] ">
-            {{ location || localStorageLocation ? 'Finding nearest busStops' : 'Waiting for device Location' }}</p>
-
     </div>
 </template>
 
 <style>
-
 .show-left {
     transform: translateX(52%);
 }
@@ -261,21 +254,5 @@ const touchStartHandle =(e:string)=>{
 .fly-in-leave-to {
     opacity: 0;
     transform: translateY(40%)
-}
-
-.loading-bar {
-    animation: loadingAnimation 2s linear infinite;
-}
-
-@keyframes loadingAnimation {
-
-    0%,
-    100% {
-        transform: translateX(-100%);
-    }
-
-    50% {
-        transform: translateX(100%);
-    }
 }
 </style>
