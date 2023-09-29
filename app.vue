@@ -179,7 +179,7 @@ const touchStartHandle =(e:string)=>{
                         :key="stop.BusStopCode + new Date().getTime()" />
                 </div>
                 <div class="w-[100%] transition-all ease-in-out duration-700" :class="filterFavs ? 'show-right' : 'hide-right'">
-                    <div v-show="favsStops?.stops.length === 0"
+                    <div v-show="favsStops?.stops.length === 0 || favsStops === null"
                         class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center">
                         <IconsBusStop :color="darkTheme ? '#e5989b' : '#6d6875'" :size="{ w: '48px', h: '48px' }" />
                         <p class="text-center tracking-wider text-[#e5989b]">There are no saved Bus Stops.</p>
