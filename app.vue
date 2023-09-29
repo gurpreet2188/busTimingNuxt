@@ -167,10 +167,10 @@ const touchStartHandle =(e:string)=>{
 
 <template>
     <div
-        class="flex flex-col lg:w-[40%] md:w-[60%] justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden">
+        class="flex flex-col lg:w-[40%] md:w-[60%] justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden min-h-[100svh]" v-touch:swipe="touchStartHandle">
         <Navigation />
         <Transition name="fly-in">
-            <div v-if="transitionLoad" class="flex justify-center items-start gap-[2%] w-[200%]" v-touch:swipe="touchStartHandle">
+            <div v-if="transitionLoad" class="flex justify-center items-start gap-[2%] w-[200%]" >
                 <div class="w-[100%] flex flex-col justify-start items-center gap-[1rem]  transition-all ease-in-out duration-700" :class="filterFavs ? 'hide-left' : 'show-left'">
                     <BusCard v-for="stop, index in stops.stops"
                         :stop-name="stop.Description" :stop-code="stop.BusStopCode" :bg-color-shift="index"
@@ -178,7 +178,7 @@ const touchStartHandle =(e:string)=>{
                         :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
                         :key="stop.BusStopCode + new Date().getTime()" />
                 </div>
-                <div class="w-[100%]  transition-all ease-in-out duration-700" :class="filterFavs ? 'show-right' : 'hide-right'">
+                <div class="w-[100%] transition-all ease-in-out duration-700" :class="filterFavs ? 'show-right' : 'hide-right'">
                     <div v-show="favsStops?.stops.length === 0"
                         class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center">
                         <IconsBusStop :color="darkTheme ? '#e5989b' : '#6d6875'" :size="{ w: '48px', h: '48px' }" />
@@ -186,7 +186,7 @@ const touchStartHandle =(e:string)=>{
 
                     </div>
 
-                    <div v-show="favsStops?.stops.length !== 0">
+                    <div class="flex flex-col justify-start items-center gap-[1rem]" v-show="favsStops?.stops.length !== 0">
                         <BusCard v-for="stop, index in favsStops?.stops "
                     :stop-name="stop.Description" :stop-code="stop.BusStopCode" :bg-color-shift="index"
                     :street-name="stop.RoadName" :services="stop.Services" :distance-to-stop="stop.Distance"
