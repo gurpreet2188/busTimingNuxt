@@ -4,6 +4,7 @@ import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops'
 
 import { fetchData } from './helper/fetchData'
 import { useGeolocation } from '@vueuse/core'
+import { browser } from 'process';
 
 useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
 
@@ -163,8 +164,11 @@ onBeforeUnmount(() => {
 
 const touchStartHandle = (e: string) => {
     if (e === 'left') {
+        window.scrollTo(0,0)
         filterFavs.value = true
+
     } else if (e === 'right') {
+        window.scrollTo(0,0)
         filterFavs.value = false
     }
 }
@@ -177,7 +181,7 @@ const touchStartHandle = (e: string) => {
         <Navigation />
         <Transition name="fly-in">
             <div v-if="transitionLoad" class="flex justify-center items-start gap-[2%] w-[200%]">
-                <div class="w-[100%] flex flex-col justify-start items-center gap-[1rem]  transition-all ease-in-out duration-700"
+                <div class="w-[100%] flex flex-col justify-start items-center gap-[1rem] transition-all ease-in-out duration-700"
                     :class="filterFavs ? 'hide-left' : 'show-left'">
                     <BusCard v-for="stop, index in stops.stops" :stop-name="stop.Description" :stop-code="stop.BusStopCode"
                         :bg-color-shift="index" :street-name="stop.RoadName" :services="stop.Services"
