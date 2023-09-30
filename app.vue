@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { _AsyncData } from 'nuxt/dist/app/composables/asyncData';
-import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops';
+import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from './types/stops';
 
 import { fetchData } from './helper/fetchData'
 import { useGeolocation } from '@vueuse/core'
-import { browser } from 'process';
 
 useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
 
@@ -56,10 +55,8 @@ const mainInterval: Ref<NodeJS.Timer | null> = ref(null)
 const favsInterval: Ref<NodeJS.Timer | null> = ref(null)
 
 watch(windowBlur, () => {
-    console.log(windowBlur.value)
     const timeout = setTimeout(() => {
         if (favsInterval.value && windowBlur.value) {
-            console.log('clearing interval')
             clearInterval(favsInterval.value)
         }
 
@@ -70,7 +67,6 @@ watch(windowBlur, () => {
 
     if (!windowBlur.value) {
         if (timeout) {
-            console.log('clearing blur timeout')
             clearTimeout(timeout)
         }
 
@@ -93,7 +89,6 @@ watch(favs, async () => {
             if (tempfavStops.stops.length > 0) {
                 fetchData(tempfavStops.stops).then(d => favsStops.value = d)
                 favsInterval.value = setInterval(() => {
-                    console.log('fetching data in interval, favs')
                     fetchData(tempfavStops.stops).then(d => favsStops.value = d)
                 }, 60000)
             }
@@ -105,7 +100,6 @@ watch(favs, async () => {
 
 watch(favs, () => {
     if (favsInterval.value) {
-        console.log('clearing interval')
         clearInterval(favsInterval.value)
     }
 })
@@ -115,7 +109,6 @@ watchEffect(async () => {
 
     if (coords.value.latitude !== Infinity && coords.value.longitude !== Infinity) {
         pause()
-        console.log('found location')
         // window.localStorage.setItem('location', JSON.stringify({ lat: coords.value.latitude, lon: coords.value.longitude }))
         location.value = { lat: coords.value.latitude, lon: coords.value.longitude }
     }
@@ -127,9 +120,9 @@ watchEffect(() => {
         stops.value = await getData({ lat: lat, lon: lon })
         if (stops.value.stops.length > 0) {
             stops.value = await fetchData(stops.value.stops)
-            console.log('fetching data')
+           
             mainInterval.value = setInterval(async () => {
-                console.log('fetching data in interval, main')
+               
                 stops.value = await fetchData(stops.value.stops)
             }, 60000)
 
@@ -153,7 +146,7 @@ watchEffect(() => {
 
 onBeforeUnmount(() => {
     if (favsInterval.value) {
-        console.log('clearing interval')
+     
         clearInterval(favsInterval.value)
     }
 

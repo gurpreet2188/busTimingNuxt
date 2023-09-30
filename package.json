@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "lucide-vue-next": "^0.263.0",
+    "nuxi": "^3.9.0",
     "pinia": "^2.1.6",
     "vue3-touch-events": "^4.1.6"
   }

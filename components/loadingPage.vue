@@ -2,8 +2,6 @@
 
 
 const props = defineProps<({ darkTheme: boolean, location:{ lat: number, lon: number } | null, error: any })>()
-
-console.log(props.darkTheme, props.location, props.error)
 </script>
 
 <template>
