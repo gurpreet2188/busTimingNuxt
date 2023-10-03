@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { _AsyncData } from 'nuxt/dist/app/composables/asyncData';
-import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from 'types/stops';
-
+import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from './types/stops';
 import { fetchData } from './helper/fetchData'
 import { useGeolocation } from '@vueuse/core'
-import { browser } from 'process';
 
 useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full' }, htmlAttrs: { class: 'min-h-full' } })
-
-
 
 const getData = async (pos: { lat: number, lon: number }) => {
 
@@ -19,6 +15,8 @@ const getData = async (pos: { lat: number, lon: number }) => {
 
 const transitionLoad: Ref<boolean> = ref(false)
 const { coords, locatedAt, error, resume, pause } = useGeolocation()
+const currentUser = useCurrentUser()
+const favStopsFirestore:Ref<any| null> = useState('favStopsFirestore', ()=>null)
 const favsStops: Ref<BUS_STOP_TYPES | null> = useState('favsStops', () => null)
 const filterFavs: Ref<Boolean> = useState('filterFavs', () => false)
 const favs: Ref<Array<string> | undefined> = useState('favs', () => undefined)
@@ -113,13 +111,29 @@ watch(favs, () => {
 
 watchEffect(async () => {
 
-    if (coords.value.latitude !== Infinity && coords.value.longitude !== Infinity) {
-        pause()
-        console.log('found location')
-        // window.localStorage.setItem('location', JSON.stringify({ lat: coords.value.latitude, lon: coords.value.longitude }))
-        location.value = { lat: coords.value.latitude, lon: coords.value.longitude }
-    }
+    // if (coords.value.latitude !== Infinity && coords.value.longitude !== Infinity) {
+    //     pause()
+    //     console.log('found location')
+    //     // window.localStorage.setItem('location', JSON.stringify({ lat: coords.value.latitude, lon: coords.value.longitude }))
+    //     location.value = { lat: coords.value.latitude, lon: coords.value.longitude }
+    // }
 
+})
+
+watchEffect(async ()=> {
+    if(currentUser?.value?.uid) {
+        favStopsFirestore.value = await useReadStore(currentUser.value.uid)
+       setTimeout(()=>{
+
+       },500)
+    }
+})
+
+watchEffect(()=>{
+    if(favStopsFirestore.value) {
+        console.log(favStopsFirestore.value)
+        console.log(currentUser?.value?.uid,favStopsFirestore.value)
+    }
 })
 
 watchEffect(() => {
@@ -164,11 +178,11 @@ onBeforeUnmount(() => {
 
 const touchStartHandle = (e: string) => {
     if (e === 'left') {
-        window.scrollTo(0,0)
+        window.scrollTo(0, 0)
         filterFavs.value = true
 
     } else if (e === 'right') {
-        window.scrollTo(0,0)
+        window.scrollTo(0, 0)
         filterFavs.value = false
     }
 }
@@ -179,6 +193,7 @@ const touchStartHandle = (e: string) => {
     <div class="flex flex-col lg:w-[40%] md:w-[60%] justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden min-h-[100svh]"
         v-touch:swipe="touchStartHandle">
         <Navigation />
+        <Welcome/>
         <Transition name="fly-in">
             <div v-if="transitionLoad" class="flex justify-center items-start gap-[2%] w-[200%]">
                 <div class="w-[100%] flex flex-col justify-start items-center gap-[1rem] transition-all ease-in-out duration-700"
@@ -211,11 +226,14 @@ const touchStartHandle = (e: string) => {
         <div v-if="transitionLoad" class="fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2  h-[5%]">
             <Footer />
         </div>
-        <div v-if="!transitionLoad"
+        <!-- <div v-if="!transitionLoad"
             class="flex flex-col gap-2 justify-center items-center w-[80%] lg:w-[40%] min-h-[80svh] overflow-hidden ">
             <LoadingPage :dark-theme="darkTheme" :location="location" :error="error" />
 
-        </div>
+        </div> -->
+
+        <!-- <Login /> -->
+        <!-- <Alerts/> -->
     </div>
 </template>
 
@@ -258,5 +276,19 @@ const touchStartHandle = (e: string) => {
 .fly-in-leave-to {
     opacity: 0;
     transform: translateY(40%)
+}
+
+.slide-fade-enter-active {
+  transition: all 0.5s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.5s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
 }
 </style>

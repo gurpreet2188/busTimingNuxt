@@ -23,9 +23,11 @@
     "vue": "latest"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.4.11",
     "firebase": "^10.4.0",
+    "firebaseui": "^6.1.0",
     "lucide-vue-next": "^0.263.0",
-    "pinia": "^2.1.6",
+    "nuxt-vuefire": "^0.3.0",
     "vue3-touch-events": "^4.1.6",
     "vuefire": "^3.1.17"
   }
