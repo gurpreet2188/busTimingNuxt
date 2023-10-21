@@ -1,21 +1,21 @@
 <script setup lang="ts">
-// import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth';
-// import { useReadStore } from 'composables/useReadStore';
 import * as firebaseui from 'firebaseui';
 import { useFirebaseAuth } from 'vuefire';
-// import { collection, doc, addDoc, setDoc } from 'firebase/firestore';
 import { useCurrentUser } from 'vuefire';
+import 'firebaseui/dist/firebaseui.css'
+import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 
-
+const props = defineProps({ firebaseUi: firebaseui.auth.AuthUI })
 const currentUser = useCurrentUser()
-const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(useFirebaseAuth())
+const loginPage = useState('loginPage')
+const welcomePage = useState('welcomePage')
+const waitForLogin: Ref<boolean> = useState('waitForLoing')
+const isLoggedIn: Ref<number> = ref(2)
 
-
-
-onMounted(async () => {
-    ui.start("#firebaseui-auth-container", useAuthConfig())
-
-})
+const loginBtnClickHandle = () => {
+    loginPage.value = false
+    welcomePage.value = true
+}
 
 const handleSignOut = () => {
     if (currentUser) {
@@ -23,15 +23,67 @@ const handleSignOut = () => {
     }
 }
 
+const config = {
+    signInOptions: [
+        GoogleAuthProvider.PROVIDER_ID,
+        EmailAuthProvider.PROVIDER_ID
+    ],
+    signInSuccessUrl: "/",
+}
+
+onMounted(async () => {
+    props?.firebaseUi?.start("#firebaseui-auth-container", config)
+})
+
+watchEffect(() => {
+    if (currentUser.value?.uid) {
+       setTimeout(()=>{
+        waitForLogin.value = false
+        isLoggedIn.value = 1
+       },1500)
+    } else {
+        isLoggedIn.value = 0
+    }
+})
+
 </script>
 
 <template>
-    <div class="flex flex-col justify-center items-center">
+    <div class="flex flex-col justify-center items-center gap-[2rem]">
+        <div v-if="waitForLogin" class="loader">
+        </div>
+        <div v-if="isLoggedIn === 1" class="text-[#6d6875] dark:text-[#ffcdb2]"> Welcome {{ currentUser?.displayName
+        }}
+        </div>
+        <div class="flex flex-col justify-center items-center gap-[1rem]" :style="{ display: isLoggedIn === 0 ? 'flex' : isLoggedIn === 1 ? 'none' : 'none'}">
 
-        <span v-if="currentUser"> Welcome {{ currentUser.displayName }}</span>
-        <span v-else>
-            <div id="firebaseui-auth-container"></div>
-        </span>
-        <button v-if="currentUser" @click="handleSignOut">Sign Out</button>
+            <div class="flex flex-col justify-center items-center gap-[1rem]" id="firebaseui-auth-container"></div>
+            <button v-if="!waitForLogin" @click="loginBtnClickHandle" class="btn-common">Cancel</button>
+        </div>
+
+
+        <button v-if="currentUser && !firebaseUi?.isPendingRedirect()" @click="handleSignOut" class="btn-common">Sign
+            Out</button>
     </div>
 </template>
+
+<style>
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+</style>

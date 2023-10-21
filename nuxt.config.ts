@@ -1,4 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
 export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: ['@nuxtjs/tailwindcss', '@vueuse/nuxt', 'nuxt-vuefire', '@pinia/nuxt'],
@@ -6,13 +7,13 @@ export default defineNuxtConfig({
   vuefire: {
     auth: true,
     config: {
-      apiKey: "AIzaSyD15QaJk-eQublaTBZmeb7KpvaaGJWbUcU",
-      authDomain: "sgbustiming.firebaseapp.com",
-      projectId: "sgbustiming",
-      storageBucket: "sgbustiming.appspot.com",
-      messagingSenderId: "602919769504",
-      appId: "1:602919769504:web:4f5c9991760b1e715980c5",
-      measurementId: "G-HWPKSFBCDY"
+      apiKey: process.env.API_KEY_FIREBASE,
+      authDomain: process.env.APP_NAME_FIREBASE + ".firebaseapp.com",
+      projectId: process.env.APP_NAME_FIREBASE,
+      storageBucket: process.env.APP_NAME_FIREBASE + ".appspot.com",
+      messagingSenderId: process.env.MESSAGE_ID_FIREBASE,
+      appId: process.env.APP_ID_FIREBASE,
+      measurementId: process.env.MEASUREMENT_ID_FIREBASE
     }
   },
   tailwindcss: { cssPath: '~/assets/css/tailwind.css' },

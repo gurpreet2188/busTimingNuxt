@@ -1,4 +1,4 @@
-<script setup lang="ts">
+ <script setup lang="ts">
 const props = defineProps({ message: String, wait:Boolean })
 const active: Ref<boolean> = useState('active', () => false)
 if (props.wait) {
@@ -21,7 +21,7 @@ console.log(props.wait)
 <template>
     <Transition name="slide-fade">
         <div v-if="active"
-            class="fixed bottom-10 flex-col justify-start items-center bg-white/50 p-2 py-4 w-[90%] rounded-md shadow-xl">
+            class="flex-col justify-start items-center bg-white/50 p-2 py-4 w-[90%] rounded-md shadow-xl filter backdrop-filter backdrop-blur-sm">
             <p class="">{{ message }}</p>
 
         </div>

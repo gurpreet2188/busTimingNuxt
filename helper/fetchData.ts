@@ -2,7 +2,7 @@ import type { Stop as BUS_STOP_TYPE } from '../types/stops'
 import type { Root as BUS_INFO_TYPES } from '../types/bus'
 
 export const fetchPOST = async (url: string, body: object) => {
-  
+    console.log(import.meta.env['VITE_APP_BASE_URL'] + url)
     try {
         const res = await fetch(import.meta.env['VITE_APP_BASE_URL'] + url, { method: 'POST', body: JSON.stringify(body) })
         const data = await res.json()
