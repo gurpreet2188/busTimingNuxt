@@ -217,8 +217,8 @@ watchEffect(() => {
     
     if (location.value && !welcomePage.value && (loggedIn.value || skipLogIn.value)) {
         // sample loc
-        loadData(1.331230, 103.838949) 
-        // loadData(location.value.lat, location.value.lon)
+        // loadData(1.331230, 103.838949) 
+        loadData(location.value.lat, location.value.lon)
     }
     // if (localStorageLocation.value) {
     //     loadData(localStorageLocation.value.lat, localStorageLocation.value.lon)
