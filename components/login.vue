@@ -5,12 +5,17 @@ import { useCurrentUser } from 'vuefire';
 import 'firebaseui/dist/firebaseui.css'
 import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 
+const LOGGEDINSTATE = {
+    'LOADING': 'loading',
+    'IN': 'loggedIn',
+    'OUT': 'loggedOut'
+}
+
 const props = defineProps({ firebaseUi: firebaseui.auth.AuthUI })
 const currentUser = useCurrentUser()
 const loginPage = useState('loginPage')
 const welcomePage = useState('welcomePage')
-const waitForLogin: Ref<boolean> = useState('waitForLoing')
-const isLoggedIn: Ref<number> = ref(2)
+const isLoggedIn: Ref<string> = useState('isLoggedIn')
 
 const loginBtnClickHandle = () => {
     loginPage.value = false
@@ -35,34 +40,21 @@ onMounted(async () => {
     props?.firebaseUi?.start("#firebaseui-auth-container", config)
 })
 
-watchEffect(() => {
-    if (currentUser.value?.uid) {
-       setTimeout(()=>{
-        waitForLogin.value = false
-        isLoggedIn.value = 1
-       },1500)
-    } else {
-        isLoggedIn.value = 0
-    }
-})
-
 </script>
 
 <template>
     <div class="flex flex-col justify-center items-center gap-[2rem]">
-        <div v-if="waitForLogin" class="loader">
+        <div v-if="isLoggedIn ===  LOGGEDINSTATE.LOADING" class="loader">
         </div>
-        <div v-if="isLoggedIn === 1" class="text-[#6d6875] dark:text-[#ffcdb2]"> Welcome {{ currentUser?.displayName
+        <!-- <div v-if="isLoggedIn === true" class="text-[#6d6875] dark:text-[#ffcdb2]"> Welcome {{ currentUser?.displayName
         }}
-        </div>
-        <div class="flex flex-col justify-center items-center gap-[1rem]" :style="{ display: isLoggedIn === 0 ? 'flex' : isLoggedIn === 1 ? 'none' : 'none'}">
+        </div> -->
+        <div class="flex flex-col justify-center items-center gap-[1rem]" :style="{ display: isLoggedIn === LOGGEDINSTATE.OUT ? 'flex' : isLoggedIn === LOGGEDINSTATE.IN ? 'none' : 'none'}">
 
             <div class="flex flex-col justify-center items-center gap-[1rem]" id="firebaseui-auth-container"></div>
-            <button v-if="!waitForLogin" @click="loginBtnClickHandle" class="btn-common">Cancel</button>
+            <button @click="loginBtnClickHandle" class="btn-common">Cancel</button>
         </div>
-
-
-        <button v-if="currentUser && !firebaseUi?.isPendingRedirect()" @click="handleSignOut" class="btn-common">Sign
+        <button v-if="isLoggedIn === LOGGEDINSTATE.IN" @click="handleSignOut" class="btn-common">Sign
             Out</button>
     </div>
 </template>

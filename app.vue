@@ -14,13 +14,17 @@ const getData = async (pos: { lat: number, lon: number }) => {
     const data = await res.json()
     return await data
 }
+const LOGGEDINSTATE = {
+    'LOADING': 'loading',
+    'IN': 'loggedIn',
+    'OUT': 'loggedOut'
+}
 
 const loadBusInfo: Ref<boolean> = useState('loadBusInfo', () => false)
 const { coords, locatedAt, error, resume, pause } = useGeolocation()
 const busStoreInstance = busStore()
 const firebaseUi = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(useFirebaseAuth())
-const waitForLogin: Ref<boolean> = useState('waitForLoing', () => false)
-const loggedIn: Ref<boolean> = useState('loggedIn', () => false)
+const isLoggedIn: Ref<string> = useState('isLoggedIn',()=>LOGGEDINSTATE.LOADING)
 const skipLogIn: Ref<boolean> = useState('skipLogIn', () => false)
 const welcomePage: Ref<boolean> = useState('welcomePage', () => false)
 const loginPage: Ref<boolean> = useState('loginPage', () => true)
@@ -128,26 +132,38 @@ watchEffect(async () => {
 
 })
 
-watchEffect(() => {
+onMounted(()=>{
+    watchEffect(() => {
     if (firebaseUi?.isPendingRedirect()) {
         loginPage.value = true
-        welcomePage.value = false
+        // welcomePage.value = false
         loadingPage.value = false
-        loggedIn.value = false
-        waitForLogin.value = true
+        isLoggedIn.value = LOGGEDINSTATE.LOADING
     } else {
         loginPage.value = false
-        if (currentUser?.value?.uid) {
+        if(currentUser.value !== undefined) {
+            if (currentUser.value?.uid) {
             loadingPage.value = true
-            welcomePage.value = false
-            loggedIn.value = true
+            // welcomePage.value = false
+            isLoggedIn.value = LOGGEDINSTATE.IN
         } else {
-            welcomePage.value = true
+            // welcomePage.value = true
             loadingPage.value = false
+            isLoggedIn.value = LOGGEDINSTATE.OUT
+            
+        }
         }
     }
 }
 )
+
+})
+
+watchEffect(()=>{
+    if(isLoggedIn.value === LOGGEDINSTATE.OUT) {
+        welcomePage.value = true
+    }
+})
 
 watchEffect(() => {
     const loadData = async (lat: number, lon: number) => {
@@ -163,11 +179,11 @@ watchEffect(() => {
 
             loadBusInfo.value = true
             loadingPage.value = false
-
+            console.log(loadingPage.value)
         }
     }
 
-    if (location.value && !welcomePage.value && (loggedIn.value || skipLogIn.value)) {
+    if (location.value && (isLoggedIn.value === LOGGEDINSTATE.IN || skipLogIn.value)) {
         // sample loc
         // loadData(1.331230, 103.838949) 
         loadData(location.value.lat, location.value.lon)
@@ -208,6 +224,7 @@ onMounted(() => {
 
 })
 
+// watch(loadingPage,()=> console.log(loadingPage.value))
 
 </script>
 
@@ -260,7 +277,7 @@ onMounted(() => {
         <div v-if="loadBusInfo" class="fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2  h-[5%]">
             <Footer />
         </div>
-        <div v-if="loggedIn"
+        <div v-if="isLoggedIn === LOGGEDINSTATE.IN"
             class="fixed bottom-[4rem] top-auto flex justify-center items-center w-[100%] lg:w-[20%] lg:mb-2 ">
             <Alerts />
         </div>
