@@ -10,7 +10,6 @@ import { busStore } from './busFirebase/busStore'
 
 
 const getData = async (pos: { lat: number, lon: number }) => {
-
     const res = await fetch(`${import.meta.env['VITE_APP_BASE_URL']}/api/find-nearest-stops`, { method: 'POST', body: JSON.stringify(pos) })
     const data = await res.json()
     return await data
@@ -19,7 +18,6 @@ const getData = async (pos: { lat: number, lon: number }) => {
 const loadBusInfo: Ref<boolean> = useState('loadBusInfo', () => false)
 const { coords, locatedAt, error, resume, pause } = useGeolocation()
 const busStoreInstance = busStore()
-// const firebaseUi: Ref<firebaseui.auth.AuthUI> = useState('firebaseUi')
 const firebaseUi = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(useFirebaseAuth())
 const waitForLogin: Ref<boolean> = useState('waitForLoing', () => false)
 const loggedIn: Ref<boolean> = useState('loggedIn', () => false)
@@ -29,13 +27,11 @@ const loginPage: Ref<boolean> = useState('loginPage', () => true)
 const loadingPage: Ref<boolean> = useState('loadingPage', () => false)
 const settings: Ref<boolean> = useState('settings', () => false)
 const currentUser = useCurrentUser()
-// const favStopsFirestore: Ref<any | null> = useState('favStopsFirestore', () => null)
 const favsStops: Ref<BUS_STOP_TYPES | null> = useState('favsStops', () => null)
 const filterFavs: Ref<Boolean> = useState('filterFavs', () => false)
 const favs: Ref<Array<string> | undefined> = useState('favs', () => undefined)
 const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] })
 const darkTheme: Ref<boolean> = useState('darkTheme', () => false)
-// const localStorageLocation: Ref<{ lat: number, lon: number } | null> = ref(null)
 const location: Ref<{ lat: number, lon: number } | null> = ref(null)
 const windowBlur: Ref<boolean> = ref(false)
 const bodyOverFlow: Ref<string> = ref('overflow:auto')
@@ -51,10 +47,6 @@ useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full', style
 
 onMounted(async () => {
     favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
-    // if (localStorage.getItem('location')) {
-    //     localStorageLocation.value = JSON.parse(localStorage.getItem('location') as string)
-    // }
-
     darkTheme.value = window.matchMedia('(prefers-color-scheme: dark)').matches
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         darkTheme.value = e.matches
@@ -131,33 +123,10 @@ watchEffect(async () => {
 
     if (coords.value.latitude !== Infinity && coords.value.longitude !== Infinity) {
         pause()
-        // window.localStorage.setItem('location', JSON.stringify({ lat: coords.value.latitude, lon: coords.value.longitude }))
         location.value = { lat: coords.value.latitude, lon: coords.value.longitude }
     }
 
 })
-
-// watchEffect(() => {
-//     setTimeout(async () => {
-//         if (currentUser?.value?.uid) {
-//             loadingPage.value = true
-//             welcomePage.value = false
-//             loggedIn.value = true
-//             // favStopsFirestore.value = await useReadStore(currentUser.value.uid)
-//             //    setTimeout(()=>{
-
-//             //    },500)
-
-//         } else {
-//             welcomePage.value = true
-//             loadingPage.value = false
-//         }
-//     }, 1000)
-//     if(currentUser) {
-//         console.log(currentUser)
-//     }
-
-// })
 
 watchEffect(() => {
     if (firebaseUi?.isPendingRedirect()) {
@@ -172,11 +141,6 @@ watchEffect(() => {
             loadingPage.value = true
             welcomePage.value = false
             loggedIn.value = true
-            // favStopsFirestore.value = await useReadStore(currentUser.value.uid)
-            //    setTimeout(()=>{
-
-            //    },500)
-
         } else {
             welcomePage.value = true
             loadingPage.value = false
@@ -185,17 +149,10 @@ watchEffect(() => {
 }
 )
 
-// watchEffect(() => {
-//     if (favStopsFirestore.value) {
-//         console.log(favStopsFirestore.value)
-//         console.log(currentUser?.value?.uid, favStopsFirestore.value)
-//     }
-// })
-
 watchEffect(() => {
     const loadData = async (lat: number, lon: number) => {
         stops.value = await getData({ lat: lat, lon: lon })
-       
+
         if (stops.value.stops.length > 0) {
             stops.value = await fetchData(stops.value.stops)
 
@@ -209,21 +166,12 @@ watchEffect(() => {
 
         }
     }
-    
+
     if (location.value && !welcomePage.value && (loggedIn.value || skipLogIn.value)) {
         // sample loc
         // loadData(1.331230, 103.838949) 
         loadData(location.value.lat, location.value.lon)
     }
-    // if (localStorageLocation.value) {
-    //     loadData(localStorageLocation.value.lat, localStorageLocation.value.lon)
-    // } else if (location.value && localStorageLocation.value) {
-    //     if (location.value !== localStorageLocation.value) {
-    //         loadData(location.value.lat, location.value.lon)
-    //     }
-    // } else if (location.value) {
-    //     loadData(location.value.lat, location.value.lon)
-    // }
 })
 
 
@@ -248,18 +196,16 @@ const touchStartHandle = (e: string) => {
     }
 }
 
-//firestore
+
 onMounted(() => {
-
     busStoreInstance.initialize()
-
     watch(favs, () => {
         if (favs.value) {
             busStoreInstance.updateStore(favs.value)
         }
     })
 
-    
+
 })
 
 
