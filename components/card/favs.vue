@@ -23,11 +23,8 @@ const clickHandle = () => {
                 localStorage.setItem('favs', JSON.stringify([...temp, props.stopCode]))
                 favs.value = [...temp, props.stopCode]
             }
-
         }
     }
-
-
 }
 
 </script>

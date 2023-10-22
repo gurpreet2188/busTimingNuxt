@@ -1,6 +1,4 @@
 <script setup lang="ts">
-
-
 const size = {h:'24px', w:'24px'}
 
 const filterFavs:Ref<boolean> = useState('filterFavs')
