@@ -7,7 +7,9 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="flex flex-col h-screen">
+    <div
+        class="flex flex-col justify-center items-center h-screen w-full md:w-[60%]"
+    >
         <div class="relative h-[48px] w-[48px]">
             <div class="absolute">
                 <IconsBusStop

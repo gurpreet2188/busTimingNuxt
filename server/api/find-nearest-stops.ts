@@ -29,6 +29,22 @@ export default defineEventHandler(async (event) => {
         }
       }
 
+      if (stops.length === 0) {
+        for (const stop of busStopsList) {
+          const distance = calculateDistance(
+            body.lat,
+            body.lon,
+            stop.Latitude,
+            stop.Longitude,
+            "K",
+          );
+          if (distance < 1) {
+            console.log("finding stops");
+            stop["Distance"] = distance;
+            stops = [...stops, stop];
+          }
+        }
+      }
       if (stops.length > 0) {
         stops.sort((a, b) => a["Distance"] - b["Distance"]);
       }

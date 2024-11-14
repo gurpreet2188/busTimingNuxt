@@ -41,6 +41,7 @@ const getData = async (pos: { lat: number; lon: number }) => {
         body: JSON.stringify(pos),
     });
     const data = await res.json();
+    console.log(pos, data);
     return await data;
 };
 const LOGGEDINSTATE = {
@@ -99,7 +100,6 @@ watchEffect(async () => {
             if (services) {
                 tempArr[index].Services = services.Services;
             }
-            console.log(tempArr);
         }
         favsStops.value = tempArr;
     }
@@ -180,6 +180,7 @@ watchEffect(() => {
 });
 
 async function fetchBusInfo() {
+    console.log(stops.value.stops);
     if (stops.value.stops.length > 0) {
         for (const stop of stops.value.stops) {
             const data: BUS_STOPS = await $fetch("/api/bus-info", {
@@ -302,7 +303,7 @@ watch(
     >
         <Navigation />
 
-        <div class="flex justify-center items-center flex-col h-full w-full">
+        <div class="flex justify-center items-center flex-col w-full">
             <transition name="fade" mode="out-in">
                 <component
                     :key="dynamicComponentKey"
