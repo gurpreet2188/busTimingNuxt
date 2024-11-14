@@ -56,6 +56,7 @@ watch(settings, () => {
         bodyOverFlow.value = "overflow:auto";
     }
 });
+
 useHead({
     bodyAttrs: {
         class: "bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full",
