@@ -220,8 +220,8 @@ watchEffect(() => {
             (isLoggedIn.value === LOGGEDINSTATE.IN || skipLogIn.value)
         ) {
             // sample loc
-            loadData(1.33123, 103.838949);
-            // loadData(location.value.lat, location.value.lon);
+            // loadData(1.33123, 103.838949);
+            loadData(location.value.lat, location.value.lon);
         }
     }
 });
