@@ -1,5 +1,3 @@
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,34 +7,37 @@
 } */
 
 body {
-    /* height: 100%; */
-    /* width: 100%; */
     box-sizing: border-box;
     padding: 0rem;
     margin: 0rem;
 }
 
 #__nuxt {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    height: auto;
+    /* height: 100dvh; */
 }
 
-html,body, #__nuxt, #__layout{
+html,
+body,
+#__nuxt,
+#__layout {
     /* height:auto!important; */
-    width: 100%!important;
+    width: 100% !important;
     background-repeat: no-repeat;
     /* overflow: hidden; */
-  }
+}
 
 @layer components {
-  .btn-common {
-    @apply bg-[#b5838d] font-light p-2 rounded-md text-[#ffcdb2] text-xl shadow-sm border border-[#ffcdb2]/0 dark:border-[#ffcdb2] dark:bg-[#1b263b] flex justify-center items-center gap-[0.5rem]
-  }
+    .btn-common {
+        @apply bg-[#b5838d] font-light p-2 rounded-md text-[#ffcdb2] text-xl shadow-sm border border-[#ffcdb2]/0 dark:border-[#ffcdb2] dark:bg-[#1b263b] flex justify-center items-center gap-[0.5rem];
+    }
 
-  .card-common {
-    @apply flex flex-col justify-center items-center gap-[2.5rem] p-[1rem] rounded-lg w-[100%] bg-[#ffb4a2] dark:bg-[#1b263b]
-  }
+    .card-common {
+        @apply flex flex-col justify-center items-center gap-[2.5rem] p-[1rem] rounded-lg w-[100%] bg-[#ffb4a2] dark:bg-[#1b263b];
+    }
 }

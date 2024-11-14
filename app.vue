@@ -1,295 +1,393 @@
 <script setup lang="ts">
-import { _AsyncData } from 'nuxt/dist/app/composables/asyncData';
-import { _RefFirestore, useCurrentUser } from 'vuefire';
-import type { Root as BUS_STOP_TYPES, Stop as BUS_STOP_TYPE } from './types/stops';
-import { fetchData } from './helper/fetchData'
-import { useGeolocation } from '@vueuse/core'
-import * as firebaseui from 'firebaseui';
-import { busStore } from './busFirebase/busStore'
+import type { Ref } from "vue";
+import type { Root as BUS_STOP_TYPES } from "./types/stops";
+import type { Root as BUS_STOPS } from "./types/bus";
+import type { COMPONENT_STATE } from "./types/components";
+import { ComponentsStateKeys } from "./types/components";
+import { useGeolocation } from "@vueuse/core";
+import { busStore } from "./busFirebase/busStore";
+import changeComponentState from "./helper/componentsState";
 
+const isLoggedIn: Ref<string> = useState("isLoggedIn");
+const { coords, locatedAt, error, resume, pause } = useGeolocation();
+const skipLogIn: Ref<boolean> = useState("skipLogIn", () => false);
+const settings: Ref<boolean> = useState("settings", () => false);
+const currentUser = useCurrentUser();
+const favsStops: Ref<BUS_STOPS[] | []> = useState("favsStops", () => []);
+const favStopsFromLocal: Ref<string[]> = useState("favs", () => []);
+const filterFavs: Ref<Boolean> = useState("filterFavs", () => false);
+const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] });
+const darkTheme: Ref<boolean> = useState("darkTheme", () => false);
+const location: Ref<{ lat: number; lon: number } | null> = ref(null);
+const windowBlur: Ref<boolean> = useState("windowBlur", () => false);
+const bodyOverFlow: Ref<string> = ref("overflow:auto");
+const mainInterval: Ref<NodeJS.Timer | number | null> = ref(null);
 
+const componentsState: Ref<COMPONENT_STATE> = useState(
+    "component_state",
+    () => {
+        return {
+            [ComponentsStateKeys.WELCOME]: false,
+            [ComponentsStateKeys.LOADBUSINFO]: false,
+            [ComponentsStateKeys.LOADING]: false,
+            [ComponentsStateKeys.LOGIN]: false,
+        };
+    },
+);
 
-const getData = async (pos: { lat: number, lon: number }) => {
-    const res = await fetch(`${import.meta.env['VITE_APP_BASE_URL']}/api/find-nearest-stops`, { method: 'POST', body: JSON.stringify(pos) })
-    const data = await res.json()
-    return await data
-}
+const getData = async (pos: { lat: number; lon: number }) => {
+    const res = await fetch(`/api/find-nearest-stops`, {
+        method: "POST",
+        body: JSON.stringify(pos),
+    });
+    const data = await res.json();
+    return await data;
+};
 const LOGGEDINSTATE = {
-    'LOADING': 'loading',
-    'IN': 'loggedIn',
-    'OUT': 'loggedOut'
-}
-
-const loadBusInfo: Ref<boolean> = useState('loadBusInfo', () => false)
-const { coords, locatedAt, error, resume, pause } = useGeolocation()
-const busStoreInstance = busStore()
-const firebaseUi = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(useFirebaseAuth())
-const isLoggedIn: Ref<string> = useState('isLoggedIn',()=>LOGGEDINSTATE.LOADING)
-const skipLogIn: Ref<boolean> = useState('skipLogIn', () => false)
-const welcomePage: Ref<boolean> = useState('welcomePage', () => false)
-const loginPage: Ref<boolean> = useState('loginPage', () => true)
-const loadingPage: Ref<boolean> = useState('loadingPage', () => false)
-const settings: Ref<boolean> = useState('settings', () => false)
-const currentUser = useCurrentUser()
-const favsStops: Ref<BUS_STOP_TYPES | null> = useState('favsStops', () => null)
-const filterFavs: Ref<Boolean> = useState('filterFavs', () => false)
-const favs: Ref<Array<string> | undefined> = useState('favs', () => undefined)
-const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] })
-const darkTheme: Ref<boolean> = useState('darkTheme', () => false)
-const location: Ref<{ lat: number, lon: number } | null> = ref(null)
-const windowBlur: Ref<boolean> = ref(false)
-const bodyOverFlow: Ref<string> = ref('overflow:auto')
+    LOADING: "loading",
+    IN: "loggedIn",
+    OUT: "loggedOut",
+};
 
 watch(settings, () => {
     if (settings.value) {
-        bodyOverFlow.value = 'overflow:hidden'
+        bodyOverFlow.value = "overflow:hidden";
     } else {
-        bodyOverFlow.value = 'overflow:auto'
+        bodyOverFlow.value = "overflow:auto";
     }
-})
-useHead({ bodyAttrs: { class: 'bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full', style: bodyOverFlow }, htmlAttrs: { class: 'min-h-full' } })
+});
+useHead({
+    bodyAttrs: {
+        class: "bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full",
+        style: bodyOverFlow,
+    },
+    htmlAttrs: { class: "min-h-full" },
+});
+
+watch(
+    currentUser,
+    () => {
+        if (currentUser.value?.uid) {
+            busStore().initialize(currentUser.value?.uid);
+        } else {
+            busStore().loadFromLocaStorage();
+        }
+    },
+    { deep: true },
+);
+
+watchEffect(async () => {
+    if (
+        (favStopsFromLocal.value?.length! > 0 && favStopsFromLocal.value) ||
+        filterFavs.value
+    ) {
+        const tempArr: BUS_STOPS[] = [];
+        for (const index in favStopsFromLocal.value) {
+            const stopData: BUS_STOPS = await $fetch("/api/stop-info", {
+                method: "POST",
+                body: { stopCode: favStopsFromLocal.value[index] },
+            });
+            if (stopData) {
+                tempArr[index] = stopData;
+            }
+            const services: BUS_STOPS = await $fetch("/api/bus-info", {
+                method: "POST",
+                body: { stopCode: favStopsFromLocal.value[index] },
+            });
+
+            if (services) {
+                tempArr[index].Services = services.Services;
+            }
+            console.log(tempArr);
+        }
+        favsStops.value = tempArr;
+    }
+});
 
 onMounted(async () => {
-    favs.value = localStorage.getItem('favs') && JSON.parse(localStorage.getItem('favs') as string)
-    darkTheme.value = window.matchMedia('(prefers-color-scheme: dark)').matches
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        darkTheme.value = e.matches
-    })
+    darkTheme.value = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", (e) => {
+            darkTheme.value = e.matches;
+        });
 
-    window.addEventListener('blur', (e) => {
+    window.addEventListener("blur", (e) => {
+        windowBlur.value = true;
+    });
 
-        windowBlur.value = true
-    })
-
-    window.addEventListener('focus', (e) => {
-
-        windowBlur.value = false
-    })
-
-
-})
-
-const mainInterval: Ref<NodeJS.Timer | null> = ref(null)
-const favsInterval: Ref<NodeJS.Timer | null> = ref(null)
+    window.addEventListener("focus", (e) => {
+        windowBlur.value = false;
+    });
+});
 
 watch(windowBlur, () => {
     const timeout = setTimeout(() => {
-        if (favsInterval.value && windowBlur.value) {
-            clearInterval(favsInterval.value)
-        }
+        // if (favsInterval.value && windowBlur.value) {
+        //     clearInterval(favsInterval.value)
+        // }
 
         if (mainInterval.value && windowBlur.value) {
-            clearInterval(mainInterval.value)
+            clearInterval(mainInterval.value as number);
         }
-    }, 60000)
+    }, 60000);
 
     if (!windowBlur.value) {
         if (timeout) {
-            clearTimeout(timeout)
-        }
-
-    }
-
-})
-
-watch(favs, async () => {
-    let tempfavStops: BUS_STOP_TYPES = { stops: [] }
-    if (favs.value) {
-        if ((favs.value?.length > 0) && process.client) {
-            for (const stop of favs.value) {
-                const res = await fetch('/api/stop-info', { method: 'POST', body: JSON.stringify({ 'stopCode': stop }) })
-                const data: BUS_STOP_TYPE = await res.json()
-                if (data['BusStopCode']) {
-                    tempfavStops.stops = [...tempfavStops.stops, data]
-                }
-            }
-
-            if (tempfavStops.stops.length > 0) {
-                fetchData(tempfavStops.stops).then(d => favsStops.value = d)
-                favsInterval.value = setInterval(() => {
-                    fetchData(tempfavStops.stops).then(d => favsStops.value = d)
-                }, 60000)
-            }
-        } else {
-            favsStops.value = { stops: [] }
+            clearTimeout(timeout);
         }
     }
-})
-
-watch(favs, () => {
-    if (favsInterval.value) {
-        clearInterval(favsInterval.value)
-    }
-})
-
+});
 
 watchEffect(async () => {
-
-    if (coords.value.latitude !== Infinity && coords.value.longitude !== Infinity) {
-        pause()
-        location.value = { lat: coords.value.latitude, lon: coords.value.longitude }
+    if (
+        coords.value.latitude !== Infinity &&
+        coords.value.longitude !== Infinity
+    ) {
+        pause();
+        location.value = {
+            lat: coords.value.latitude,
+            lon: coords.value.longitude,
+        };
     }
+});
 
-})
-
-onMounted(()=>{
-    watchEffect(() => {
-    if (firebaseUi?.isPendingRedirect()) {
-        loginPage.value = true
-        // welcomePage.value = false
-        loadingPage.value = false
-        isLoggedIn.value = LOGGEDINSTATE.LOADING
-    } else {
-        loginPage.value = false
-        if(currentUser.value !== undefined) {
-            if (currentUser.value?.uid) {
-            loadingPage.value = true
-            // welcomePage.value = false
-            isLoggedIn.value = LOGGEDINSTATE.IN
+watch(
+    currentUser,
+    () => {
+        if (currentUser.value) {
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.LOADING,
+            );
+            isLoggedIn.value = LOGGEDINSTATE.IN;
         } else {
-            // welcomePage.value = true
-            loadingPage.value = false
-            isLoggedIn.value = LOGGEDINSTATE.OUT
-            
+            isLoggedIn.value = LOGGEDINSTATE.OUT;
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.WELCOME,
+            );
         }
-        }
-    }
-}
-)
-
-})
-
-watchEffect(()=>{
-    if(isLoggedIn.value === LOGGEDINSTATE.OUT) {
-        welcomePage.value = true
-    }
-})
+    },
+    { deep: true },
+);
 
 watchEffect(() => {
-    const loadData = async (lat: number, lon: number) => {
-        stops.value = await getData({ lat: lat, lon: lon })
+    if (isLoggedIn.value === LOGGEDINSTATE.IN) {
+        componentsState.value = changeComponentState(
+            ComponentsStateKeys.LOADING,
+        );
+    }
+});
 
-        if (stops.value.stops.length > 0) {
-            stops.value = await fetchData(stops.value.stops)
-
-            mainInterval.value = setInterval(async () => {
-
-                stops.value = await fetchData(stops.value.stops)
-            }, 60000)
-
-            loadBusInfo.value = true
-            loadingPage.value = false
-            console.log(loadingPage.value)
+async function fetchBusInfo() {
+    if (stops.value.stops.length > 0) {
+        for (const stop of stops.value.stops) {
+            const data: BUS_STOPS = await $fetch("/api/bus-info", {
+                method: "POST",
+                body: JSON.stringify({ stopCode: stop.BusStopCode }),
+            });
+            if (Object.keys(data).includes("Services")) {
+                if (stop.BusStopCode === data.BusStopCode) {
+                    stop.Services = data.Services;
+                }
+            }
         }
     }
-
-    if (location.value && (isLoggedIn.value === LOGGEDINSTATE.IN || skipLogIn.value)) {
-        // sample loc
-        // loadData(1.331230, 103.838949) 
-        loadData(location.value.lat, location.value.lon)
-    }
-})
-
-
-onBeforeUnmount(() => {
-    if (favsInterval.value) {
-        clearInterval(favsInterval.value)
-    }
-
-    if (mainInterval.value) {
-        clearInterval(mainInterval.value)
-    }
-})
-
-const touchStartHandle = (e: string) => {
-    if (e === 'left') {
-        window.scrollTo(0, 0)
-        filterFavs.value = true
-
-    } else if (e === 'right') {
-        window.scrollTo(0, 0)
-        filterFavs.value = false
-    }
+    return stops;
 }
 
+watchEffect(() => {
+    if (componentsState.value[ComponentsStateKeys.LOADING]) {
+        const loadData = async (lat: number, lon: number) => {
+            stops.value = await getData({ lat: lat, lon: lon });
+            if (stops.value.stops.length > 0) {
+                // componentsState.value = changeComponentState(
+                //     ComponentsStateKeys.LOADING,
+                // );
+                fetchBusInfo();
 
-onMounted(() => {
-    busStoreInstance.initialize()
-    watch(favs, () => {
-        if (favs.value) {
-            busStoreInstance.updateStore(favs.value)
+                mainInterval.value = setInterval(async () => {
+                    fetchBusInfo();
+                }, 60000);
+                componentsState.value = changeComponentState(
+                    ComponentsStateKeys.LOADBUSINFO,
+                );
+            }
+        };
+
+        if (
+            location.value &&
+            (isLoggedIn.value === LOGGEDINSTATE.IN || skipLogIn.value)
+        ) {
+            // sample loc
+            loadData(1.33123, 103.838949);
+            // loadData(location.value.lat, location.value.lon);
         }
-    })
+    }
+});
 
+onBeforeUnmount(() => {
+    // if (favsInterval.value) {
+    //     clearInterval(favsInterval.value)
+    // }
 
-})
+    if (mainInterval.value) {
+        clearInterval(mainInterval.value as number);
+    }
+});
 
-// watch(loadingPage,()=> console.log(loadingPage.value))
+const touchStartHandle = (e: string) => {
+    if (e === "left") {
+        window.scrollTo(0, 0);
+        filterFavs.value = true;
+    } else if (e === "right") {
+        window.scrollTo(0, 0);
+        filterFavs.value = false;
+    }
+};
 
+const dynamicComponentProps = ref({});
+const dynamicComponentKey = ref("");
+
+const componentToRender = computed(() => {
+    if (
+        componentsState.value[ComponentsStateKeys.WELCOME] &&
+        isLoggedIn.value !== LOGGEDINSTATE.LOADING
+    ) {
+        dynamicComponentKey.value = "welcome";
+        dynamicComponentProps.value = {};
+        return resolveComponent("Welcome");
+    } else if (componentsState.value[ComponentsStateKeys.LOGIN]) {
+        dynamicComponentKey.value = "auth";
+        dynamicComponentProps.value = {};
+        return resolveComponent("Auth");
+    } else if (componentsState.value[ComponentsStateKeys.LOADING]) {
+        dynamicComponentKey.value = "loadingPage";
+        dynamicComponentProps.value = {
+            darkTheme: darkTheme,
+            location: location,
+            error: error,
+        };
+        return resolveComponent("LazyLoadingPage");
+    } else if (componentsState.value[ComponentsStateKeys.LOADBUSINFO]) {
+        if (filterFavs.value) {
+            dynamicComponentKey.value = "FavsBusCards";
+            dynamicComponentProps.value = {
+                stopsWithServices: toRaw(stops.value),
+            };
+            return resolveComponent("LazyFavsBusCards");
+        } else {
+            dynamicComponentKey.value = "LocationBusCards";
+            dynamicComponentProps.value = {
+                stopsWithServices: toRaw(stops.value),
+            };
+            return resolveComponent("LazyLocBuses");
+        }
+    }
+});
+
+watch(
+    dynamicComponentKey,
+    () => {
+        console.log(dynamicComponentKey.value);
+    },
+    { deep: true },
+);
 </script>
 
 <template>
-    <div class="relative flex flex-col lg:w-[40%] md:w-[60%] justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden"
-        v-touch:swipe="touchStartHandle">
+    <div
+        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden"
+        v-touch:swipe="touchStartHandle"
+    >
         <Navigation />
 
-        <div v-if="welcomePage && !loginPage && !loadBusInfo && !loadingPage">
-            <Welcome />
-        </div>
-        <div v-if="loginPage">
-            <Login :firebase-ui="firebaseUi" />
-        </div>
-        <div v-if="loadingPage && !loginPage && !loadBusInfo"
-            class="flex flex-col gap-2 justify-center items-center w-[80%] lg:w-[40%] min-h-[80svh] overflow-hidden ">
-            <LoadingPage :dark-theme="darkTheme" :location="location" :error="error" />
-
+        <div class="flex justify-center items-center flex-col h-full w-full">
+            <transition name="fade" mode="out-in">
+                <component
+                    :key="dynamicComponentKey"
+                    :is="componentToRender"
+                    v-bind="dynamicComponentProps"
+                />
+            </transition>
         </div>
 
-        <Transition name="fly-in">
-            <div v-if="loadBusInfo" class="flex justify-center items-start gap-[2%] w-[200%]">
-                <div class="w-[100%] flex flex-col justify-start items-center gap-[1rem] transition-all ease-in-out duration-700"
-                    :class="filterFavs ? 'hide-left' : 'show-left'">
-                    <BusCard v-for="stop, index in stops.stops" :stop-name="stop.Description" :stop-code="stop.BusStopCode"
-                        :bg-color-shift="index" :street-name="stop.RoadName" :services="stop.Services"
-                        :distance-to-stop="stop.Distance" :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
-                        :key="stop.BusStopCode + new Date().getTime()" />
-                </div>
-                <div class="w-[100%] transition-all ease-in-out duration-700"
-                    :class="filterFavs ? 'show-right' : 'hide-right'">
-                    <div v-show="favsStops?.stops.length === 0 || favsStops === null"
-                        class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center">
-                        <IconsBusStop :color="darkTheme ? '#e5989b' : '#6d6875'" :size="{ w: '48px', h: '48px' }" />
-                        <p class="text-center tracking-wider text-[#e5989b]">There are no saved Bus Stops.</p>
-
-                    </div>
-
-                    <div class="flex flex-col justify-start items-center gap-[1rem]" v-show="favsStops?.stops.length !== 0">
-                        <BusCard v-for="stop, index in favsStops?.stops " :stop-name="stop.Description"
-                            :stop-code="stop.BusStopCode" :bg-color-shift="index" :street-name="stop.RoadName"
-                            :services="stop.Services" :distance-to-stop="stop.Distance"
-                            :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
-                            :key="stop.BusStopCode + new Date().getTime()" />
-                    </div>
-                </div>
-            </div>
-        </Transition>
-
-        <div v-if="loadBusInfo" class="fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2  h-[5%]">
-            <Footer />
-        </div>
-        <div v-if="isLoggedIn === LOGGEDINSTATE.IN"
-            class="fixed bottom-[4rem] top-auto flex justify-center items-center w-[100%] lg:w-[20%] lg:mb-2 ">
-            <Alerts />
-        </div>
+        <Footer
+            :class="`fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2 h-[5%]`"
+            v-if="componentsState[ComponentsStateKeys.LOADBUSINFO]"
+        />
     </div>
-    <div v-if="settings" class="absolute top-0 flex justify-center items-center z-10 h-[100vh] bg-black/50 w-[100%]">
-
+    <div
+        v-if="settings"
+        class="absolute top-0 flex justify-center items-center z-10 h-[100vh] bg-black/50 w-[100%]"
+    >
         <Settings />
-
     </div>
 </template>
 
 <style>
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
+
+/* .v-enter-active {
+    animation: slideIn 0.5s;
+}
+@keyframes slideIn {
+    from {
+        translate: -200px 0;
+        opacity: 0;
+    }
+    to {
+        translate: 0 0;
+        opacity: 1;
+    }
+}
+.v-leave-active {
+    animation: slideOut 0.5s;
+}
+@keyframes slideOut {
+    from {
+        translate: 0 0;
+        opacity: 1;
+    }
+    to {
+        translate: 200px 0;
+        opacity: 0;
+    }
+} */
+/* .v-enter-active {
+    animation: slideIn 0.5s;
+}
+@keyframes slideIn {
+    from {
+        translate: -200px 0;
+        opacity: 0;
+    }
+    to {
+        translate: 0 0;
+        opacity: 1;
+    }
+}
+.v-leave-active {
+    animation: slideOut 0.5s;
+}
+@keyframes slideOut {
+    from {
+        translate: 0 0;
+        opacity: 1;
+    }
+    to {
+        translate: 200px 0;
+        opacity: 0;
+    }
+} */
+
 .show-left {
     transform: translateX(52%);
 }
@@ -308,8 +406,6 @@ onMounted(() => {
     transform: translateX(-52%);
 }
 
-
-
 .fly-in-enter-active {
     transform: translateY(0%);
     opacity: 1;
@@ -327,10 +423,10 @@ onMounted(() => {
 
 .fly-in-leave-to {
     opacity: 0;
-    transform: translateY(40%)
+    transform: translateY(40%);
 }
 
-.slide-fade-enter-active {
+/* .slide-fade-enter-active {
     transition: all 0.5s ease-out;
 }
 
@@ -342,5 +438,5 @@ onMounted(() => {
 .slide-fade-leave-to {
     transform: translateX(100%);
     opacity: 0;
-}
+} */
 </style>

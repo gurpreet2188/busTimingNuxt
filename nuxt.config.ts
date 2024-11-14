@@ -2,8 +2,14 @@
 
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  modules: ['@nuxtjs/tailwindcss', '@vueuse/nuxt', 'nuxt-vuefire', '@pinia/nuxt'],
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "@vueuse/nuxt",
+    "nuxt-vuefire",
+    "@pinia/nuxt",
+  ],
   ssr: false,
+
   vuefire: {
     auth: true,
     config: {
@@ -13,17 +19,21 @@ export default defineNuxtConfig({
       storageBucket: process.env.APP_NAME_FIREBASE + ".appspot.com",
       messagingSenderId: process.env.MESSAGE_ID_FIREBASE,
       appId: process.env.APP_ID_FIREBASE,
-      measurementId: process.env.MEASUREMENT_ID_FIREBASE
-    }
+      measurementId: process.env.MEASUREMENT_ID_FIREBASE,
+    },
   },
-  tailwindcss: { cssPath: '~/assets/css/tailwind.css' },
+
+  tailwindcss: { cssPath: "~/assets/css/tailwind.css" },
+
   // build: {
   //   // @ts-ignore
   //   postcss: {
   //     postcssOptions: require('./postcss.config.js'),
   //   },
   // },
-  experimental: {
-    inlineSSRStyles: false
-  },
-})
+  // experimental: {
+  //   inlineSSRStyles: false
+  // },
+
+  compatibilityDate: "2024-11-08",
+});

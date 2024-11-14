@@ -18,4 +18,5 @@ export default defineEventHandler(async (event)=>{
             return stop
         }
     }
+    return {error:'error'}
 })
