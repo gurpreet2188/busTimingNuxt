@@ -60,10 +60,10 @@ watch(settings, () => {
 
 useHead({
     bodyAttrs: {
-        class: "bg-[#ffcdb2] dark:bg-[#0d1b2a] min-h-full",
+        class: "min-h-full",
         style: bodyOverFlow,
     },
-    htmlAttrs: { class: "min-h-full" },
+    htmlAttrs: { class: "min-h-full bg-[#f8edeb] dark:bg-[#0d1b2a]" },
 });
 
 watch(

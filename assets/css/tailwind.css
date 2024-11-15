@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* html {
-    height: 100%;
-} */
-
 body {
     box-sizing: border-box;
     padding: 0rem;
@@ -34,10 +30,10 @@ body,
 
 @layer components {
     .btn-common {
-        @apply bg-[#b5838d] font-light p-2 rounded-md text-[#ffcdb2] text-xl shadow-sm border border-[#ffcdb2]/0 dark:border-[#ffcdb2] dark:bg-[#1b263b] flex justify-center items-center gap-[0.5rem];
+        @apply bg-[#ffd7ba] font-light p-2 rounded-md text-[#7f5539] dark:text-[#ffcdb2] text-xl shadow-sm border border-[#ffcdb2]/0 dark:border-[#ffcdb2] dark:bg-[#1b263b] flex justify-center items-center gap-[0.5rem];
     }
 
     .card-common {
-        @apply flex flex-col justify-center items-center gap-[2.5rem] p-[1rem] rounded-lg w-[100%] bg-[#ffb4a2] dark:bg-[#1b263b];
+        @apply flex flex-col justify-center items-center gap-[2.5rem] p-[1rem] rounded-lg w-[100%] bg-[#ffe5d9] dark:bg-[#1b263b];
     }
 }

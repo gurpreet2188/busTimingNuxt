@@ -29,7 +29,7 @@ const locateBusStopClickHandle = () => {
             <div class="flex flex-col justify-center items-center gap-[0.5rem]">
                 <button @click="loginBtnClickHandle" class="btn-common">
                     <IconsAccount
-                        :color="'#ffcdb2'"
+                        :color="darkTheme ? '#ffcdb2' : '#7f5539'"
                         :size="{ w: '24px', h: '24px' }"
                     />
                     Login / Register
@@ -49,7 +49,7 @@ const locateBusStopClickHandle = () => {
             <!-- locate bus stop -->
             <button @click="locateBusStopClickHandle" class="btn-common w-auto">
                 <IconsLocation
-                    :color="'#ffcdb2'"
+                    :color="darkTheme ? '#ffcdb2' : '#7f5539'"
                     :size="{ w: '22px', h: '22px' }"
                     :active="true"
                 />
