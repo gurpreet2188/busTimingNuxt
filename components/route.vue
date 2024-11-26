@@ -42,13 +42,24 @@ const handleShowBusRoute = () => {
             </p>
 
             <div class="flex flex-col justify-center items-start gap-2 w-full">
-                <p
+                <CardStopInfo
+                    v-for="(stop, index) in Object.keys(props.route.fromStart)"
+                    :stop-code="props.route.fromStart[stop]['BusStopCode']"
+                    :stop-name="props.route.fromStart[stop]['Description']"
+                    :stop-pos="{
+                        lat: props.route.fromStart[stop]['Latitude'],
+                        lon: props.route.fromStart[stop]['Longitude'],
+                    }"
+                    :street-name="props.route.fromStart[stop]['RoadName']"
+                />
+                <!-- <p
                     class="line-clamp-1 text-ellipsis text-black dark:text-white"
                     v-for="(stop, index) in Object.keys(props.route.fromStart)"
                 >
                     {{ props.route.fromStart[stop]["StopSequence"] }}
+                    {{ props.route.fromStart[stop]["RoadName"] }} /
                     {{ props.route.fromStart[stop]["Description"] }}
-                </p>
+                </p> -->
             </div>
         </div>
         <div
@@ -62,13 +73,16 @@ const handleShowBusRoute = () => {
             </p>
 
             <div class="flex flex-col justify-center items-start gap-2 w-full">
-                <p
-                    class="line-clamp-1 text-ellipsis text-black dark:text-white"
+                <CardStopInfo
                     v-for="(stop, index) in Object.keys(props.route.fromEnd)"
-                >
-                    {{ props.route.fromEnd[stop]["StopSequence"] }}
-                    {{ props.route.fromEnd[stop]["Description"] }}
-                </p>
+                    :stop-code="props.route.fromEnd[stop]['BusStopCode']"
+                    :stop-name="props.route.fromEnd[stop]['Description']"
+                    :stop-pos="{
+                        lat: props.route.fromEnd[stop]['Latitude'],
+                        lon: props.route.fromEnd[stop]['Longitude'],
+                    }"
+                    :street-name="props.route.fromEnd[stop]['RoadName']"
+                />
             </div>
         </div>
     </div>
