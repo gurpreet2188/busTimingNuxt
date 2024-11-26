@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType } from "nuxt/dist/app/compat/capi";
+import type { PropType } from "vue";
 
 type SIZE = {
     w: string;

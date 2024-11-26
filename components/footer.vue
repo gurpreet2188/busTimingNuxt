@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import type { COMPONENT_STATE } from "~/types/components";
+import { SubComponentStateKeys } from "../types/components";
+import changeComponentState from "../helper/componentsState";
 const darkTheme = useState("darkTheme");
 const size = { h: "24px", w: "24px" };
 
 const filterFavs: Ref<boolean> = useState("filterFavs");
+const subComponentsState: Ref<COMPONENT_STATE> = useState(
+    "sub_component_state",
+);
 
-const clickHandle = (val: boolean) => {
-    return (filterFavs.value = val);
+const clickHandle = (component: string) => {
+    subComponentsState.value = changeComponentState(component, true);
 };
 </script>
 
@@ -17,14 +23,14 @@ const clickHandle = (val: boolean) => {
             <button
                 @click="
                     () => {
-                        clickHandle(false);
+                        clickHandle(SubComponentStateKeys.LOCATION);
                     }
                 "
             >
                 <IconsLocation
                     :color="darkTheme ? '#ffcdb2' : '#7f5539'"
                     :size="size"
-                    :active="!filterFavs"
+                    :active="subComponentsState[SubComponentStateKeys.LOCATION]"
                 />
             </button>
         </div>
@@ -32,14 +38,29 @@ const clickHandle = (val: boolean) => {
             <button
                 @click="
                     () => {
-                        clickHandle(true);
+                        clickHandle(SubComponentStateKeys.FAVS);
                     }
                 "
             >
                 <IconsFavs
                     :color="darkTheme ? '#ffcdb2' : '#7f5539'"
                     :size="size"
-                    :active="filterFavs"
+                    :active="subComponentsState[SubComponentStateKeys.FAVS]"
+                />
+            </button>
+        </div>
+        <div class="flex justify-center items-center w-[50%]">
+            <button
+                @click="
+                    () => {
+                        clickHandle(SubComponentStateKeys.ROUTE);
+                    }
+                "
+            >
+                <IconsRoute
+                    :color="darkTheme ? '#ffcdb2' : '#7f5539'"
+                    :size="size"
+                    :active="subComponentsState[SubComponentStateKeys.ROUTE]"
                 />
             </button>
         </div>

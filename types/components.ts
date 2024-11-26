@@ -12,3 +12,9 @@ export enum ComponentsStateKeys {
   LOADING = "loading",
   LOGIN = "login",
 }
+
+export enum SubComponentStateKeys {
+  LOCATION = "location",
+  FAVS = "favs",
+  ROUTE = "route",
+}

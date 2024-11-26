@@ -1,21 +1,27 @@
 <script setup lang="ts">
-import { PropType } from 'nuxt/dist/app/compat/capi';
+import type { PropType } from "vue";
 
 type SIZE = {
-    w:string
-    h:string
-}
+    w: string;
+    h: string;
+};
 
-defineProps({color:String, active:Boolean, size:Object as PropType<SIZE> })
-
+defineProps({ color: String, active: Boolean, size: Object as PropType<SIZE> });
 </script>
 
 <template>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" :width="size?.w" :height="size?.h">
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        :width="size?.w"
+        :height="size?.h"
+    >
         <path
             :fill="color"
             :fill-opacity="active ? 1 : 0"
             :stroke="color"
             stroke-width="2px"
-            d="M13.46,12L19,17.54V19H17.54L12,13.46L6.46,19H5V17.54L10.54,12L5,6.46V5H6.46L12,10.54L17.54,5H19V6.46L13.46,12Z" />
-</svg></template>
+            d="M13.46,12L19,17.54V19H17.54L12,13.46L6.46,19H5V17.54L10.54,12L5,6.46V5H6.46L12,10.54L17.54,5H19V6.46L13.46,12Z"
+        />
+    </svg>
+</template>

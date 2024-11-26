@@ -3,10 +3,11 @@ import type { Ref } from "vue";
 import type { Root as BUS_STOP_TYPES } from "./types/stops";
 import type { Root as BUS_STOPS } from "./types/bus";
 import type { COMPONENT_STATE } from "./types/components";
-import { ComponentsStateKeys } from "./types/components";
+import { ComponentsStateKeys, SubComponentStateKeys } from "./types/components";
 import { useGeolocation } from "@vueuse/core";
 import { busStore } from "./busFirebase/busStore";
 import changeComponentState from "./helper/componentsState";
+import { useBusRoute } from "./composables/useBusRoute";
 
 const isLoggedIn: Ref<string> = useState("isLoggedIn");
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
@@ -31,6 +32,17 @@ const componentsState: Ref<COMPONENT_STATE> = useState(
             [ComponentsStateKeys.LOADBUSINFO]: false,
             [ComponentsStateKeys.LOADING]: false,
             [ComponentsStateKeys.LOGIN]: false,
+        };
+    },
+);
+
+const subComponentState: Ref<COMPONENT_STATE> = useState(
+    "sub_component_state",
+    () => {
+        return {
+            [SubComponentStateKeys.LOCATION]: true,
+            [SubComponentStateKeys.FAVS]: false,
+            [SubComponentStateKeys.ROUTE]: false,
         };
     },
 );
@@ -69,6 +81,7 @@ useHead({
 watch(
     currentUser,
     () => {
+        // useBusRoute("10");
         if (currentUser.value?.uid) {
             busStore().initialize(currentUser.value?.uid);
         } else {
@@ -271,18 +284,22 @@ const componentToRender = computed(() => {
         };
         return resolveComponent("LazyLoadingPage");
     } else if (componentsState.value[ComponentsStateKeys.LOADBUSINFO]) {
-        if (filterFavs.value) {
+        if (subComponentState.value[SubComponentStateKeys.FAVS]) {
             dynamicComponentKey.value = "FavsBusCards";
             dynamicComponentProps.value = {
                 stopsWithServices: toRaw(stops.value),
             };
             return resolveComponent("LazyFavsBusCards");
-        } else {
+        } else if (subComponentState.value[SubComponentStateKeys.LOCATION]) {
             dynamicComponentKey.value = "LocationBusCards";
             dynamicComponentProps.value = {
                 stopsWithServices: toRaw(stops.value),
             };
             return resolveComponent("LazyLocBuses");
+        } else if (subComponentState.value[SubComponentStateKeys.ROUTE]) {
+            dynamicComponentKey.value = "Search";
+            dynamicComponentProps.value = {};
+            return resolveComponent("LazySearch");
         }
     }
 });

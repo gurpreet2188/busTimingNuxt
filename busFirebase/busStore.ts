@@ -13,7 +13,6 @@ export function busStore() {
     const db = useFirestore();
     userDoc.value = (await getDoc(doc(db, "users", uid))).data() as FAVS;
     if (toRaw(userDoc.value).favs) {
-      console.log(toRaw(userDoc.value).favs);
       checkForFavsInLocalStorage(toRaw(userDoc.value).favs, uid);
     }
   }
