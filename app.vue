@@ -17,13 +17,21 @@ const currentUser = useCurrentUser();
 const favsStops: Ref<Stop[] | []> = useState("favsStops", () => []);
 const favStopsFromLocal: Ref<string[]> = useState("favs", () => []);
 const filterFavs: Ref<Boolean> = useState("filterFavs", () => false);
-const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] });
+const stops: Ref<BUS_STOP_TYPES> = useState("locstops", () => {
+    return { stops: [] };
+});
 const darkTheme: Ref<boolean> = useState("darkTheme", () => false);
 const location: Ref<{ lat: number; lon: number } | null> = ref(null);
 const windowBlur: Ref<boolean> = useState("windowBlur", () => false);
 const bodyOverFlow: Ref<string> = ref("overflow:auto");
 const mainInterval: Ref<NodeJS.Timer | number | null> = ref(null);
 
+const dynamicComponentProps = useState("dynamicProps", () => {
+    return {};
+});
+const dynamicComponentKey = ref("");
+
+const componentToRender = shallowRef();
 const componentsState: Ref<COMPONENT_STATE> = useState(
     "component_state",
     () => {
@@ -228,9 +236,6 @@ watch(
                 console.log(stops.value.stops.length);
                 // if (stops.value.stops.length > 0) {
                 fetchBusInfo();
-                componentsState.value = changeComponentState(
-                    ComponentsStateKeys.LOADBUSINFO,
-                );
                 mainInterval.value = setInterval(async () => {
                     fetchBusInfo();
                 }, 60000);
@@ -243,16 +248,48 @@ watch(
             ) {
                 // sample loc
                 // loadData(1.402788, 103.890488);
-                setTimeout(async () => {
-                    await loadData(location.value!!.lat, location.value!!.lon);
-                }, 3000);
+                await loadData(location.value!!.lat, location.value!!.lon);
+                // setTimeout(async () => {
+                //     // await loadData(1.402788, 103.890488);
+                //     await loadData(location.value!!.lat, location.value!!.lon);
+                // }, 5000);
             }
         }
     },
     { deep: true },
 );
 
-watch(location, () => console.log(location.value, isLoggedIn.value));
+watch(
+    [stops, currentUser],
+    () => {
+        if (stops.value.stops.length > 0) {
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.LOADBUSINFO,
+            );
+        } else if (currentUser.value) {
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.LOADING,
+            );
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.LOCATIONLOADING,
+            );
+        } else {
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.WELCOME,
+            );
+        }
+    },
+    { deep: true },
+);
+// watch([location, componentToRender], () =>
+//     console.log(
+//         location.value,
+//         stops.value.stops,
+//         // subComponentState.value,
+//         dynamicComponentProps.value,
+//         componentToRender.value,
+//     ),
+// );
 watch(componentsState, () => {
     console.log(stops.value);
     console.log(componentsState.value),
@@ -282,67 +319,61 @@ const touchStartHandle = (e: string) => {
     }
 };
 
-const dynamicComponentProps = ref({});
-const dynamicComponentKey = ref("");
-
-const componentToRender = shallowRef();
-
-watch(
-    [componentsState, subComponentState],
-    () => {
-        if (
-            componentsState.value[ComponentsStateKeys.WELCOME] &&
-            isLoggedIn.value !== LOGGEDINSTATE.LOADING
-        ) {
-            dynamicComponentKey.value = "welcome";
-            dynamicComponentProps.value = {};
-            componentToRender.value = resolveComponent("Welcome");
-        } else if (componentsState.value[ComponentsStateKeys.LOGIN]) {
-            dynamicComponentKey.value = "auth";
-            dynamicComponentProps.value = {};
-            componentToRender.value = resolveComponent("Auth");
-        } else if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
-            dynamicComponentKey.value = "locationLoadingPage";
-            dynamicComponentProps.value = {
-                darkTheme: darkTheme,
-                onlyBar: false,
-                location: location,
-                error: error,
-            };
-            componentToRender.value = resolveComponent("LazyLoadingPage");
-        } else if (componentsState.value[ComponentsStateKeys.LOADING]) {
-            dynamicComponentKey.value = "locationLoadingPage";
-            dynamicComponentProps.value = {
-                darkTheme: darkTheme,
-                onlyBar: true,
-                location: location,
-                error: error,
-            };
-            componentToRender.value = resolveComponent("LazyLoadingPage");
-        } else if (componentsState.value[ComponentsStateKeys.LOADBUSINFO]) {
-            if (subComponentState.value[SubComponentStateKeys.FAVS]) {
-                dynamicComponentKey.value = "FavsBusCards";
-                dynamicComponentProps.value = {
-                    stopsWithServices: toRaw(stops.value),
-                };
-                componentToRender.value = resolveComponent("LazyFavsBusCards");
-            } else if (
-                subComponentState.value[SubComponentStateKeys.LOCATION]
-            ) {
-                dynamicComponentKey.value = "LocationBusCards";
-                dynamicComponentProps.value = {
-                    stopsWithServices: toRaw(stops.value),
-                };
-                componentToRender.value = resolveComponent("LazyLocBuses");
-            } else if (subComponentState.value[SubComponentStateKeys.ROUTE]) {
-                dynamicComponentKey.value = "Search";
-                dynamicComponentProps.value = {};
-                componentToRender.value = resolveComponent("LazySearch");
-            }
-        }
-    },
-    { deep: true },
-);
+// watch(
+//     [componentsState, subComponentState],
+//     async () => {
+//         if (
+//             componentsState.value[ComponentsStateKeys.WELCOME] &&
+//             isLoggedIn.value !== LOGGEDINSTATE.LOADING
+//         ) {
+//             dynamicComponentKey.value = "welcome";
+//             dynamicComponentProps.value = {};
+//         } else if (componentsState.value[ComponentsStateKeys.LOGIN]) {
+//             dynamicComponentKey.value = "auth";
+//             dynamicComponentProps.value = {};
+//             // componentToRender.value = resolveComponent("Auth");
+//         } else if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
+//             dynamicComponentKey.value = "locationLoadingPage";
+//             dynamicComponentProps.value = {
+//                 darkTheme: darkTheme,
+//                 onlyBar: false,
+//                 location: location,
+//                 error: error,
+//             };
+//             // componentToRender.value = resolveComponent("LazyLoadingPage");
+//         } else if (componentsState.value[ComponentsStateKeys.LOADING]) {
+//             dynamicComponentKey.value = "locationLoadingPage";
+//             dynamicComponentProps.value = {
+//                 darkTheme: darkTheme,
+//                 onlyBar: true,
+//                 location: location,
+//                 error: error,
+//             };
+//             // componentToRender.value = resolveComponent("LazyLoadingPage");
+//         } else if (componentsState.value[ComponentsStateKeys.LOADBUSINFO]) {
+//             if (subComponentState.value[SubComponentStateKeys.FAVS]) {
+//                 dynamicComponentKey.value = "FavsBusCards";
+//                 dynamicComponentProps.value = {
+//                     stopsWithServices: toRaw(stops.value),
+//                 };
+//                 componentToRender.value = resolveComponent("LazyFavsBusCards");
+//             } else if (
+//                 subComponentState.value[SubComponentStateKeys.LOCATION]
+//             ) {
+//                 dynamicComponentKey.value = "LocationBusCards";
+//                 dynamicComponentProps.value = {
+//                     stopsWithServices: toRaw(stops.value),
+//                 };
+//                 // componentToRender.value = resolveComponent("LazyLocBuses");
+//             } else if (subComponentState.value[SubComponentStateKeys.ROUTE]) {
+//                 dynamicComponentKey.value = "Search";
+//                 dynamicComponentProps.value = {};
+//                 // componentToRender.value = resolveComponent("LazySearch");
+//             }
+//         }
+//     },
+//     { deep: true },
+// );
 
 // watch(
 //     dynamicComponentKey,
@@ -355,12 +386,11 @@ watch(
 
 <template>
     <div
-        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden"
-        v-touch:swipe="touchStartHandle"
+        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden bg-[#f8edeb] dark:bg-[#0d1b2a]"
     >
         <Navigation />
 
-        <div class="flex justify-center items-center flex-col w-full">
+        <!-- <div class="flex justify-center items-center flex-col w-full">
             <transition name="fade" mode="out-in">
                 <component
                     :key="dynamicComponentKey"
@@ -368,8 +398,48 @@ watch(
                     v-bind="dynamicComponentProps"
                 />
             </transition>
-        </div>
+        </div> -->
 
+        <Welcome v-if="componentsState[ComponentsStateKeys.WELCOME]" />
+        <LazyAuth v-if="componentsState[ComponentsStateKeys.LOGIN]" />
+        <LoadingPage
+            v-if="componentsState[ComponentsStateKeys.LOADING]"
+            :darkTheme="darkTheme"
+            :onlyBar="true"
+            :location="location"
+            :error="error"
+        />
+        <LoadingPage
+            v-if="componentsState[ComponentsStateKeys.LOCATIONLOADING]"
+            :darkTheme="darkTheme"
+            :onlyBar="false"
+            :location="location"
+            :error="error"
+        />
+        <LazyLocBuses
+            v-if="
+                componentsState[ComponentsStateKeys.LOADBUSINFO] &&
+                subComponentState[SubComponentStateKeys.LOCATION] &&
+                stops.stops.length > 0
+            "
+            :stopsWithServices="stops"
+        />
+        <LazyFavsBusCards
+            v-if="
+                componentsState[ComponentsStateKeys.LOADBUSINFO] &&
+                subComponentState[SubComponentStateKeys.FAVS] &&
+                stops.stops.length > 0
+            "
+            :stopsWithServices="stops"
+        />
+
+        <LazySearch
+            v-if="
+                componentsState[ComponentsStateKeys.LOADBUSINFO] &&
+                subComponentState[SubComponentStateKeys.ROUTE] &&
+                stops.stops.length > 0
+            "
+        />
         <Footer
             :class="`fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2 h-[5%]`"
             v-if="componentsState[ComponentsStateKeys.LOADBUSINFO]"

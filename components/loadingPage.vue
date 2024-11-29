@@ -39,7 +39,7 @@ const props = defineProps<{
             ></span>
         </div>
         <p
-            v-if="!error?.message"
+            v-if="!error?.message && !onlyBar"
             class="text-center tracking-wider font-light text-[#6d6875] dark:text-[#ffcdb2]"
         >
             {{
@@ -50,7 +50,7 @@ const props = defineProps<{
         </p>
 
         <p
-            v-if="error?.message"
+            v-if="error?.message && !onlyBar"
             class="text-center tracking-wider text-[#6d6875] dark:text-[#ffcdb2]"
         >
             {{ error?.message }}

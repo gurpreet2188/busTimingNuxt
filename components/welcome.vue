@@ -10,7 +10,9 @@ const loginBtnClickHandle = () => {
 };
 
 const locateBusStopClickHandle = () => {
-    componentsState.value = changeComponentState(ComponentsStateKeys.LOADING);
+    componentsState.value = changeComponentState(
+        ComponentsStateKeys.LOCATIONLOADING,
+    );
     skipLogIn.value = true;
 };
 </script>

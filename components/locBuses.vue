@@ -3,7 +3,6 @@ import type { Root as BUS_STOP_TYPE } from "../types/stops";
 import { useCheckIfFavStop } from "#build/imports";
 const props = defineProps<{ stopsWithServices: BUS_STOP_TYPE }>();
 const favStopsFromLocal: Ref<string[] | null> = useState("favs");
-watch(props.stopsWithServices, () => console.log(props.stopsWithServices));
 </script>
 
 <template>
