@@ -9,6 +9,7 @@ export interface COMPONENT_STATE {
 export enum ComponentsStateKeys {
   WELCOME = "welcome",
   LOADBUSINFO = "loadBusInfo",
+  LOCATIONLOADING = "locationLoading",
   LOADING = "loading",
   LOGIN = "login",
 }

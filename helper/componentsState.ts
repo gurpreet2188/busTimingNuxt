@@ -16,7 +16,8 @@ export default function changeComponentState(
     : {
         [ComponentsStateKeys.WELCOME]: false,
         [ComponentsStateKeys.LOADBUSINFO]: false,
-        [ComponentsStateKeys.LOADING]: false,
+        [ComponentsStateKeys.LOADING]: true,
+        [ComponentsStateKeys.LOCATIONLOADING]: false,
         [ComponentsStateKeys.LOGIN]: false,
       };
   for (const [k, v] of Object.entries(componentsState)) {

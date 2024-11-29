@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
     darkTheme: boolean;
+    onlyBar: boolean;
     location: { lat: number; lon: number } | null;
     error: any;
 }>();
@@ -10,7 +11,7 @@ const props = defineProps<{
     <div
         class="flex flex-col justify-center items-center h-screen w-full md:w-[60%]"
     >
-        <div class="relative h-[48px] w-[48px]">
+        <div v-if="!onlyBar" class="relative h-[48px] w-[48px]">
             <div class="absolute">
                 <IconsBusStop
                     v-if="location && !error?.message"

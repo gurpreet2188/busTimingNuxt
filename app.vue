@@ -28,9 +28,10 @@ const componentsState: Ref<COMPONENT_STATE> = useState(
     "component_state",
     () => {
         return {
-            [ComponentsStateKeys.WELCOME]: true,
+            [ComponentsStateKeys.WELCOME]: false,
             [ComponentsStateKeys.LOADBUSINFO]: false,
-            [ComponentsStateKeys.LOADING]: false,
+            [ComponentsStateKeys.LOADING]: true,
+            [ComponentsStateKeys.LOCATIONLOADING]: false,
             [ComponentsStateKeys.LOGIN]: false,
         };
     },
@@ -177,7 +178,7 @@ watch(
     () => {
         if (currentUser.value) {
             componentsState.value = changeComponentState(
-                ComponentsStateKeys.LOADING,
+                ComponentsStateKeys.LOCATIONLOADING,
             );
             isLoggedIn.value = LOGGEDINSTATE.IN;
         } else {
@@ -190,13 +191,17 @@ watch(
     { deep: true },
 );
 
-watchEffect(() => {
-    if (isLoggedIn.value === LOGGEDINSTATE.IN) {
-        componentsState.value = changeComponentState(
-            ComponentsStateKeys.LOADING,
-        );
-    }
-});
+watch(
+    isLoggedIn,
+    () => {
+        if (isLoggedIn.value === LOGGEDINSTATE.IN) {
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.LOCATIONLOADING,
+            );
+        }
+    },
+    { deep: true },
+);
 
 async function fetchBusInfo() {
     if (stops.value.stops.length > 0) {
@@ -212,26 +217,24 @@ async function fetchBusInfo() {
             }
         }
     }
-    return stops;
 }
 
 watch(
     componentsState,
-    () => {
-        if (componentsState.value[ComponentsStateKeys.LOADING]) {
+    async () => {
+        if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
             const loadData = async (lat: number, lon: number) => {
                 stops.value = await getData({ lat: lat, lon: lon });
                 console.log(stops.value.stops.length);
-                if (stops.value.stops.length > 0) {
+                // if (stops.value.stops.length > 0) {
+                fetchBusInfo();
+                componentsState.value = changeComponentState(
+                    ComponentsStateKeys.LOADBUSINFO,
+                );
+                mainInterval.value = setInterval(async () => {
                     fetchBusInfo();
-
-                    mainInterval.value = setInterval(async () => {
-                        fetchBusInfo();
-                    }, 60000);
-                    componentsState.value = changeComponentState(
-                        ComponentsStateKeys.LOADBUSINFO,
-                    );
-                }
+                }, 60000);
+                // }
             };
 
             if (
@@ -240,16 +243,23 @@ watch(
             ) {
                 // sample loc
                 // loadData(1.402788, 103.890488);
-                loadData(location.value.lat, location.value.lon);
+                setTimeout(async () => {
+                    await loadData(location.value!!.lat, location.value!!.lon);
+                }, 3000);
             }
         }
     },
-    { immediate: true, deep: true },
+    { deep: true },
 );
 
-watch(componentsState, () => console.log(componentsState.value), {
-    deep: true,
-    immediate: true,
+watch(location, () => console.log(location.value, isLoggedIn.value));
+watch(componentsState, () => {
+    console.log(stops.value);
+    console.log(componentsState.value),
+        {
+            deep: true,
+            immediate: true,
+        };
 });
 
 onBeforeUnmount(() => {
@@ -275,46 +285,64 @@ const touchStartHandle = (e: string) => {
 const dynamicComponentProps = ref({});
 const dynamicComponentKey = ref("");
 
-const componentToRender = computed(() => {
-    if (
-        componentsState.value[ComponentsStateKeys.WELCOME] &&
-        isLoggedIn.value !== LOGGEDINSTATE.LOADING
-    ) {
-        dynamicComponentKey.value = "welcome";
-        dynamicComponentProps.value = {};
-        return resolveComponent("Welcome");
-    } else if (componentsState.value[ComponentsStateKeys.LOGIN]) {
-        dynamicComponentKey.value = "auth";
-        dynamicComponentProps.value = {};
-        return resolveComponent("Auth");
-    } else if (componentsState.value[ComponentsStateKeys.LOADING]) {
-        dynamicComponentKey.value = "loadingPage";
-        dynamicComponentProps.value = {
-            darkTheme: darkTheme,
-            location: location,
-            error: error,
-        };
-        return resolveComponent("LazyLoadingPage");
-    } else {
-        if (subComponentState.value[SubComponentStateKeys.FAVS]) {
-            dynamicComponentKey.value = "FavsBusCards";
-            dynamicComponentProps.value = {
-                stopsWithServices: toRaw(stops.value),
-            };
-            return resolveComponent("LazyFavsBusCards");
-        } else if (subComponentState.value[SubComponentStateKeys.LOCATION]) {
-            dynamicComponentKey.value = "LocationBusCards";
-            dynamicComponentProps.value = {
-                stopsWithServices: toRaw(stops.value),
-            };
-            return resolveComponent("LazyLocBuses");
-        } else if (subComponentState.value[SubComponentStateKeys.ROUTE]) {
-            dynamicComponentKey.value = "Search";
+const componentToRender = shallowRef();
+
+watch(
+    [componentsState, subComponentState],
+    () => {
+        if (
+            componentsState.value[ComponentsStateKeys.WELCOME] &&
+            isLoggedIn.value !== LOGGEDINSTATE.LOADING
+        ) {
+            dynamicComponentKey.value = "welcome";
             dynamicComponentProps.value = {};
-            return resolveComponent("LazySearch");
+            componentToRender.value = resolveComponent("Welcome");
+        } else if (componentsState.value[ComponentsStateKeys.LOGIN]) {
+            dynamicComponentKey.value = "auth";
+            dynamicComponentProps.value = {};
+            componentToRender.value = resolveComponent("Auth");
+        } else if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
+            dynamicComponentKey.value = "locationLoadingPage";
+            dynamicComponentProps.value = {
+                darkTheme: darkTheme,
+                onlyBar: false,
+                location: location,
+                error: error,
+            };
+            componentToRender.value = resolveComponent("LazyLoadingPage");
+        } else if (componentsState.value[ComponentsStateKeys.LOADING]) {
+            dynamicComponentKey.value = "locationLoadingPage";
+            dynamicComponentProps.value = {
+                darkTheme: darkTheme,
+                onlyBar: true,
+                location: location,
+                error: error,
+            };
+            componentToRender.value = resolveComponent("LazyLoadingPage");
+        } else if (componentsState.value[ComponentsStateKeys.LOADBUSINFO]) {
+            if (subComponentState.value[SubComponentStateKeys.FAVS]) {
+                dynamicComponentKey.value = "FavsBusCards";
+                dynamicComponentProps.value = {
+                    stopsWithServices: toRaw(stops.value),
+                };
+                componentToRender.value = resolveComponent("LazyFavsBusCards");
+            } else if (
+                subComponentState.value[SubComponentStateKeys.LOCATION]
+            ) {
+                dynamicComponentKey.value = "LocationBusCards";
+                dynamicComponentProps.value = {
+                    stopsWithServices: toRaw(stops.value),
+                };
+                componentToRender.value = resolveComponent("LazyLocBuses");
+            } else if (subComponentState.value[SubComponentStateKeys.ROUTE]) {
+                dynamicComponentKey.value = "Search";
+                dynamicComponentProps.value = {};
+                componentToRender.value = resolveComponent("LazySearch");
+            }
         }
-    }
-});
+    },
+    { deep: true },
+);
 
 // watch(
 //     dynamicComponentKey,
