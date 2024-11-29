@@ -46,7 +46,9 @@ const checkNoOpBuses = (timing: string) => {
             class="flex flex-col justify-center items-start gap-4 p-2 w-full rounded-md bg-[#ffe5d9] dark:bg-[#1b263b]"
             v-for="service of Object.entries(stopInfo.Service)"
         >
-            <div class="flex flex-col w-full gap-4">
+            <div
+                class="flex flex-col w-full gap-4 text-[#212121] dark:text-[#f1f1f1]"
+            >
                 <div class="grid grid-cols-3 w-full gap-2">
                     <div
                         class="flex flex-col justify-end items-start gap-2 w-full"

@@ -3,10 +3,12 @@
 export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: [
+    "nuxt-component-meta",
     "@nuxtjs/tailwindcss",
     "@vueuse/nuxt",
     "nuxt-vuefire",
     "@pinia/nuxt",
+    "@nuxtjs/color-mode",
   ],
   ssr: false,
 

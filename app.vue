@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { Root as BUS_STOP_TYPES } from "./types/stops";
+import type { Root as BUS_STOP_TYPES, Stop } from "./types/stops";
 import type { Root as BUS_INFO_TYPE } from "./types/bus";
 import type { COMPONENT_STATE } from "./types/components";
 import { ComponentsStateKeys, SubComponentStateKeys } from "./types/components";
@@ -14,7 +14,7 @@ const { coords, locatedAt, error, resume, pause } = useGeolocation();
 const skipLogIn: Ref<boolean> = useState("skipLogIn", () => false);
 const settings: Ref<boolean> = useState("settings", () => false);
 const currentUser = useCurrentUser();
-const favsStops: Ref<BUS_INFO_TYPE[] | []> = useState("favsStops", () => []);
+const favsStops: Ref<Stop[] | []> = useState("favsStops", () => []);
 const favStopsFromLocal: Ref<string[]> = useState("favs", () => []);
 const filterFavs: Ref<Boolean> = useState("filterFavs", () => false);
 const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] });
@@ -28,7 +28,7 @@ const componentsState: Ref<COMPONENT_STATE> = useState(
     "component_state",
     () => {
         return {
-            [ComponentsStateKeys.WELCOME]: false,
+            [ComponentsStateKeys.WELCOME]: true,
             [ComponentsStateKeys.LOADBUSINFO]: false,
             [ComponentsStateKeys.LOADING]: false,
             [ComponentsStateKeys.LOGIN]: false,
@@ -70,6 +70,13 @@ watch(settings, () => {
 });
 
 useHead({
+    meta: [
+        {
+            name: "theme-color",
+            content: darkTheme ? "#0d1b2a" : "#ffe5d9",
+            media: "(prefers-color-scheme: light)",
+        },
+    ],
     bodyAttrs: {
         class: "min-h-full",
         style: bodyOverFlow,
@@ -95,21 +102,21 @@ watchEffect(async () => {
         (favStopsFromLocal.value?.length! > 0 && favStopsFromLocal.value) ||
         filterFavs.value
     ) {
-        const tempArr: BUS_INFO_TYPE[] = [];
+        const tempArr: Stop[] = [];
         for (const index in favStopsFromLocal.value) {
             const stopData = await $fetch("/api/stop-info", {
                 method: "POST",
                 body: { stopCode: favStopsFromLocal.value[index] },
             });
-            if (stopData) {
+            if (stopData?.BusStopCode) {
                 tempArr[index] = stopData;
             }
             const services = await $fetch("/api/bus-info", {
                 method: "POST",
                 body: { stopCode: favStopsFromLocal.value[index] },
             });
-
-            if (services) {
+            // console.log(services);
+            if (services.Services) {
                 tempArr[index].Services = services.Services;
             }
         }
@@ -208,31 +215,41 @@ async function fetchBusInfo() {
     return stops;
 }
 
-watchEffect(() => {
-    if (componentsState.value[ComponentsStateKeys.LOADING]) {
-        const loadData = async (lat: number, lon: number) => {
-            stops.value = await getData({ lat: lat, lon: lon });
-            if (stops.value.stops.length > 0) {
-                fetchBusInfo();
-
-                mainInterval.value = setInterval(async () => {
+watch(
+    componentsState,
+    () => {
+        if (componentsState.value[ComponentsStateKeys.LOADING]) {
+            const loadData = async (lat: number, lon: number) => {
+                stops.value = await getData({ lat: lat, lon: lon });
+                console.log(stops.value.stops.length);
+                if (stops.value.stops.length > 0) {
                     fetchBusInfo();
-                }, 60000);
-                componentsState.value = changeComponentState(
-                    ComponentsStateKeys.LOADBUSINFO,
-                );
-            }
-        };
 
-        if (
-            location.value &&
-            (isLoggedIn.value === LOGGEDINSTATE.IN || skipLogIn.value)
-        ) {
-            // sample loc
-            // loadData(1.402788, 103.890488);
-            loadData(location.value.lat, location.value.lon);
+                    mainInterval.value = setInterval(async () => {
+                        fetchBusInfo();
+                    }, 60000);
+                    componentsState.value = changeComponentState(
+                        ComponentsStateKeys.LOADBUSINFO,
+                    );
+                }
+            };
+
+            if (
+                location.value &&
+                (isLoggedIn.value === LOGGEDINSTATE.IN || skipLogIn.value)
+            ) {
+                // sample loc
+                // loadData(1.402788, 103.890488);
+                loadData(location.value.lat, location.value.lon);
+            }
         }
-    }
+    },
+    { immediate: true, deep: true },
+);
+
+watch(componentsState, () => console.log(componentsState.value), {
+    deep: true,
+    immediate: true,
 });
 
 onBeforeUnmount(() => {

@@ -2,8 +2,19 @@ export interface Root {
   stops: Stop[];
 }
 
-export interface Stop {
+export interface CachedStops {
   error: boolean;
+  created?: string;
+  stops?: { [key: string]: Stop };
+}
+export interface LTAStop {
+  BusStopCode: string;
+  RoadName: string;
+  Description: string;
+  Latitude: number;
+  Longitude: number;
+}
+export interface Stop {
   BusStopCode?: string;
   RoadName?: string;
   Description?: string;

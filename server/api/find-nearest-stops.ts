@@ -1,46 +1,40 @@
-import { busStopsFromStore } from "../busStops";
-import type { Stop as BUS_STOP_TYPE } from "../../types/stops";
-import { Disc } from "lucide-vue-next";
-
-// globalThis.busStopsHashMap = new Map()
-
-// busStops().then((d) => d.foreach((obj:BUS_STOP_TYPE)=> globalThis.busStopHashMap.set(obj.)))
+import type { CachedStops, Stop } from "../../types/stops";
 
 export default defineEventHandler(async (event) => {
   const body: null | { lat: number; lon: number } = JSON.parse(
     await readBody(event),
   );
-  let stops: Array<BUS_STOP_TYPE> | [] = [];
+  let stops: Array<Stop> | [] = [];
 
   if (body?.hasOwnProperty("lat")) {
-    const busStopsList = await busStopsFromStore();
-    if (busStopsList?.data[0].Latitude) {
-      for (const stop of busStopsList.data) {
+    let cachedData = await useStorage<CachedStops>().getItem("bus-stops");
+    if (cachedData?.stops) {
+      for (const [k, v] of Object.entries(cachedData?.stops)) {
         const distance = calculateDistance(
           body.lat,
           body.lon,
-          stop.Latitude!!,
-          stop.Longitude!!,
+          v.Latitude!!,
+          v.Longitude!!,
           "K",
         );
         if (distance < 0.3) {
-          stop["Distance"] = distance;
-          stops = [...stops, stop];
+          v["Distance"] = distance;
+          stops = [...stops, v];
         }
       }
 
       if (stops.length === 0) {
-        for (const stop of busStopsList.data) {
+        for (const [k, v] of Object.entries(cachedData?.stops)) {
           const distance = calculateDistance(
             body.lat,
             body.lon,
-            stop.Latitude!!,
-            stop.Longitude!!,
+            v.Latitude!!,
+            v.Longitude!!,
             "K",
           );
           if (distance < 1) {
-            stop["Distance"] = distance;
-            stops = [...stops, stop];
+            v["Distance"] = distance;
+            stops = [...stops, v];
           }
         }
       }

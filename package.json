@@ -11,23 +11,27 @@
   "devDependencies": {
     "@invictus.codes/nuxt-vuetify": "^0.3.0",
     "@nuxt/devtools": "latest",
+    "@nuxthq/studio": "^2.0.3",
+    "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/tailwindcss": "^6.12.2",
-    "@types/node": "^18.19.64",
+    "@types/node": "^18.19.67",
     "@vueuse/core": "^10.11.1",
     "@vueuse/nuxt": "^10.11.1",
     "autoprefixer": "^10.4.20",
-    "nuxt": "^3.14.159",
-    "postcss": "^8.4.47"
+    "nuxt": "^3.14.1592",
+    "postcss": "^8.4.49"
   },
   "overrides": {
     "vue": "latest"
   },
   "dependencies": {
+    "@nuxt/kit": "^3.14.1592",
     "@pinia/nuxt": "^0.4.11",
     "firebase": "^10.14.1",
     "firebaseui": "^6.1.0",
     "lucide-vue-next": "^0.263.0",
     "nuxt-app": ".",
+    "nuxt-component-meta": "",
     "nuxt-vuefire": "^0.3.1",
     "vue3-touch-events": "^4.2.0",
     "vuefire": "^3.2.0"

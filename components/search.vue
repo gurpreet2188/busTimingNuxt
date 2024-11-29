@@ -7,6 +7,8 @@ const props = defineProps<{}>();
 const searchText: Ref<{ text: string }> = useState("searchText", () => {
     return { text: "" };
 });
+
+const searchResultMsg: Ref<string> = useState("searchResultMsg", () => "");
 const searchResult: Ref<RestructuredRoutes[] | RestructuredStops[]> = useState(
     "searchResult",
     () => [],
@@ -25,13 +27,17 @@ const handleOnSubmit = async () => {
         searchResult.value = (await useBusRoute(
             searchText.value.text,
         )) as RestructuredRoutes[];
-
+        searchResultMsg.value =
+            "Found " + searchResult.value.length + " Bus Service(s)";
         searchResult.value = searchResult.value.sort(
             (a, b) => parseInt(a.ServiceNo) - parseInt(b.ServiceNo),
         );
     } else if (searchText.value.text.length === 5) {
         searchResult.value = await useBusStopCode(searchText.value.text);
-        console.log(searchResult.value);
+        searchResultMsg.value =
+            "Found " + searchResult.value.length + " Bus Stop(s)";
+    } else {
+        searchResultMsg.value = "No Results";
     }
 };
 
@@ -68,9 +74,9 @@ watch(hideSearch, () => {
                 v-if="!hideSearch"
                 class="flex flex-col justify-items items-start gap-2 w-full"
             >
-                <h2 class="text-black dark:text-white text-lg">
-                    Found {{ searchResult.length }} Bus Service(s)
-                </h2>
+                <p class="text-black dark:text-white">
+                    {{ searchResultMsg }}
+                </p>
                 <div class="flex flex-row flex-wrap gap-2 w-full">
                     <button
                         class="text-black dark:text-white p-2 rounded-md bg-[#ffe5d9] dark:bg-[#1b263b]"

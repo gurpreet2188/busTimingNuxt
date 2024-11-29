@@ -19,12 +19,10 @@ const value = computed({
 
 <template>
     <form
-        class="flex flex-col justify-start items-start gap-8 w-full"
+        class="flex flex-col justify-start items-start gap-4 w-full"
         @submit.prevent="() => handleOnSubmit()"
     >
-        <h2
-            class="text-3xl text-center text-black dark:text-white w-full font-light"
-        >
+        <h2 class="text-xl text-black dark:text-white w-full font-light">
             Search for Services and Bus Stops
         </h2>
         <div class="flex flex-row justify-start items-center gap-2 w-full">
@@ -32,7 +30,7 @@ const value = computed({
                 <input
                     class="text-black dark:text-white p-2 rounded-md bg-[#ffe5d9] dark:bg-[#1b263b]"
                     name="search"
-                    placeholder="Enter Bus Number"
+                    placeholder="Bus Number or Stop Code..."
                     v-model.trim="value.text"
                 />
                 <label for="search" class="text-black dark:text-white text-xs">

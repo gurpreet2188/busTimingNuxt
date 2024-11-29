@@ -1,24 +1,12 @@
-import { HashMapSingleton } from "../busInfoHashMap";
-
-const hashmap = HashMapSingleton.getInstance();
+import type { CachedStops } from "~/types/stops";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   let name: string = "";
-  if (hashmap.stopNameHashMap.size === 0) {
-    await hashmap.loadHashMap();
-  }
   if (body["stopCode"]) {
-    // const busStopsList:BUS_STOP_TYPE[] = await busStops()
-    // if(busStopsList) {
-    //     for (const stop of busStopsList) {
-    //         if(stop['BusStopCode']===body['stopCode']) {
-    //             return {'name':stop.Description}
-    //         }
-    //     }
-    // }
     const targetStop = body["stopCode"];
-    const stop = hashmap.stopNameHashMap.get(targetStop);
+    const stop = (await useStorage<CachedStops>().getItem("bus-stops"))
+      ?.stops!![targetStop].Description;
     name = stop!!;
   }
   return name;
