@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { ResturcturedRoutes } from "../types/routes";
-const props = defineProps<{ title: string; route: ResturcturedRoutes }>();
-const showBusRoute: Ref<boolean> = useState("showBusRoute");
+import type { RestructuredRoutes } from "../types/routes";
+const props = defineProps<{ title: string; route: RestructuredRoutes }>();
+const hideSearch: Ref<boolean> = useState("hideSearch");
 const darkTheme = useState("darkTheme");
 const handleShowBusRoute = () => {
-    showBusRoute.value = false;
+    hideSearch.value = false;
 };
 </script>
 

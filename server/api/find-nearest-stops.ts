@@ -1,5 +1,6 @@
-import { busStops } from "../busStops";
+import { busStopsFromStore } from "../busStops";
 import type { Stop as BUS_STOP_TYPE } from "../../types/stops";
+import { Disc } from "lucide-vue-next";
 
 // globalThis.busStopsHashMap = new Map()
 
@@ -12,41 +13,39 @@ export default defineEventHandler(async (event) => {
   let stops: Array<BUS_STOP_TYPE> | [] = [];
 
   if (body?.hasOwnProperty("lat")) {
-    const busStopsList = await busStops();
-    if (busStopsList) {
-      for (const stop of busStopsList) {
+    const busStopsList = await busStopsFromStore();
+    if (busStopsList?.data[0].Latitude) {
+      for (const stop of busStopsList.data) {
         const distance = calculateDistance(
           body.lat,
           body.lon,
-          stop.Latitude,
-          stop.Longitude,
+          stop.Latitude!!,
+          stop.Longitude!!,
           "K",
         );
         if (distance < 0.3) {
-          console.log("finding stops");
           stop["Distance"] = distance;
           stops = [...stops, stop];
         }
       }
 
       if (stops.length === 0) {
-        for (const stop of busStopsList) {
+        for (const stop of busStopsList.data) {
           const distance = calculateDistance(
             body.lat,
             body.lon,
-            stop.Latitude,
-            stop.Longitude,
+            stop.Latitude!!,
+            stop.Longitude!!,
             "K",
           );
           if (distance < 1) {
-            console.log("finding stops");
             stop["Distance"] = distance;
             stops = [...stops, stop];
           }
         }
       }
       if (stops.length > 0) {
-        stops.sort((a, b) => a["Distance"] - b["Distance"]);
+        stops.sort((a, b) => a["Distance"]!! - b["Distance"]!!);
       }
     }
   }

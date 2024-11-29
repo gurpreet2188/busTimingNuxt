@@ -1,20 +1,20 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
 import type { Root as BUS_STOP_TYPES } from "./types/stops";
-import type { Root as BUS_STOPS } from "./types/bus";
+import type { Root as BUS_INFO_TYPE } from "./types/bus";
 import type { COMPONENT_STATE } from "./types/components";
 import { ComponentsStateKeys, SubComponentStateKeys } from "./types/components";
 import { useGeolocation } from "@vueuse/core";
 import { busStore } from "./busFirebase/busStore";
 import changeComponentState from "./helper/componentsState";
-import { useBusRoute } from "./composables/useBusRoute";
+// import { useBusRoute } from "./composables/useBusRoute";
 
 const isLoggedIn: Ref<string> = useState("isLoggedIn");
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
 const skipLogIn: Ref<boolean> = useState("skipLogIn", () => false);
 const settings: Ref<boolean> = useState("settings", () => false);
 const currentUser = useCurrentUser();
-const favsStops: Ref<BUS_STOPS[] | []> = useState("favsStops", () => []);
+const favsStops: Ref<BUS_INFO_TYPE[] | []> = useState("favsStops", () => []);
 const favStopsFromLocal: Ref<string[]> = useState("favs", () => []);
 const filterFavs: Ref<Boolean> = useState("filterFavs", () => false);
 const stops: Ref<BUS_STOP_TYPES> = ref({ stops: [] });
@@ -53,7 +53,6 @@ const getData = async (pos: { lat: number; lon: number }) => {
         body: JSON.stringify(pos),
     });
     const data = await res.json();
-    console.log(pos, data);
     return await data;
 };
 const LOGGEDINSTATE = {
@@ -96,16 +95,16 @@ watchEffect(async () => {
         (favStopsFromLocal.value?.length! > 0 && favStopsFromLocal.value) ||
         filterFavs.value
     ) {
-        const tempArr: BUS_STOPS[] = [];
+        const tempArr: BUS_INFO_TYPE[] = [];
         for (const index in favStopsFromLocal.value) {
-            const stopData: BUS_STOPS = await $fetch("/api/stop-info", {
+            const stopData = await $fetch("/api/stop-info", {
                 method: "POST",
                 body: { stopCode: favStopsFromLocal.value[index] },
             });
             if (stopData) {
                 tempArr[index] = stopData;
             }
-            const services: BUS_STOPS = await $fetch("/api/bus-info", {
+            const services = await $fetch("/api/bus-info", {
                 method: "POST",
                 body: { stopCode: favStopsFromLocal.value[index] },
             });
@@ -193,16 +192,15 @@ watchEffect(() => {
 });
 
 async function fetchBusInfo() {
-    console.log(stops.value.stops);
     if (stops.value.stops.length > 0) {
         for (const stop of stops.value.stops) {
-            const data: BUS_STOPS = await $fetch("/api/bus-info", {
+            const data = await $fetch("/api/bus-info", {
                 method: "POST",
                 body: JSON.stringify({ stopCode: stop.BusStopCode }),
             });
-            if (Object.keys(data).includes("Services")) {
+            if (!data.error) {
                 if (stop.BusStopCode === data.BusStopCode) {
-                    stop.Services = data.Services;
+                    stop.Services = data.Services!!;
                 }
             }
         }
@@ -215,9 +213,6 @@ watchEffect(() => {
         const loadData = async (lat: number, lon: number) => {
             stops.value = await getData({ lat: lat, lon: lon });
             if (stops.value.stops.length > 0) {
-                // componentsState.value = changeComponentState(
-                //     ComponentsStateKeys.LOADING,
-                // );
                 fetchBusInfo();
 
                 mainInterval.value = setInterval(async () => {
@@ -234,7 +229,7 @@ watchEffect(() => {
             (isLoggedIn.value === LOGGEDINSTATE.IN || skipLogIn.value)
         ) {
             // sample loc
-            // loadData(1.33123, 103.838949);
+            // loadData(1.402788, 103.890488);
             loadData(location.value.lat, location.value.lon);
         }
     }
@@ -283,7 +278,7 @@ const componentToRender = computed(() => {
             error: error,
         };
         return resolveComponent("LazyLoadingPage");
-    } else if (componentsState.value[ComponentsStateKeys.LOADBUSINFO]) {
+    } else {
         if (subComponentState.value[SubComponentStateKeys.FAVS]) {
             dynamicComponentKey.value = "FavsBusCards";
             dynamicComponentProps.value = {
@@ -304,13 +299,13 @@ const componentToRender = computed(() => {
     }
 });
 
-watch(
-    dynamicComponentKey,
-    () => {
-        console.log(dynamicComponentKey.value);
-    },
-    { deep: true },
-);
+// watch(
+//     dynamicComponentKey,
+//     () => {
+//         console.log(componentToRender.value);
+//     },
+//     { deep: true },
+// );
 </script>
 
 <template>

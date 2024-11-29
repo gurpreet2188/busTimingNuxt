@@ -26,6 +26,5 @@ export default function changeComponentState(
       componentsState[k] = false;
     }
   }
-  console.log(componentsState);
   return componentsState;
 }

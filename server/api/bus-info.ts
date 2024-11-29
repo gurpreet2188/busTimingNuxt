@@ -18,17 +18,22 @@ import type { Root as BUS_INFO_TYPE } from "../../types/bus";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
+  let data: BUS_INFO_TYPE = { error: true };
   if (body["stopCode"]) {
     const searchParams = new URLSearchParams({
       BusStopCode: body["stopCode"],
     }).toString();
-    const data: BUS_INFO_TYPE = await $fetch(
+    data = await $fetch(
       "http://datamall2.mytransport.sg/ltaodataservice/BusArrivalv2?" +
         searchParams,
       {
-        headers: { AccountKey: API_KEY as string, accept: "application/json" },
+        headers: {
+          AccountKey: API_KEY as string,
+          accept: "application/json",
+        },
       },
     );
+    data.error = false;
     // const data: BUS_INFO_TYPE = await res.json();
     // if('BusStopCode' in data) {
     //     data.Services[0].NextBus.Destination = await findStopName(data.Services[0].NextBus.DestinationCode)
@@ -37,5 +42,5 @@ export default defineEventHandler(async (event) => {
     return data;
   }
 
-  return { error: "error" };
+  return data;
 });

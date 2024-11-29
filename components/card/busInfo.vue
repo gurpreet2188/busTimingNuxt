@@ -4,7 +4,6 @@ import type {
     NextBus as NEXT_BUS_TYPE,
 } from "../../types/bus";
 import type { PropType } from "vue";
-import { fetchPOST } from "../../helper/fetchData";
 
 const props = defineProps({
     busCode: String,
@@ -33,25 +32,33 @@ const busOriginDestination: Ref<{
     destination: string | undefined;
 }> = ref({ origin: undefined, destination: undefined });
 
-watch(showOriginDestination, async () => {
-    if (
-        showOriginDestination.value &&
-        props.nextBus &&
-        (!props.nextBus.Destination || !props.nextBus.Origin)
-    ) {
-        const tempOrigin: { name: string } = await fetchPOST("/api/stop-name", {
-            stopCode: props.nextBus.OriginCode,
-        });
-        const tempDestination: { name: string } = await fetchPOST(
-            "/api/stop-name",
-            { stopCode: props.nextBus.DestinationCode },
-        );
-        if (tempOrigin["name"] && tempDestination["name"]) {
-            busOriginDestination.value.origin = tempOrigin["name"];
-            busOriginDestination.value.destination = tempDestination["name"];
+watch(
+    showOriginDestination,
+    async () => {
+        if (
+            showOriginDestination.value &&
+            props.nextBus &&
+            (!props.nextBus.Destination || !props.nextBus.Origin)
+        ) {
+            const tempOrigin = await $fetch("/api/stop-name", {
+                method: "POST",
+                body: JSON.stringify({
+                    stopCode: props.nextBus.OriginCode,
+                }),
+            });
+            const tempDestination = await $fetch("/api/stop-name", {
+                method: "POST",
+                body: JSON.stringify({
+                    stopCode: props.nextBus.DestinationCode,
+                }),
+            });
+
+            busOriginDestination.value.origin = tempOrigin;
+            busOriginDestination.value.destination = tempDestination;
         }
-    }
-});
+    },
+    { immediate: false, deep: true },
+);
 
 const clickHandle = () => {
     showOriginDestination.value = !showOriginDestination.value;

@@ -1,16 +1,11 @@
-import type { Stop } from "~/types/stops";
-
 const API_KEY: string | undefined = process.env.API_KEY;
 
 export async function busStopsFromStore() {
   let skip = 0;
   let data: Array<object> = [];
   const isCached = await useStorage().hasItem("bus-stops");
-  const cachedData = await useStorage<{
-    created: string;
-    data: Stop[];
-  }>().getItem("bus-stops");
-  if (!isCached || cachedData?.created) {
+  // const cachedData = useStorage().getItem("bus-stops");
+  if (!isCached) {
     while (true) {
       const searchParams = new URLSearchParams({ $skip: `${skip}` }).toString();
       const res = await fetch(
@@ -42,6 +37,7 @@ export async function busStopsFromStore() {
       } else {
         break;
       }
+      break;
     }
     await useStorage().setItem("bus-stops", {
       created: new Date().toString(),
@@ -49,7 +45,5 @@ export async function busStopsFromStore() {
     });
   }
 
-  return await useStorage<{ craeted: string; data: Stop[] }>().getItem(
-    "bus-stops",
-  );
+  return await useStorage().getItem("bus-stops");
 }

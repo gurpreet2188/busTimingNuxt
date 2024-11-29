@@ -33,7 +33,7 @@ export interface StoredValues {
   SUN_LastBus: string;
 }
 
-export interface ResturcturedRoutes {
+export interface RestructuredRoutes {
   ServiceNo: string;
   Operator: string;
   fromStart: { [key: string]: StoredValues };
