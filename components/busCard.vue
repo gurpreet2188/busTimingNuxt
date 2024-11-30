@@ -28,20 +28,18 @@ const favClickhandle = () => {
         class="relative flex flex-col justify-center items-start gap-2 rounded-lg dark:shadow-none w-[100%]"
     >
         <div
-            class="absolute w-[2rem] h-[2rem] top-[1.12rem] bottom-auto right-[1rem] left-auto"
+            class="absolute w-[2rem] h-[2rem] top-[0.4rem] bottom-auto right-[0.4rem] left-auto"
         >
             <!-- <CardFavs :fav="fav" :stop-code="stopCode" /> -->
             <button
                 @click="favClickhandle"
                 class="flex justify-center items-center rounded-full w-[100%] h-[100%] p-1"
             >
-                <div>
-                    <IconsFavs
-                        :color="darkTheme ? '#ffcdb2' : '#7f5539'"
-                        :active="fav"
-                        :size="{ w: '22px', h: '22px' }"
-                    />
-                </div>
+                <IconsFavs
+                    :color="darkTheme ? '#ffcdb2' : '#7f5539'"
+                    :active="fav"
+                    :size="{ w: '22px', h: '22px' }"
+                />
             </button>
         </div>
         <StopInfo

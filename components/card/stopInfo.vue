@@ -13,8 +13,8 @@ defineProps({
     <div
         class="flex flex-col justify-center items-start gap-4 p-2 w-[100%] border-b-[1px] border-black/10 dark:border-[#6d6875]/50 text-[#6d6875] dark:text-[#ffcdb2] rounded-md bg-[#ffe5d9] dark:bg-[#1b263b]"
     >
-        <div class="flex flex-row justify-between items-center gap-2">
-            <h2 class="text-[1.3rem] whitespace-nowrap">
+        <div class="flex flex-row justify-center items-center gap-2">
+            <h2 class="text-4xl whitespace-nowrap">
                 {{ stopCode }}
             </h2>
 

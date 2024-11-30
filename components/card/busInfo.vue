@@ -105,7 +105,7 @@ const busLoadTextColor = (load: string | undefined) => {
             class="flex flex-row justify-between items-center w-[100%]"
         > -->
         <div class="flex-[70%] grid grid-cols-3 gap-1 text-left text-xl w-full">
-            <p v-show="nextBus" class="btn-common">
+            <p v-show="nextBus" class="btn-common text-2xl">
                 {{ busCode }}
             </p>
 
