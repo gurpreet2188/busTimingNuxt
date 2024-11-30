@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { Root as BUS_STOP_TYPES, Stop } from "./types/stops";
+import type {
+    Root as BUS_STOP_TYPES,
+    Stop,
+    StopQueryResponse,
+    StopQuery,
+} from "./types/stops";
 import type { Root as BUS_INFO_TYPE } from "./types/bus";
 import type { COMPONENT_STATE } from "./types/components";
 import { ComponentsStateKeys, SubComponentStateKeys } from "./types/components";
@@ -26,12 +31,6 @@ const windowBlur: Ref<boolean> = useState("windowBlur", () => false);
 const bodyOverFlow: Ref<string> = ref("overflow:auto");
 const mainInterval: Ref<NodeJS.Timer | number | null> = ref(null);
 
-const dynamicComponentProps = useState("dynamicProps", () => {
-    return {};
-});
-const dynamicComponentKey = ref("");
-
-const componentToRender = shallowRef();
 const componentsState: Ref<COMPONENT_STATE> = useState(
     "component_state",
     () => {
@@ -56,14 +55,17 @@ const subComponentState: Ref<COMPONENT_STATE> = useState(
     },
 );
 
-const getData = async (pos: { lat: number; lon: number }) => {
-    const res = await fetch(`/api/find-nearest-stops`, {
+const getData = async (lat: number, lon: number) => {
+    const query: StopQuery = {
+        nearest: { lat, lon },
+    };
+    const res: StopQueryResponse = await $fetch(`/api/get-stop-info`, {
         method: "POST",
-        body: JSON.stringify(pos),
+        body: query,
     });
-    const data = await res.json();
-    return await data;
+    return res.stops!!;
 };
+
 const LOGGEDINSTATE = {
     LOADING: "loading",
     IN: "loggedIn",
@@ -113,18 +115,24 @@ watchEffect(async () => {
     ) {
         const tempArr: Stop[] = [];
         for (const index in favStopsFromLocal.value) {
-            const stopData = await $fetch("/api/stop-info", {
-                method: "POST",
-                body: { stopCode: favStopsFromLocal.value[index] },
-            });
-            if (stopData?.BusStopCode) {
-                tempArr[index] = stopData;
+            const query: StopQuery = {
+                single: favStopsFromLocal.value[index],
+            };
+            const stopData: StopQueryResponse = await $fetch(
+                "/api/get-stop-info",
+                {
+                    method: "POST",
+                    body: JSON.stringify(query),
+                },
+            );
+            if (stopData?.stop) {
+                tempArr[index] = stopData?.stop;
             }
             const services = await $fetch("/api/bus-info", {
                 method: "POST",
                 body: { stopCode: favStopsFromLocal.value[index] },
             });
-            // console.log(services);
+
             if (services.Services) {
                 tempArr[index].Services = services.Services;
             }
@@ -211,6 +219,7 @@ watch(
     { deep: true },
 );
 
+// fetch services timing
 async function fetchBusInfo() {
     if (stops.value.stops.length > 0) {
         for (const stop of stops.value.stops) {
@@ -227,19 +236,17 @@ async function fetchBusInfo() {
     }
 }
 
+// initial load
 watch(
-    componentsState,
+    [componentsState, location],
     async () => {
         if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
             const loadData = async (lat: number, lon: number) => {
-                stops.value = await getData({ lat: lat, lon: lon });
-                console.log(stops.value.stops.length);
-                // if (stops.value.stops.length > 0) {
+                stops.value.stops = await getData(lat, lon);
                 fetchBusInfo();
                 mainInterval.value = setInterval(async () => {
                     fetchBusInfo();
                 }, 60000);
-                // }
             };
 
             if (
@@ -247,12 +254,8 @@ watch(
                 (isLoggedIn.value === LOGGEDINSTATE.IN || skipLogIn.value)
             ) {
                 // sample loc
-                // loadData(1.402788, 103.890488);
-                await loadData(location.value!!.lat, location.value!!.lon);
-                // setTimeout(async () => {
-                //     // await loadData(1.402788, 103.890488);
-                //     await loadData(location.value!!.lat, location.value!!.lon);
-                // }, 5000);
+                // loadData(1.29684825487647, 103.85253591654006);
+                await loadData(location.value.lat, location.value.lon);
             }
         }
     },
@@ -260,44 +263,16 @@ watch(
 );
 
 watch(
-    [stops, currentUser],
+    stops,
     () => {
         if (stops.value.stops.length > 0) {
             componentsState.value = changeComponentState(
                 ComponentsStateKeys.LOADBUSINFO,
             );
-        } else if (currentUser.value) {
-            componentsState.value = changeComponentState(
-                ComponentsStateKeys.LOADING,
-            );
-            componentsState.value = changeComponentState(
-                ComponentsStateKeys.LOCATIONLOADING,
-            );
-        } else {
-            componentsState.value = changeComponentState(
-                ComponentsStateKeys.WELCOME,
-            );
         }
     },
     { deep: true },
 );
-// watch([location, componentToRender], () =>
-//     console.log(
-//         location.value,
-//         stops.value.stops,
-//         // subComponentState.value,
-//         dynamicComponentProps.value,
-//         componentToRender.value,
-//     ),
-// );
-watch(componentsState, () => {
-    console.log(stops.value);
-    console.log(componentsState.value),
-        {
-            deep: true,
-            immediate: true,
-        };
-});
 
 onBeforeUnmount(() => {
     // if (favsInterval.value) {
@@ -318,70 +293,6 @@ const touchStartHandle = (e: string) => {
         filterFavs.value = false;
     }
 };
-
-// watch(
-//     [componentsState, subComponentState],
-//     async () => {
-//         if (
-//             componentsState.value[ComponentsStateKeys.WELCOME] &&
-//             isLoggedIn.value !== LOGGEDINSTATE.LOADING
-//         ) {
-//             dynamicComponentKey.value = "welcome";
-//             dynamicComponentProps.value = {};
-//         } else if (componentsState.value[ComponentsStateKeys.LOGIN]) {
-//             dynamicComponentKey.value = "auth";
-//             dynamicComponentProps.value = {};
-//             // componentToRender.value = resolveComponent("Auth");
-//         } else if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
-//             dynamicComponentKey.value = "locationLoadingPage";
-//             dynamicComponentProps.value = {
-//                 darkTheme: darkTheme,
-//                 onlyBar: false,
-//                 location: location,
-//                 error: error,
-//             };
-//             // componentToRender.value = resolveComponent("LazyLoadingPage");
-//         } else if (componentsState.value[ComponentsStateKeys.LOADING]) {
-//             dynamicComponentKey.value = "locationLoadingPage";
-//             dynamicComponentProps.value = {
-//                 darkTheme: darkTheme,
-//                 onlyBar: true,
-//                 location: location,
-//                 error: error,
-//             };
-//             // componentToRender.value = resolveComponent("LazyLoadingPage");
-//         } else if (componentsState.value[ComponentsStateKeys.LOADBUSINFO]) {
-//             if (subComponentState.value[SubComponentStateKeys.FAVS]) {
-//                 dynamicComponentKey.value = "FavsBusCards";
-//                 dynamicComponentProps.value = {
-//                     stopsWithServices: toRaw(stops.value),
-//                 };
-//                 componentToRender.value = resolveComponent("LazyFavsBusCards");
-//             } else if (
-//                 subComponentState.value[SubComponentStateKeys.LOCATION]
-//             ) {
-//                 dynamicComponentKey.value = "LocationBusCards";
-//                 dynamicComponentProps.value = {
-//                     stopsWithServices: toRaw(stops.value),
-//                 };
-//                 // componentToRender.value = resolveComponent("LazyLocBuses");
-//             } else if (subComponentState.value[SubComponentStateKeys.ROUTE]) {
-//                 dynamicComponentKey.value = "Search";
-//                 dynamicComponentProps.value = {};
-//                 // componentToRender.value = resolveComponent("LazySearch");
-//             }
-//         }
-//     },
-//     { deep: true },
-// );
-
-// watch(
-//     dynamicComponentKey,
-//     () => {
-//         console.log(componentToRender.value);
-//     },
-//     { deep: true },
-// );
 </script>
 
 <template>
@@ -389,16 +300,6 @@ const touchStartHandle = (e: string) => {
         class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden bg-[#f8edeb] dark:bg-[#0d1b2a]"
     >
         <Navigation />
-
-        <!-- <div class="flex justify-center items-center flex-col w-full">
-            <transition name="fade" mode="out-in">
-                <component
-                    :key="dynamicComponentKey"
-                    :is="componentToRender"
-                    v-bind="dynamicComponentProps"
-                />
-            </transition>
-        </div> -->
 
         <Welcome v-if="componentsState[ComponentsStateKeys.WELCOME]" />
         <LazyAuth v-if="componentsState[ComponentsStateKeys.LOGIN]" />

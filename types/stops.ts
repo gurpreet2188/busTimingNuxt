@@ -79,3 +79,15 @@ export interface StopService {
   SUN_FirstBus: string;
   SUN_LastBus: string;
 }
+
+export interface StopQuery {
+  nearest?: { lat: number; lon: number };
+  single?: string;
+  name?: string;
+}
+
+export interface StopQueryResponse {
+  stops?: Stop[];
+  stop?: Stop;
+  name?: string;
+}

@@ -2,8 +2,8 @@
 import type { RestructuredRoutes } from "~/types/routes";
 import type { RestructuredStops } from "~/types/stops";
 import Route from "./route.vue";
-const props = defineProps<{}>();
 
+const props = defineProps<{}>();
 const searchText: Ref<{ text: string }> = useState("searchText", () => {
     return { text: "" };
 });
@@ -22,6 +22,7 @@ const stopInfo: Ref<RestructuredStops | undefined> = useState(
     "stopInfo",
     () => undefined,
 );
+
 const handleOnSubmit = async () => {
     if (searchText.value.text.length > 0 && searchText.value.text.length < 5) {
         searchResult.value = (await useBusRoute(
@@ -42,7 +43,6 @@ const handleOnSubmit = async () => {
 };
 
 const handleClick = (data: RestructuredRoutes | RestructuredStops) => {
-    console.log(data);
     if (Object.keys(data).includes("ServiceNo")) {
         routeInfo.value = data as RestructuredRoutes;
         stopInfo.value = undefined;

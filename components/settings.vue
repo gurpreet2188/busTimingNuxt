@@ -4,7 +4,6 @@ import type { COMPONENT_STATE } from "../types/components";
 import type { Root as BUS_INFO_TYPE } from "~/types/bus";
 import changeComponentState from "~/helper/componentsState";
 import { ComponentsStateKeys } from "../types/components";
-const transitionLoad: Ref<boolean> = useState("transitionLoad");
 const settings: Ref<boolean> = useState("settings");
 const authBtnText: Ref<string> = ref("Logout");
 const darkTheme = useState("darkTheme");
@@ -13,10 +12,7 @@ const currentUser = useCurrentUser();
 const authMessage: Ref<boolean> = ref(false);
 const componentsState: Ref<COMPONENT_STATE> = useState("component_state");
 const favsStops: Ref<BUS_INFO_TYPE[] | []> = useState("favsStops");
-const mode = useColorMode({
-    attribute: "theme",
-    modes: { auto: "auto", dark: "dark", light: "light" },
-});
+const mode = useColorMode();
 const handleAuth = () => {
     if (currentUser.value?.uid) {
         signOut(getAuth())
@@ -57,19 +53,19 @@ const handleBtnClose = () => {
     settings.value = false;
 };
 
-watch(
-    darkModeState,
-    () => {
-        if (darkModeState.value === "light") {
-            darkTheme.value = false;
-            mode.value = "light";
-        } else if (darkModeState.value === "dark") {
-            darkTheme.value = true;
-            mode.value = "dark";
-        }
-    },
-    { immediate: false, deep: true },
-);
+// watch(
+//     darkModeState,
+//     () => {
+//         if (darkModeState.value === "light") {
+//             darkTheme.value = false;
+//             mode.preference = "light";
+//         } else if (darkModeState.value === "dark") {
+//             darkTheme.value = true;
+//             mode.preference = "dark";
+//         }
+//     },
+//     { immediate: false, deep: true },
+// );
 </script>
 
 <template>
@@ -127,9 +123,9 @@ watch(
                 <p>Dark Mode</p>
                 <input
                     type="radio"
-                    id="auto"
-                    value="auto"
-                    v-model="darkModeState"
+                    id="system"
+                    value="system"
+                    v-model="mode.preference"
                 />
                 <label for="auto">Auto</label>
 
@@ -137,14 +133,14 @@ watch(
                     type="radio"
                     id="light"
                     value="light"
-                    v-model="darkModeState"
+                    v-model="mode.preference"
                 />
                 <label for="tlight">Light</label>
                 <input
                     type="radio"
                     id="dark"
                     value="dark"
-                    v-model="darkModeState"
+                    v-model="mode.preference"
                 />
                 <label for="dark">Dark</label>
             </div>
