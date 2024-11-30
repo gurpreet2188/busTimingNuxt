@@ -6,7 +6,7 @@ const favStopsFromLocal: Ref<string[] | null> = useState("favs");
 </script>
 
 <template>
-    <div class="flex flex-col justify-start items-center gap-2 w-full">
+    <div class="flex flex-col justify-start items-center gap-8 w-full">
         <BusCard
             v-for="(stop, index) in props.stopsWithServices.stops"
             :fav="useCheckIfFavStop(stop.BusStopCode!!, favStopsFromLocal!)"

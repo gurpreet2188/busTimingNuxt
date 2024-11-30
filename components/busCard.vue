@@ -25,7 +25,7 @@ const favClickhandle = () => {
 <!-- :style="{ 'background-color': `hsl(${bgColorShift && colors[bgColorShift]},100%,98%)` } -->
 <template>
     <div
-        class="relative flex flex-col justify-center items-start gap-8 p-4 rounded-lg dark:shadow-none w-[100%] bg-[#ffe5d9] dark:bg-[#1b263b]"
+        class="relative flex flex-col justify-center items-start gap-2 rounded-lg dark:shadow-none w-[100%]"
     >
         <div
             class="absolute w-[2rem] h-[2rem] top-[1.12rem] bottom-auto right-[1rem] left-auto"

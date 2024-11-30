@@ -35,12 +35,12 @@ watch(
             </div>
             <div
                 v-else
-                class="flex flex-col justify-start items-center gap-[1rem] w-full"
+                class="flex flex-col justify-start items-center gap-2 w-full"
             >
                 <TransitionGroup
                     name="bslist"
                     tag="div"
-                    class="flex flex-col gap-2 w-[100%]"
+                    class="flex flex-col gap-8 w-[100%]"
                 >
                     <BusCard
                         v-for="(stop, index) in favsStops"
