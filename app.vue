@@ -6,7 +6,6 @@ import type {
     StopQueryResponse,
     StopQuery,
 } from "./types/stops";
-import type { Root as BUS_INFO_TYPE } from "./types/bus";
 import type { COMPONENT_STATE } from "./types/components";
 import { ComponentsStateKeys, SubComponentStateKeys } from "./types/components";
 import { useGeolocation } from "@vueuse/core";
@@ -30,7 +29,7 @@ const location: Ref<{ lat: number; lon: number } | null> = ref(null);
 const windowBlur: Ref<boolean> = useState("windowBlur", () => false);
 const bodyOverFlow: Ref<string> = ref("overflow:auto");
 const mainInterval: Ref<NodeJS.Timer | number | null> = ref(null);
-
+const colorMode = useColorMode();
 const componentsState: Ref<COMPONENT_STATE> = useState(
     "component_state",
     () => {
@@ -71,6 +70,20 @@ const LOGGEDINSTATE = {
     IN: "loggedIn",
     OUT: "loggedOut",
 };
+
+watch(
+    colorMode,
+    () => {
+        if (colorMode.preference === "system") {
+            darkTheme.value = window.matchMedia(
+                "(prefers-color-scheme: dark)",
+            ).matches;
+        } else {
+            darkTheme.value = colorMode.preference === "dark" ? true : false;
+        }
+    },
+    { deep: true },
+);
 
 watch(settings, () => {
     if (settings.value) {
@@ -284,15 +297,15 @@ onBeforeUnmount(() => {
     }
 });
 
-const touchStartHandle = (e: string) => {
-    if (e === "left") {
-        window.scrollTo(0, 0);
-        filterFavs.value = true;
-    } else if (e === "right") {
-        window.scrollTo(0, 0);
-        filterFavs.value = false;
-    }
-};
+// const touchStartHandle = (e: string) => {
+//     if (e === "left") {
+//         window.scrollTo(0, 0);
+//         filterFavs.value = true;
+//     } else if (e === "right") {
+//         window.scrollTo(0, 0);
+//         filterFavs.value = false;
+//     }
+// };
 </script>
 
 <template>
@@ -365,59 +378,6 @@ const touchStartHandle = (e: string) => {
     opacity: 0;
 }
 
-/* .v-enter-active {
-    animation: slideIn 0.5s;
-}
-@keyframes slideIn {
-    from {
-        translate: -200px 0;
-        opacity: 0;
-    }
-    to {
-        translate: 0 0;
-        opacity: 1;
-    }
-}
-.v-leave-active {
-    animation: slideOut 0.5s;
-}
-@keyframes slideOut {
-    from {
-        translate: 0 0;
-        opacity: 1;
-    }
-    to {
-        translate: 200px 0;
-        opacity: 0;
-    }
-} */
-/* .v-enter-active {
-    animation: slideIn 0.5s;
-}
-@keyframes slideIn {
-    from {
-        translate: -200px 0;
-        opacity: 0;
-    }
-    to {
-        translate: 0 0;
-        opacity: 1;
-    }
-}
-.v-leave-active {
-    animation: slideOut 0.5s;
-}
-@keyframes slideOut {
-    from {
-        translate: 0 0;
-        opacity: 1;
-    }
-    to {
-        translate: 200px 0;
-        opacity: 0;
-    }
-} */
-
 .show-left {
     transform: translateX(52%);
 }
@@ -455,18 +415,4 @@ const touchStartHandle = (e: string) => {
     opacity: 0;
     transform: translateY(40%);
 }
-
-/* .slide-fade-enter-active {
-    transition: all 0.5s ease-out;
-}
-
-.slide-fade-leave-active {
-    transition: all 0.5s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-    transform: translateX(100%);
-    opacity: 0;
-} */
 </style>
