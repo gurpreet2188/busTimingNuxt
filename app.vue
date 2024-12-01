@@ -11,8 +11,6 @@ import { ComponentsStateKeys, SubComponentStateKeys } from "./types/components";
 import { useGeolocation } from "@vueuse/core";
 import { busStore } from "./busFirebase/busStore";
 import changeComponentState from "./helper/componentsState";
-// import { useBusRoute } from "./composables/useBusRoute";
-
 const isLoggedIn: Ref<string> = useState("isLoggedIn");
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
 const skipLogIn: Ref<boolean> = useState("skipLogIn", () => false);
@@ -71,19 +69,22 @@ const LOGGEDINSTATE = {
     OUT: "loggedOut",
 };
 
-watch(
-    colorMode,
-    () => {
-        if (colorMode.preference === "system") {
-            darkTheme.value = window.matchMedia(
-                "(prefers-color-scheme: dark)",
-            ).matches;
-        } else {
-            darkTheme.value = colorMode.preference === "dark" ? true : false;
-        }
-    },
-    { deep: true },
-);
+onMounted(() => {
+    watch(
+        colorMode,
+        () => {
+            if (colorMode.preference === "system") {
+                darkTheme.value = window.matchMedia(
+                    "(prefers-color-scheme: dark)",
+                ).matches;
+            } else {
+                darkTheme.value =
+                    colorMode.preference === "dark" ? true : false;
+            }
+        },
+        { deep: true },
+    );
+});
 
 watch(settings, () => {
     if (settings.value) {
@@ -288,24 +289,10 @@ watch(
 );
 
 onBeforeUnmount(() => {
-    // if (favsInterval.value) {
-    //     clearInterval(favsInterval.value)
-    // }
-
     if (mainInterval.value) {
         clearInterval(mainInterval.value as number);
     }
 });
-
-// const touchStartHandle = (e: string) => {
-//     if (e === "left") {
-//         window.scrollTo(0, 0);
-//         filterFavs.value = true;
-//     } else if (e === "right") {
-//         window.scrollTo(0, 0);
-//         filterFavs.value = false;
-//     }
-// };
 </script>
 
 <template>

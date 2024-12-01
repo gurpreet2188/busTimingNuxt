@@ -1,8 +1,8 @@
 <script setup lang="ts">
 defineProps({ busType: String, color: String });
 const size = {
-    w: "24px",
-    h: "24px",
+    w: "20px",
+    h: "20px",
 };
 </script>
 

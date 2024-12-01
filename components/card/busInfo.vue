@@ -28,6 +28,10 @@ const busUTCToMins = (UTCTime: string): string => {
 const showOriginDestination: Ref<boolean> = ref(false);
 const darkTheme: Ref<boolean> = useState("darkTheme");
 
+const size = {
+    w: "20px",
+    h: "20px",
+};
 const busOriginDestination: Ref<{
     origin: string | undefined;
     destination: string | undefined;
@@ -71,10 +75,6 @@ watch(
     { immediate: false, deep: true },
 );
 
-// const clickHandle = () => {
-//     showOriginDestination.value = !showOriginDestination.value;
-// };
-
 const busLoadTextColor = (load: string | undefined) => {
     if (load) {
         // g - 99d98c , o- ffb600,
@@ -99,71 +99,50 @@ const busLoadTextColor = (load: string | undefined) => {
     <div
         class="flex flex-col justify-center items-start gap-2 w-full text-[#6d6875] dark:text-[#ffcdb2]"
     >
-        <!-- <div class="grid grid-cols-bus-info w-[100%]"> -->
-        <!-- <button
-            @click="clickHandle"
-            class="flex flex-row justify-between items-center w-[100%]"
-        > -->
-        <div class="flex-[70%] grid grid-cols-3 gap-1 text-left text-xl w-full">
+        <div class="flex-[70%] grid grid-cols-3 gap-8 text-left text-xl w-full">
             <p v-show="nextBus" class="btn-common text-2xl">
                 {{ busCode }}
             </p>
 
-            <p
-                v-show="nextBus"
-                class="flex flex-row justify-center items-center gap-2"
+            <div
+                class="mr-2 ml-auto flex flex-row justify-center items-center gap-2"
             >
-                {{ nextBus && busUTCToMins(nextBus.EstimatedArrival) }}
-                <CardBusTypeIcons
-                    :bus-type="nextBus?.Type"
-                    :color="busLoadTextColor(nextBus?.Load)"
-                />
-            </p>
-            <p
-                v-show="nextBus2"
-                class="flex flex-row justify-center items-center gap-2"
+                <p v-show="nextBus" class="text-3xl">
+                    {{ nextBus && busUTCToMins(nextBus.EstimatedArrival) }}
+                </p>
+                <div class="flex flex-col justify-center items-center">
+                    <IconsWheelChair
+                        v-if="nextBus?.Feature === 'WAB'"
+                        :active="true"
+                        :size="size"
+                        :color="darkTheme ? '#ffcdb2' : '#6d6875'"
+                    />
+                    <CardBusTypeIcons
+                        :bus-type="nextBus?.Type"
+                        :color="busLoadTextColor(nextBus?.Load)"
+                    />
+                </div>
+            </div>
+            <div
+                class="mr-2 ml-auto flex flex-row justify-center items-center gap-2"
             >
-                {{ nextBus2 && busUTCToMins(nextBus2.EstimatedArrival) }}
-                <CardBusTypeIcons
-                    :bus-type="nextBus2?.Type"
-                    :color="busLoadTextColor(nextBus2?.Load)"
-                />
-            </p>
-            <!-- <p v-show="nextBus3" class="">
-                {{ nextBus3 && busUTCToMins(nextBus3.EstimatedArrival) }}
-            </p> -->
+                <p v-show="nextBus2" class="text-3xl">
+                    {{ nextBus2 && busUTCToMins(nextBus2.EstimatedArrival) }}
+                </p>
+                <div class="flex flex-col justify-center items-center">
+                    <IconsWheelChair
+                        v-if="nextBus2?.Feature === 'WAB'"
+                        :active="true"
+                        :size="size"
+                        :color="darkTheme ? '#ffcdb2' : '#6d6875'"
+                    />
+                    <CardBusTypeIcons
+                        :bus-type="nextBus2?.Type"
+                        :color="busLoadTextColor(nextBus2?.Load)"
+                    />
+                </div>
+            </div>
         </div>
-        <!-- </button> -->
-
-        <!-- <div class="flex flex-col justify-between overflow-hidden w-[100%]"> -->
-        <!-- <div class="grid grid-cols-3 justify-items-center"> -->
-        <!-- <p class="text-left opacity-0">{{ busCode }}</p> -->
-        <!-- <CardBusTypeIcons
-                    :bus-type="nextBus?.Type"
-                    :color="busLoadTextColor(nextBus?.Load)"
-                />
-                <CardBusTypeIcons
-                    :bus-type="nextBus2?.Type"
-                    :color="busLoadTextColor(nextBus2?.Load)"
-                /> -->
-        <!-- <CardBusTypeIcons
-                    :bus-type="nextBus3?.Type"
-                    :color="busLoadTextColor(nextBus3?.Load)"
-                /> -->
-        <!-- </div> -->
-        <!-- <p
-                    v-if="
-                        busOriginDestination.origin &&
-                        busOriginDestination.destination
-                    "
-                    class="text-[0.7rem]"
-                >
-                    {{ busOriginDestination.origin }} ->
-                    {{ busOriginDestination.destination }}
-                </p> -->
-        <!-- </div> -->
-
-        <!-- </div> -->
     </div>
 </template>
 
