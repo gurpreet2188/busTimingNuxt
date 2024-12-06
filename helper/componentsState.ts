@@ -9,17 +9,18 @@ export default function changeComponentState(
 ): COMPONENT_STATE {
   const componentsState: COMPONENT_STATE = subComponent
     ? {
-        [SubComponentStateKeys.LOCATION]: true,
-        [SubComponentStateKeys.FAVS]: false,
-        [SubComponentStateKeys.ROUTE]: false,
-      }
+      [SubComponentStateKeys.LOADING]: true,
+      [SubComponentStateKeys.LOCATION]: false,
+      [SubComponentStateKeys.FAVS]: false,
+      [SubComponentStateKeys.ROUTE]: false,
+    }
     : {
-        [ComponentsStateKeys.WELCOME]: false,
-        [ComponentsStateKeys.LOADBUSINFO]: false,
-        [ComponentsStateKeys.LOADING]: true,
-        [ComponentsStateKeys.LOCATIONLOADING]: false,
-        [ComponentsStateKeys.LOGIN]: false,
-      };
+      [ComponentsStateKeys.WELCOME]: false,
+      [ComponentsStateKeys.LOADBUSINFO]: false,
+      [ComponentsStateKeys.LOADING]: true,
+      [ComponentsStateKeys.LOCATIONLOADING]: false,
+      [ComponentsStateKeys.LOGIN]: false,
+    };
   for (const [k, v] of Object.entries(componentsState)) {
     if (k === componentKey) {
       componentsState[componentKey] = true;
