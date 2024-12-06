@@ -52,47 +52,11 @@ const subComponentState: Ref<COMPONENT_STATE> = useState(
     },
 );
 
-const getData = async (lat: number, lon: number) => {
-    const query: StopQuery = {
-        nearest: { lat, lon },
-    };
-    const res: StopQueryResponse = await $fetch(`/api/get-stop-info`, {
-        method: "POST",
-        body: query,
-    });
-    return res.stops!!;
-};
-
 const LOGGEDINSTATE = {
     LOADING: "loading",
     IN: "loggedIn",
     OUT: "loggedOut",
 };
-
-onMounted(() => {
-    watch(
-        colorMode,
-        () => {
-            if (colorMode.preference === "system") {
-                darkTheme.value = window.matchMedia(
-                    "(prefers-color-scheme: dark)",
-                ).matches;
-            } else {
-                darkTheme.value =
-                    colorMode.preference === "dark" ? true : false;
-            }
-        },
-        { deep: true },
-    );
-});
-
-watch(settings, () => {
-    if (settings.value) {
-        bodyOverFlow.value = "overflow:hidden";
-    } else {
-        bodyOverFlow.value = "overflow:auto";
-    }
-});
 
 useHead({
     meta: [
@@ -109,18 +73,85 @@ useHead({
     htmlAttrs: { class: "min-h-full bg-[#f8edeb] dark:bg-[#0d1b2a]" },
 });
 
+onBeforeUnmount(() => {
+    if (mainInterval.value) {
+        clearInterval(mainInterval.value as number);
+    }
+});
+
+onMounted(async () => {
+
+    watch(
+        colorMode,
+        () => {
+            if (colorMode.preference === "system") {
+                darkTheme.value = window.matchMedia(
+                    "(prefers-color-scheme: dark)",
+                ).matches;
+            } else {
+                darkTheme.value =
+                    colorMode.preference === "dark" ? true : false;
+            }
+        },
+        { deep: true },
+    );
+
+    darkTheme.value = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", (e) => {
+            darkTheme.value = e.matches;
+        });
+
+    window.addEventListener("blur", (e) => {
+        windowBlur.value = true;
+    });
+
+    window.addEventListener("focus", (e) => {
+        windowBlur.value = false;
+    });
+});
+
 watch(
     currentUser,
     () => {
-        // useBusRoute("10");
-        if (currentUser.value?.uid) {
+        if (currentUser.value) {
             busStore().initialize(currentUser.value?.uid);
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.LOCATIONLOADING,
+            );
+            isLoggedIn.value = LOGGEDINSTATE.IN;
         } else {
             busStore().loadFromLocaStorage();
+            isLoggedIn.value = LOGGEDINSTATE.OUT;
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.WELCOME,
+            );
         }
     },
     { deep: true },
 );
+
+watch(
+    isLoggedIn,
+    () => {
+        if (isLoggedIn.value === LOGGEDINSTATE.IN) {
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.LOCATIONLOADING,
+            );
+        }
+    },
+    { deep: true },
+);
+
+watch(settings, () => {
+    if (settings.value) {
+        bodyOverFlow.value = "overflow:hidden";
+    } else {
+        bodyOverFlow.value = "overflow:auto";
+    }
+});
+
 
 watchEffect(async () => {
     if (
@@ -155,22 +186,6 @@ watchEffect(async () => {
     }
 });
 
-onMounted(async () => {
-    darkTheme.value = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    window
-        .matchMedia("(prefers-color-scheme: dark)")
-        .addEventListener("change", (e) => {
-            darkTheme.value = e.matches;
-        });
-
-    window.addEventListener("blur", (e) => {
-        windowBlur.value = true;
-    });
-
-    window.addEventListener("focus", (e) => {
-        windowBlur.value = false;
-    });
-});
 
 watch(windowBlur, () => {
     const timeout = setTimeout(() => {
@@ -203,35 +218,9 @@ watchEffect(async () => {
     }
 });
 
-watch(
-    currentUser,
-    () => {
-        if (currentUser.value) {
-            componentsState.value = changeComponentState(
-                ComponentsStateKeys.LOCATIONLOADING,
-            );
-            isLoggedIn.value = LOGGEDINSTATE.IN;
-        } else {
-            isLoggedIn.value = LOGGEDINSTATE.OUT;
-            componentsState.value = changeComponentState(
-                ComponentsStateKeys.WELCOME,
-            );
-        }
-    },
-    { deep: true },
-);
 
-watch(
-    isLoggedIn,
-    () => {
-        if (isLoggedIn.value === LOGGEDINSTATE.IN) {
-            componentsState.value = changeComponentState(
-                ComponentsStateKeys.LOCATIONLOADING,
-            );
-        }
-    },
-    { deep: true },
-);
+
+
 
 // fetch services timing
 async function fetchBusInfo() {
@@ -288,11 +277,17 @@ watch(
     { deep: true },
 );
 
-onBeforeUnmount(() => {
-    if (mainInterval.value) {
-        clearInterval(mainInterval.value as number);
-    }
-});
+const getData = async (lat: number, lon: number) => {
+    const query: StopQuery = {
+        nearest: { lat, lon },
+    };
+    const res: StopQueryResponse = await $fetch(`/api/get-stop-info`, {
+        method: "POST",
+        body: query,
+    });
+    return res.stops!!;
+};
+
 </script>
 
 <template>
