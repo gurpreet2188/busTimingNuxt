@@ -11,6 +11,7 @@ import { ComponentsStateKeys, SubComponentStateKeys } from "./types/components";
 import { useGeolocation } from "@vueuse/core";
 import { busStore } from "./busFirebase/busStore";
 import changeComponentState from "./helper/componentsState";
+import fetchBusInfo from "./helper/fetchData";
 const isLoggedIn: Ref<string> = useState("isLoggedIn");
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
 const skipLogIn: Ref<boolean> = useState("skipLogIn", () => false);
@@ -160,14 +161,7 @@ watchEffect(async () => {
             if (stopData?.stop) {
                 tempArr[index] = stopData?.stop;
             }
-            const services = await $fetch("/api/bus-info", {
-                method: "POST",
-                body: { stopCode: favStopsFromLocal.value[index] },
-            });
-
-            if (services.Services) {
-                tempArr[index].Services = services.Services;
-            }
+            tempArr[index].Services = await fetchBusInfo(favStopsFromLocal.value[index])
         }
         favsStops.value = tempArr;
     }
@@ -204,22 +198,6 @@ watchEffect(async () => {
     }
 });
 
-// fetch services timing
-async function fetchBusInfo() {
-    if (stops.value.stops.length > 0) {
-        for (const stop of stops.value.stops) {
-            const data = await $fetch("/api/bus-info", {
-                method: "POST",
-                body: JSON.stringify({ stopCode: stop.BusStopCode }),
-            });
-            if (!data.error) {
-                if (stop.BusStopCode === data.BusStopCode) {
-                    stop.Services = data.Services!!;
-                }
-            }
-        }
-    }
-}
 
 // initial load
 watch(
@@ -228,9 +206,13 @@ watch(
         if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
             const loadData = async (lat: number, lon: number) => {
                 stops.value.stops = await getData(lat, lon);
-                fetchBusInfo();
+                for (const stop of stops.value.stops) {
+                    stop.Services = await fetchBusInfo(stop.BusStopCode!!)
+                }
                 mainInterval.value = setInterval(async () => {
-                    fetchBusInfo();
+                    for (const stop of stops.value.stops) {
+                    stop.Services = await fetchBusInfo(stop.BusStopCode!!)
+                }
                 }, 60000);
             };
 
@@ -274,59 +256,35 @@ const getData = async (lat: number, lon: number) => {
 
 <template>
     <div
-        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden bg-[#f8edeb] dark:bg-[#0d1b2a]"
-    >
+        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden bg-[#f8edeb] dark:bg-[#0d1b2a]">
         <Navigation />
 
         <Welcome v-if="componentsState[ComponentsStateKeys.WELCOME]" />
         <LazyAuth v-if="componentsState[ComponentsStateKeys.LOGIN]" />
-        <LoadingPage
-            v-if="componentsState[ComponentsStateKeys.LOADING]"
-            :darkTheme="darkTheme"
-            :onlyBar="true"
-            :location="location"
-            :error="error"
-        />
-        <LoadingPage
-            v-if="componentsState[ComponentsStateKeys.LOCATIONLOADING]"
-            :darkTheme="darkTheme"
-            :onlyBar="false"
-            :location="location"
-            :error="error"
-        />
-        <LazyLocBuses
-            v-if="
-                componentsState[ComponentsStateKeys.LOADBUSINFO] &&
-                subComponentState[SubComponentStateKeys.LOCATION] &&
-                stops.stops.length > 0
-            "
-            :stopsWithServices="stops"
-        />
-        <LazyFavsBusCards
-            v-if="
-                componentsState[ComponentsStateKeys.LOADBUSINFO] &&
-                subComponentState[SubComponentStateKeys.FAVS] &&
-                stops.stops.length > 0
-            "
-            :stopsWithServices="stops"
-        />
+        <LoadingPage v-if="componentsState[ComponentsStateKeys.LOADING]" :darkTheme="darkTheme" :onlyBar="true"
+            :location="location" :error="error" />
+        <LoadingPage v-if="componentsState[ComponentsStateKeys.LOCATIONLOADING]" :darkTheme="darkTheme" :onlyBar="false"
+            :location="location" :error="error" />
+        <LazyLocBuses v-if="
+            componentsState[ComponentsStateKeys.LOADBUSINFO] &&
+            subComponentState[SubComponentStateKeys.LOCATION] &&
+            stops.stops.length > 0
+        " :stopsWithServices="stops" />
+        <LazyFavsBusCards v-if="
+            componentsState[ComponentsStateKeys.LOADBUSINFO] &&
+            subComponentState[SubComponentStateKeys.FAVS] &&
+            stops.stops.length > 0
+        " :stopsWithServices="stops" />
 
-        <LazySearch
-            v-if="
-                componentsState[ComponentsStateKeys.LOADBUSINFO] &&
-                subComponentState[SubComponentStateKeys.ROUTE] &&
-                stops.stops.length > 0
-            "
-        />
-        <Footer
-            :class="`fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2 h-[5%]`"
-            v-if="componentsState[ComponentsStateKeys.LOADBUSINFO]"
-        />
+        <LazySearch v-if="
+            componentsState[ComponentsStateKeys.LOADBUSINFO] &&
+            subComponentState[SubComponentStateKeys.ROUTE] &&
+            stops.stops.length > 0
+        " />
+        <Footer :class="`fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2 h-[5%]`"
+            v-if="componentsState[ComponentsStateKeys.LOADBUSINFO]" />
     </div>
-    <div
-        v-if="settings"
-        class="absolute top-0 flex justify-center items-center z-10 h-[100vh] bg-black/50 w-[100%]"
-    >
+    <div v-if="settings" class="absolute top-0 flex justify-center items-center z-10 h-[100vh] bg-black/50 w-[100%]">
         <Settings />
     </div>
 </template>
