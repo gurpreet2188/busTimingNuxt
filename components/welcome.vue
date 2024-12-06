@@ -3,7 +3,7 @@ import type { COMPONENT_STATE } from "../types/components";
 import { ComponentsStateKeys } from "../types/components";
 import changeComponentState from "~/helper/componentsState";
 const darkTheme = useState("darkTheme");
-const skipLogIn = useState("skipLogIn");
+const skipWelcome = useState("skipWelcome");
 const componentsState: Ref<COMPONENT_STATE> = useState("component_state");
 const loginBtnClickHandle = () => {
     componentsState.value = changeComponentState(ComponentsStateKeys.LOGIN);
@@ -13,7 +13,8 @@ const locateBusStopClickHandle = () => {
     componentsState.value = changeComponentState(
         ComponentsStateKeys.LOCATIONLOADING,
     );
-    skipLogIn.value = true;
+    skipWelcome.value = true;
+    localStorage.setItem('skipWelcome', JSON.stringify(true))
 };
 </script>
 

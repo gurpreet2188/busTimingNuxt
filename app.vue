@@ -12,9 +12,11 @@ import { useGeolocation } from "@vueuse/core";
 import { busStore } from "./busFirebase/busStore";
 import changeComponentState from "./helper/componentsState";
 import fetchBusInfo from "./helper/fetchData";
+
+const skipWelcome: Ref<boolean> = useState('skipWelcome', () => false)
 const isLoggedIn: Ref<string> = useState("isLoggedIn");
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
-const skipLogIn: Ref<boolean> = useState("skipLogIn", () => false);
+// const skipLogIn: Ref<boolean> = useState("skipLogIn", () => false);
 const settings: Ref<boolean> = useState("settings", () => false);
 const currentUser = useCurrentUser();
 const favsStops: Ref<Stop[] | []> = useState("favsStops", () => []);
@@ -79,8 +81,10 @@ onBeforeUnmount(() => {
         clearInterval(mainInterval.value as number);
     }
 });
-
+ 
 onMounted(async () => {
+
+    skipWelcome.value = JSON.parse(localStorage.getItem('skipWelcome')!!)
 
     watch(
         colorMode,
@@ -98,6 +102,7 @@ onMounted(async () => {
     );
 
     darkTheme.value = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
     window
         .matchMedia("(prefers-color-scheme: dark)")
         .addEventListener("change", (e) => {
@@ -114,7 +119,7 @@ onMounted(async () => {
 });
 
 watch(
-    currentUser,
+    [currentUser],
     () => {
         if (currentUser.value) {
             busStore().initialize(currentUser.value?.uid);
@@ -122,12 +127,19 @@ watch(
                 ComponentsStateKeys.LOCATIONLOADING,
             );
             isLoggedIn.value = LOGGEDINSTATE.IN;
+        } else if (skipWelcome.value) {
+            busStore().loadFromLocaStorage();
+            isLoggedIn.value = LOGGEDINSTATE.OUT;
+            componentsState.value = changeComponentState(
+                ComponentsStateKeys.LOCATIONLOADING,
+            );
         } else {
             busStore().loadFromLocaStorage();
             isLoggedIn.value = LOGGEDINSTATE.OUT;
             componentsState.value = changeComponentState(
                 ComponentsStateKeys.WELCOME,
             );
+            
         }
     },
     { deep: true },
@@ -201,7 +213,7 @@ watchEffect(async () => {
 
 // initial load
 watch(
-    [componentsState, location],
+    [componentsState, location, skipWelcome],
     async () => {
         if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
             const loadData = async (lat: number, lon: number) => {
@@ -211,14 +223,14 @@ watch(
                 }
                 mainInterval.value = setInterval(async () => {
                     for (const stop of stops.value.stops) {
-                    stop.Services = await fetchBusInfo(stop.BusStopCode!!)
-                }
+                        stop.Services = await fetchBusInfo(stop.BusStopCode!!)
+                    }
                 }, 60000);
             };
 
             if (
                 location.value &&
-                (isLoggedIn.value === LOGGEDINSTATE.IN || skipLogIn.value)
+                (isLoggedIn.value === LOGGEDINSTATE.IN || skipWelcome.value)
             ) {
                 // sample loc
                 // loadData(1.29684825487647, 103.85253591654006);
@@ -267,19 +279,16 @@ const getData = async (lat: number, lon: number) => {
             :location="location" :error="error" />
         <LazyLocBuses v-if="
             componentsState[ComponentsStateKeys.LOADBUSINFO] &&
-            subComponentState[SubComponentStateKeys.LOCATION] &&
-            stops.stops.length > 0
+            subComponentState[SubComponentStateKeys.LOCATION] 
         " :stopsWithServices="stops" />
         <LazyFavsBusCards v-if="
             componentsState[ComponentsStateKeys.LOADBUSINFO] &&
-            subComponentState[SubComponentStateKeys.FAVS] &&
-            stops.stops.length > 0
+            subComponentState[SubComponentStateKeys.FAVS]
         " :stopsWithServices="stops" />
 
         <LazySearch v-if="
             componentsState[ComponentsStateKeys.LOADBUSINFO] &&
-            subComponentState[SubComponentStateKeys.ROUTE] &&
-            stops.stops.length > 0
+            subComponentState[SubComponentStateKeys.ROUTE] 
         " />
         <Footer :class="`fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2 h-[5%]`"
             v-if="componentsState[ComponentsStateKeys.LOADBUSINFO]" />
