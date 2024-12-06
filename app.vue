@@ -132,18 +132,6 @@ watch(
     { deep: true },
 );
 
-watch(
-    isLoggedIn,
-    () => {
-        if (isLoggedIn.value === LOGGEDINSTATE.IN) {
-            componentsState.value = changeComponentState(
-                ComponentsStateKeys.LOCATIONLOADING,
-            );
-        }
-    },
-    { deep: true },
-);
-
 watch(settings, () => {
     if (settings.value) {
         bodyOverFlow.value = "overflow:hidden";
@@ -151,7 +139,6 @@ watch(settings, () => {
         bodyOverFlow.value = "overflow:auto";
     }
 });
-
 
 watchEffect(async () => {
     if (
@@ -186,7 +173,6 @@ watchEffect(async () => {
     }
 });
 
-
 watch(windowBlur, () => {
     const timeout = setTimeout(() => {
         // if (favsInterval.value && windowBlur.value) {
@@ -217,10 +203,6 @@ watchEffect(async () => {
         };
     }
 });
-
-
-
-
 
 // fetch services timing
 async function fetchBusInfo() {

@@ -51,6 +51,7 @@ const handleGooglePopupLogin = () => {
             if (d.user.uid) {
                 busStore().initialize(d.user.uid);
                 isLoggedIn.value = LOGGEDINSTATE.IN;
+                componentsState.value = changeComponentState(ComponentsStateKeys.LOCATIONLOADING);
             }
         })
         .catch((err) => {
