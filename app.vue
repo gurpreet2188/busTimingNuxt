@@ -13,12 +13,15 @@ import { busStore } from "./busFirebase/busStore";
 import changeComponentState from "./helper/componentsState";
 import fetchBusInfo from "./helper/fetchData";
 
-const skipWelcome: Ref<boolean> = useState('skipWelcome', () => false)
+const skipWelcome: Ref<boolean> = useState("skipWelcome", () => false);
 const isLoggedIn: Ref<string> = useState("isLoggedIn");
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
-const isLocationLoading: Ref<boolean> = useState("isLocationLoading", () => false)
-const located: Ref<boolean> = useState("located", () => false)
-const locationError: Ref<string> = useState("locationError", () => "")
+const isLocationLoading: Ref<boolean> = useState(
+    "isLocationLoading",
+    () => false,
+);
+const located: Ref<boolean> = useState("located", () => false);
+const locationError: Ref<string> = useState("locationError", () => "");
 const settings: Ref<boolean> = useState("settings", () => false);
 const currentUser = useCurrentUser();
 const favsStops: Ref<Stop[] | []> = useState("favsStops", () => []);
@@ -78,9 +81,8 @@ useHead({
 });
 
 onMounted(async () => {
-
-    skipWelcome.value = JSON.parse(localStorage.getItem('skipWelcome')!!)
-
+    skipWelcome.value = JSON.parse(localStorage.getItem("skipWelcome")!!);
+    console.log(coords.value);
     watch(
         colorMode,
         () => {
@@ -142,7 +144,6 @@ watch(
             componentsState.value = changeComponentState(
                 ComponentsStateKeys.WELCOME,
             );
-
         }
     },
     { deep: true },
@@ -168,7 +169,9 @@ watchEffect(async () => {
             if (stopData?.stop) {
                 tempArr[index] = stopData?.stop;
             }
-            tempArr[index].Services = await fetchBusInfo(favStopsFromLocal.value[index])
+            tempArr[index].Services = await fetchBusInfo(
+                favStopsFromLocal.value[index],
+            );
         }
         favsStops.value = tempArr;
     }
@@ -178,29 +181,33 @@ watchEffect(async () => {
 watch(
     [componentsState, coords],
     async () => {
-        isLocationLoading.value = true
         if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
-            subComponentState.value = changeComponentState(SubComponentStateKeys.LOCATION, true)
+            isLocationLoading.value = true;
+            subComponentState.value = changeComponentState(
+                SubComponentStateKeys.LOCATION,
+                true,
+            );
             if (
                 coords.value.latitude !== Infinity &&
                 coords.value.longitude !== Infinity &&
                 (isLoggedIn.value === LOGGEDINSTATE.IN || skipWelcome.value)
             ) {
-                isLocationLoading.value = false
-                located.value = true
-                pause()
+                isLocationLoading.value = false;
+                located.value = true;
+                pause();
                 // sample loc
                 // stops.value.stops = await getData(1.430786, 103.877458);
-                stops.value.stops = await getData(coords.value.latitude, coords.value.longitude);
+                stops.value.stops = await getData(
+                    coords.value.latitude,
+                    coords.value.longitude,
+                );
                 for (const stop of stops.value.stops) {
-                    stop.Services = await fetchBusInfo(stop.BusStopCode!!)
+                    stop.Services = await fetchBusInfo(stop.BusStopCode!!);
                 }
-                
             } else if (error.value) {
-                isLocationLoading.value = false
-                locationError.value = error.value.message
+                isLocationLoading.value = false;
+                locationError.value = error.value.message;
             }
-
         }
     },
     { deep: true },
@@ -216,35 +223,52 @@ const getData = async (lat: number, lon: number) => {
     });
     return res.stops!!;
 };
-
 </script>
 
 <template>
     <div
-        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden bg-[#f8edeb] dark:bg-[#0d1b2a]">
+        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden bg-[#f8edeb] dark:bg-[#0d1b2a]"
+    >
         <Navigation />
 
         <Welcome v-if="componentsState[ComponentsStateKeys.WELCOME]" />
         <LazyAuth v-if="componentsState[ComponentsStateKeys.LOGIN]" />
-        <LoadingPage v-if="componentsState[ComponentsStateKeys.LOADING]" :darkTheme="darkTheme" :onlyBar="true"
-            :location="false" />
-        <LazyLocBuses v-if="
-            componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
-            subComponentState[SubComponentStateKeys.LOCATION]
-        " :stopsWithServices="stops" />
-        <LazyFavsBusCards v-if="
-            componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
-            subComponentState[SubComponentStateKeys.FAVS]
-        " :stopsWithServices="stops" />
+        <LoadingPage
+            v-if="componentsState[ComponentsStateKeys.LOADING]"
+            :darkTheme="darkTheme"
+            :onlyBar="true"
+            :location="false"
+        />
+        <LazyLocBuses
+            v-if="
+                componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
+                subComponentState[SubComponentStateKeys.LOCATION]
+            "
+            :stopsWithServices="stops"
+        />
+        <LazyFavsBusCards
+            v-if="
+                componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
+                subComponentState[SubComponentStateKeys.FAVS]
+            "
+            :stopsWithServices="stops"
+        />
 
-        <LazySearch v-if="
-            componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
-            subComponentState[SubComponentStateKeys.ROUTE]
-        " />
-        <Footer :class="`fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2 h-[5%]`"
-            v-if="componentsState[ComponentsStateKeys.LOCATIONLOADING]" />
+        <LazySearch
+            v-if="
+                componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
+                subComponentState[SubComponentStateKeys.ROUTE]
+            "
+        />
+        <Footer
+            :class="`fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2 h-[5%]`"
+            v-if="componentsState[ComponentsStateKeys.LOCATIONLOADING]"
+        />
     </div>
-    <div v-if="settings" class="absolute top-0 flex justify-center items-center z-10 h-[100vh] bg-black/50 w-[100%]">
+    <div
+        v-if="settings"
+        class="absolute top-0 flex justify-center items-center z-10 h-[100vh] bg-black/50 w-[100%]"
+    >
         <Settings />
     </div>
 </template>
