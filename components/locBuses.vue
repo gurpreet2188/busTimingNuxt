@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Root as BUS_STOP_TYPE } from "../types/stops";
+import type { Stop } from "../types/stops";
 import { useCheckIfFavStop } from "#build/imports";
-defineProps<{ stopsWithServices: BUS_STOP_TYPE }>();
+const props = defineProps<{ stopsWithServices: Stop[] | null }>();
 const isLocationLoading: Ref<boolean> = useState("isLocationLoading");
 const locationError: Ref<string> = useState("locationError");
 const located: Ref<boolean> = useState("located");
@@ -10,23 +10,24 @@ const isStopsError: Ref<boolean> = useState("isStopsError", () => false);
 const darkTheme: Ref<boolean> = useState("darkTheme");
 
 const msg = computed((): string => {
+    let m = "";
     if (isLocationLoading.value) {
-        return "Finding nearest Bus Stops...";
+        m = "Finding nearest Bus Stops...";
     } else if (locationError.value) {
-        return locationError.value;
-    } else if (located.value) {
+        m = locationError.value;
+    } else if (located.value && props.stopsWithServices!!.length === 0) {
         isStopsError.value = true;
-        return "No stops found within 1km range.";
+        m = "No stops found within 1km range.";
     }
-    return "";
+    return m;
 });
 </script>
 
 <template>
     <div class="flex flex-col justify-start items-center gap-8 w-full">
         <BusCard
-            v-if="stopsWithServices.stops.length > 0"
-            v-for="(stop, index) in stopsWithServices.stops"
+            v-if="stopsWithServices!!.length > 0"
+            v-for="(stop, index) in stopsWithServices!!"
             :fav="useCheckIfFavStop(stop.BusStopCode!!, favStopsFromLocal!)"
             :stop-name="stop.Description"
             :stop-code="stop.BusStopCode"

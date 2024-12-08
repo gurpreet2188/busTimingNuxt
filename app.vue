@@ -27,9 +27,7 @@ const currentUser = useCurrentUser();
 const favsStops: Ref<Stop[] | []> = useState("favsStops", () => []);
 const favStopsFromLocal: Ref<string[]> = useState("favs", () => []);
 const filterFavs: Ref<Boolean> = useState("filterFavs", () => false);
-const stops: Ref<BUS_STOP_TYPES> = useState("locstops", () => {
-    return { stops: [] };
-});
+const stops: Ref<Stop[] | null> = useState("locstops", () => null);
 const darkTheme: Ref<boolean> = useState("darkTheme", () => false);
 const windowBlur: Ref<boolean> = useState("windowBlur", () => false);
 const bodyOverFlow: Ref<string> = ref("overflow:auto");
@@ -196,12 +194,13 @@ watch(
                 located.value = true;
                 pause();
                 // sample loc
-                // stops.value.stops = await getData(1.430786, 103.877458);
-                stops.value.stops = await getData(
+                // stops.value = { stops: await getData(1.430786, 103.877458) };
+                // stops.value = await getData(1.40276, 103.890896);
+                stops.value = await getData(
                     coords.value.latitude,
                     coords.value.longitude,
                 );
-                for (const stop of stops.value.stops) {
+                for (const stop of stops.value!!) {
                     stop.Services = await fetchBusInfo(stop.BusStopCode!!);
                 }
             } else if (error.value) {
