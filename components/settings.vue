@@ -52,49 +52,32 @@ watch(authMessage, () => {
 const handleBtnClose = () => {
     settings.value = false;
 };
-
-// watch(
-//     darkModeState,
-//     () => {
-//         if (darkModeState.value === "light") {
-//             darkTheme.value = false;
-//             mode.preference = "light";
-//         } else if (darkModeState.value === "dark") {
-//             darkTheme.value = true;
-//             mode.preference = "dark";
-//         }
-//     },
-//     { immediate: false, deep: true },
-// );
 </script>
 
 <template>
     <div
-        class="card-common items-start w-[90%] md:w-[20%] shadow-xl bg-[#ffe5d9] dark:bg-[#1b263b]"
+        class="card-common items-start w-[90%] md:w-[20%] shadow-xl bg-bta-elevated-light dark:bg-bta-elevated-dark"
     >
         <div
-            class="flex justify-between items-center w-[100%] text-[#6d6875] dark:text-[#ffcdb2]"
+            class="flex justify-between items-center w-[100%] text-bta-inverted dark:text-bta-dark"
         >
             <h2 class="text-2xl tracking-wider">Settings</h2>
             <button @click="handleBtnClose">
                 <IconsClose
-                    :color="darkTheme ? '#ffcdb2' : '#6d6875'"
+                    :colorClass="'fill-bta-inverted stroke-bta-inverted dark:fill-bta-dark dark:stroke-bta-dark'"
+                    :active="true"
                     :size="{ w: '20px', h: '20px' }"
                 />
             </button>
         </div>
 
         <div
-            class="flex flex-col justify-center items-start gap-4 w-full text-[#212121] dark:text-[#f1f1f1]"
+            class="flex flex-col justify-center items-start gap-4 w-full text-bta-inverted dark:text-bta-dark"
         >
             <div
                 class="flex flex-row justify-start items-center gap-2 border-b-2 border-b-black/10 dark:border-b-white/10 w-full"
             >
-                <IconsAccount
-                    :active="true"
-                    :color="darkTheme ? '#f1f1f1' : '#212121'"
-                    :size="{ w: '24px', h: '24px' }"
-                />
+                <!-- <IconsAccount :active="true" :size="{ w: '24px', h: '24px' }" /> -->
                 <p class="text-lg">Profile</p>
             </div>
             <div
@@ -112,7 +95,7 @@ const handleBtnClose = () => {
             <p v-if="authMessage">Loggin Out...</p>
         </div>
         <div
-            class="flex flex-col justify-center items-start gap-4 w-full text-[#212121] dark:text-[#f1f1f1]"
+            class="flex flex-col justify-center items-start gap-4 w-full text-bta-inverted dark:text-bta-dark"
         >
             <div
                 class="flex flex-row justify-start items-center gap-2 border-b-2 border-b-black/10 dark:border-b-white/10 w-full"

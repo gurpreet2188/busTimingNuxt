@@ -12,10 +12,38 @@ module.exports = {
   ],
   theme: {
     extend: {
-      gridTemplateColumns: {
-        "bus-info": "1fr 3fr",
+      fill: {
+        bta: {
+          light: "#5f7470",
+          dark: "#508991",
+          inverted: "#e0e2db",
+          "inverted-white": "#ffffff",
+          "inverted-black": "#000000",
+        },
+      },
+      stroke: {
+        bta: {
+          light: "#5f7470",
+          dark: "#508991",
+          inverted: "#e0e2db",
+          "inverted-white": "#ffffff",
+          "inverted-black": "#000000",
+        },
+      },
+      backgroundColor: {
+        bta: { light: "#e0e2db", dark: "#0d1b2a" },
+        "bta-elevated": { light: "#5f7470", dark: "#172a3a" },
+      },
+      textColor: {
+        bta: { light: "#5f7470", dark: "#508991", inverted: "#e0e2db" },
       },
     },
   },
   plugins: [],
+  safelist: [
+    { pattern: /fill-bta(light|dark|inverted|inverted-white|inverted-black)/ },
+    {
+      pattern: /stroke-bta(light|dark|inverted|inverted-white|inverted-black)/,
+    },
+  ],
 };

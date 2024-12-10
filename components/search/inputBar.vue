@@ -28,7 +28,7 @@ const value = computed({
         <div class="flex flex-row justify-start items-center gap-2 w-full">
             <div class="flex flex-col justify-center items-start gap-2 w-full">
                 <input
-                    class="text-black dark:text-white p-2 rounded-md bg-[#ffe5d9] dark:bg-[#1b263b]"
+                    class="text-[#e0e2db] dark:text-[#172a3a] placeholder-[#e0e2db]/50 dark:placeholder-[#172a3a]/80 p-2 rounded-md bg-[#5f7470] dark:bg-[#508991]"
                     name="search"
                     placeholder="Bus Number or Stop Code..."
                     v-model.trim="value.text"

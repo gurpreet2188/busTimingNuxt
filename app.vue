@@ -75,7 +75,7 @@ useHead({
         class: "min-h-full",
         style: bodyOverFlow,
     },
-    htmlAttrs: { class: "min-h-full bg-[#f8edeb] dark:bg-[#0d1b2a]" },
+    htmlAttrs: { class: "min-h-full bg-bta-light dark:bg-bta-dark" },
 });
 
 onMounted(async () => {
@@ -194,7 +194,7 @@ watch(
                 located.value = true;
                 pause();
                 // sample loc
-                // stops.value = { stops: await getData(1.430786, 103.877458) };
+                // stops.value = await getData(1.430786, 103.877458);
                 // stops.value = await getData(1.40276, 103.890896);
                 stops.value = await getData(
                     coords.value.latitude,
@@ -226,9 +226,17 @@ const getData = async (lat: number, lon: number) => {
 
 <template>
     <div
-        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden bg-[#f8edeb] dark:bg-[#0d1b2a]"
+        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden"
     >
-        <Navigation />
+        <Navigation
+            :title="
+                subComponentState[SubComponentStateKeys.LOCATION]
+                    ? 'Near By Stops'
+                    : subComponentState[SubComponentStateKeys.FAVS]
+                      ? 'Saved Stops'
+                      : 'Search'
+            "
+        />
 
         <Welcome v-if="componentsState[ComponentsStateKeys.WELCOME]" />
         <LazyAuth v-if="componentsState[ComponentsStateKeys.LOGIN]" />

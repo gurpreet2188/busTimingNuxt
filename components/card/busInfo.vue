@@ -93,53 +93,71 @@ const busLoadTextColor = (load: string | undefined) => {
         }
     }
 };
+
+const busStatusIconColor =
+    "fill-bta-inverted-white dark:fill-bta-inverted-black";
 </script>
 
 <template>
     <div
-        class="flex flex-col justify-center items-start gap-2 w-full text-[#6d6875] dark:text-[#ffcdb2]"
+        class="flex flex-col justify-center items-start gap-2 p-2 w-full text-bta-light dark:text-bta-dark"
     >
-        <div class="flex-[70%] grid grid-cols-3 gap-8 text-left text-xl w-full">
-            <p v-show="nextBus" class="btn-common text-2xl">
+        <div
+            class="flex-[70%] grid grid-cols-3 place-items-center gap-8 text-left text-xl w-full"
+        >
+            <p class="mr-auto ml-2 text-3xl text-left font-extralight">
                 {{ busCode }}
             </p>
 
             <div
-                class="mr-2 ml-auto flex flex-row justify-center items-center gap-2"
+                class="mr-1 ml-auto flex flex-row justify-center items-center gap-2"
             >
-                <p v-show="nextBus" class="text-3xl">
-                    {{ nextBus && busUTCToMins(nextBus.EstimatedArrival) }}
+                <p class="text-3xl font-light">
+                    {{
+                        nextBus?.EstimatedArrival.length!! > 0
+                            ? busUTCToMins(nextBus!!.EstimatedArrival)
+                            : "--"
+                    }}
                 </p>
-                <div class="flex flex-col justify-center items-center">
+                <div
+                    :style="{
+                        backgroundColor: busLoadTextColor(nextBus?.Load),
+                    }"
+                    class="flex flex-col justify-center items-center p-[2px] rounded-md"
+                >
                     <IconsWheelChair
                         v-if="nextBus?.Feature === 'WAB'"
                         :active="true"
                         :size="size"
-                        :color="darkTheme ? '#ffcdb2' : '#6d6875'"
+                        :colorClass="busStatusIconColor"
                     />
-                    <CardBusTypeIcons
-                        :bus-type="nextBus?.Type"
-                        :color="busLoadTextColor(nextBus?.Load)"
-                    />
+                    <CardBusTypeIcons :busType="nextBus?.Type!!" />
                 </div>
             </div>
             <div
-                class="mr-2 ml-auto flex flex-row justify-center items-center gap-2"
+                class="mr-1 ml-auto flex flex-row justify-center items-center gap-2"
             >
-                <p v-show="nextBus2" class="text-3xl">
-                    {{ nextBus2 && busUTCToMins(nextBus2.EstimatedArrival) }}
+                <p class="text-3xl font-light">
+                    {{
+                        nextBus2?.EstimatedArrival.length!! > 0
+                            ? busUTCToMins(nextBus2!!.EstimatedArrival)
+                            : "--"
+                    }}
                 </p>
-                <div class="flex flex-col justify-center items-center">
+                <div
+                    v-show="nextBus2?.EstimatedArrival.length!! > 0"
+                    :style="{
+                        backgroundColor: busLoadTextColor(nextBus2?.Load),
+                    }"
+                    class="flex flex-col justify-center items-center p-[2px] rounded-md"
+                >
                     <IconsWheelChair
-                        v-if="nextBus2?.Feature === 'WAB'"
+                        v-if="nextBus?.Feature === 'WAB'"
                         :active="true"
                         :size="size"
-                        :color="darkTheme ? '#ffcdb2' : '#6d6875'"
+                        :colorClass="busStatusIconColor"
                     />
-                    <CardBusTypeIcons
-                        :bus-type="nextBus2?.Type"
-                        :color="busLoadTextColor(nextBus2?.Load)"
-                    />
+                    <CardBusTypeIcons :busType="nextBus2?.Type!!" />
                 </div>
             </div>
         </div>

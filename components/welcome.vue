@@ -14,16 +14,18 @@ const locateBusStopClickHandle = () => {
         ComponentsStateKeys.LOCATIONLOADING,
     );
     skipWelcome.value = true;
-    localStorage.setItem('skipWelcome', JSON.stringify(true))
+    localStorage.setItem("skipWelcome", JSON.stringify(true));
 };
 </script>
 
 <template>
     <div
-        class="flex flex-col justify-center items-center gap-[2rem] w-[100%] text-[#6d6875] dark:text-[#ffcdb2] h-full"
+        class="flex flex-col justify-center items-center gap-[2rem] w-[100%] text-bta-inverted dark:text-bta-dark h-full"
     >
         <!-- title -->
-        <div class="card-common w-[100%]">
+        <div
+            class="flex flex-col justify-center items-center gap-8 rounded-md p-4 bg-bta-elevated-light dark:bg-bta-elevated-dark w-[100%]"
+        >
             <!-- info -->
             <p class="text-center text-xl">
                 Locate nearest Bus Stops and get real-time Bus arrival timings.
@@ -31,17 +33,17 @@ const locateBusStopClickHandle = () => {
             <!-- Account -->
             <div class="flex flex-col justify-center items-center gap-[0.5rem]">
                 <button @click="loginBtnClickHandle" class="btn-common">
-                    <IconsAccount
+                    <!-- <IconsAccount
                         :color="darkTheme ? '#ffcdb2' : '#7f5539'"
                         :size="{ w: '24px', h: '24px' }"
-                    />
+                    /> -->
                     Login / Register
                 </button>
                 <p class="inline-block text-center">
                     Sync your
                     <span class="inline-block"
                         ><IconsFavs
-                            :color="darkTheme ? '#ffcdb2' : '#6d6875'"
+                            :inverted="true"
                             :active="true"
                             :size="{ w: '16px', h: '16px' }"
                     /></span>

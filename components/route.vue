@@ -11,14 +11,14 @@ const handleShowBusRoute = () => {
 <template>
     <div class="flex flex-col justify-center items-start gap-4 w-full">
         <div
-            class="flex flex-row justify-between items-center p-2 w-full rounded-md bg-[#ffe5d9] dark:bg-[#1b263b]"
+            class="flex flex-row justify-between items-center p-2 w-full rounded-md bg-bta-elevated-light dark:bg-bta-elevated-dark"
         >
-            <h2 class="text-xl text-[#7f5539] dark:text-[#ffcdb2]">
+            <h2 class="text-xl text-bta-inverted dark:text-bta-dark">
                 Route for Service: {{ props.title }}
             </h2>
             <button @click="handleShowBusRoute">
                 <IconsClose
-                    :color="darkTheme ? '#ffcdb2' : '#7f5539'"
+                    :colorClass="'stroke-bta-inverted dark:stroke-bta-dark'"
                     :active="true"
                     :size="{ w: '22px', h: '22px' }"
                 />

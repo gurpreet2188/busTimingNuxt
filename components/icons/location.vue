@@ -6,7 +6,18 @@ type SIZE = {
     h: string;
 };
 
-defineProps({ color: String, active: Boolean, size: Object as PropType<SIZE> });
+const props = defineProps<{
+    inverted?: boolean;
+    active: boolean;
+    size: SIZE;
+}>();
+
+const color = (): string => {
+    if (props.inverted) {
+        return "fill-bta-inverted stroke-bta-inverted dark:fill-bta-dark dark:stroke-bta-dark";
+    }
+    return "fill-bta-light stroke-bta-light dark:fill-bta-dark dark:stroke-bta-dark";
+};
 </script>
 
 <template>
@@ -17,9 +28,8 @@ defineProps({ color: String, active: Boolean, size: Object as PropType<SIZE> });
         :height="size?.h"
     >
         <path
-            :fill="color"
+            :class="color()"
             :fill-opacity="active ? 1 : 0"
-            :stroke="color"
             stroke-width="2px"
             d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"
         />

@@ -17,7 +17,7 @@ const clickHandle = (component: string) => {
 
 <template>
     <div
-        class="flex justify-center items-center w-[100%] h-[100%] lg:shadow-lg lg:rounded-lg bg-[#f8edeb]/50 dark:bg-[#0d1b2a]/50 backdrop-blur-md"
+        class="flex justify-center items-center w-[100%] h-[100%] lg:shadow-lg lg:rounded-lg bg-[#e0e2db]/50 dark:bg-[#0d1b2a]/50 backdrop-blur-md"
     >
         <div class="flex justify-center items-center w-[50%]">
             <button
@@ -28,7 +28,7 @@ const clickHandle = (component: string) => {
                 "
             >
                 <IconsLocation
-                    :color="darkTheme ? '#ffcdb2' : '#7f5539'"
+                    :color="darkTheme ? '#508991' : '#5f7470'"
                     :size="size"
                     :active="subComponentsState[SubComponentStateKeys.LOCATION]"
                 />
@@ -43,7 +43,6 @@ const clickHandle = (component: string) => {
                 "
             >
                 <IconsFavs
-                    :color="darkTheme ? '#ffcdb2' : '#7f5539'"
                     :size="size"
                     :active="subComponentsState[SubComponentStateKeys.FAVS]"
                 />
@@ -58,7 +57,7 @@ const clickHandle = (component: string) => {
                 "
             >
                 <IconsRoute
-                    :color="darkTheme ? '#ffcdb2' : '#7f5539'"
+                    :color="darkTheme ? '#508991' : '#5f7470'"
                     :size="size"
                     :active="subComponentsState[SubComponentStateKeys.ROUTE]"
                 />

@@ -79,7 +79,7 @@ watch(hideSearch, () => {
                 </p>
                 <div class="flex flex-row flex-wrap gap-2 w-full">
                     <button
-                        class="text-black dark:text-white p-2 rounded-md bg-[#ffe5d9] dark:bg-[#1b263b]"
+                        class="text-[#e0e2db] dark:text-[#172a3a] p-2 rounded-md bg-[#5f7470] dark:bg-[#508991]"
                         v-for="result in searchResult"
                         @click="() => handleClick(result)"
                     >

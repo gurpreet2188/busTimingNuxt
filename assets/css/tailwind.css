@@ -30,7 +30,7 @@ body,
 
 @layer components {
     .btn-common {
-        @apply bg-[#ffd7ba]  p-2 rounded-md text-[#7f5539] dark:text-[#ffcdb2] text-xl shadow-sm border border-[#ffcdb2]/0 dark:border-[#ffcdb2] dark:bg-[#1b263b] text-center flex flex-row justify-center items-center gap-2;
+        @apply flex flex-row justify-center items-center text-xl text-center font-bold rounded-md text-bta-inverted dark:text-bta-dark gap-2;
     }
 
     .card-common {
