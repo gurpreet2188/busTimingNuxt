@@ -9,8 +9,7 @@ type SIZE = {
 const props = defineProps<{
     size: SIZE;
 }>();
-const color =
-    "fill-bta-light stroke-bta-light dark:fill-bta-dark dark:stroke-bta-dark";
+const color = "fill-bta-light dark:fill-bta-dark";
 </script>
 
 <template>
@@ -23,7 +22,7 @@ const color =
         <path
             :class="color"
             :fill-opacity="1"
-            d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"
+            d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14"
         />
     </svg>
 </template>

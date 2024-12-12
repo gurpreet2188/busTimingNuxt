@@ -28,9 +28,9 @@ const value = computed({
         <div class="flex flex-row justify-start items-center gap-2 w-full">
             <div class="flex flex-col justify-center items-start gap-2 w-full">
                 <input
-                    class="text-[#e0e2db] dark:text-[#172a3a] placeholder-[#e0e2db]/50 dark:placeholder-[#172a3a]/80 p-2 rounded-md bg-[#5f7470] dark:bg-[#508991]"
+                    class="text-bta-light dark:text-bta-dark text-3xl p-2 bg-transparent border-b-2 border-bta-light dark:border-bta-dark w-[95%]"
                     name="search"
-                    placeholder="Bus Number or Stop Code..."
+                    placeholder="..."
                     v-model.trim="value.text"
                 />
                 <label for="search" class="text-black dark:text-white text-xs">
@@ -38,10 +38,10 @@ const value = computed({
                 >
             </div>
             <button
-                class="text-black dark:text-white self-start p-2 rounded-md dark:bg-[#1b263b]"
+                class="text-black dark:text-white self-start p-2 px-4 rounded-md"
                 type="submit"
             >
-                Submit
+                <IconsSearch :size="{ w: '42px', h: '42px' }" />
             </button>
         </div>
     </form>

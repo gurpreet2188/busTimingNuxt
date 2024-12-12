@@ -105,7 +105,7 @@ const busStatusIconColor =
         <div
             class="flex-[70%] grid grid-cols-3 place-items-center gap-8 text-left text-xl w-full"
         >
-            <p class="mr-auto ml-2 text-3xl text-left font-extralight">
+            <p class="mr-auto ml-2 text-3xl text-left font-light">
                 {{ busCode }}
             </p>
 

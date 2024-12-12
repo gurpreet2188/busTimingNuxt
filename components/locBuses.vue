@@ -15,7 +15,11 @@ const msg = computed((): string => {
         m = "Finding nearest Bus Stops...";
     } else if (locationError.value) {
         m = locationError.value;
-    } else if (located.value && props.stopsWithServices!!.length === 0) {
+    } else if (
+        located.value &&
+        props.stopsWithServices &&
+        props.stopsWithServices!!.length === 0
+    ) {
         isStopsError.value = true;
         m = "No stops found within 1km range.";
     }
@@ -26,7 +30,7 @@ const msg = computed((): string => {
 <template>
     <div class="flex flex-col justify-start items-center gap-8 w-full">
         <BusCard
-            v-if="stopsWithServices!!.length > 0"
+            v-if="stopsWithServices && stopsWithServices!!.length!! > 0"
             v-for="(stop, index) in stopsWithServices!!"
             :fav="useCheckIfFavStop(stop.BusStopCode!!, favStopsFromLocal!)"
             :stop-name="stop.Description"
@@ -40,11 +44,19 @@ const msg = computed((): string => {
         />
 
         <LoadingPage
-            v-else
+            v-else-if="locationError.length > 0 || isStopsError"
+            :showBarOnly="false"
             :darkTheme="darkTheme"
-            :onlyBar="false"
             :location="isLocationLoading"
             :error="locationError.length > 0 || isStopsError"
+            :msg="msg"
+        />
+
+        <LoadingPage
+            v-else
+            :showBarOnly="true"
+            :location="false"
+            :error="false"
             :msg="msg"
         />
     </div>

@@ -33,9 +33,13 @@ module.exports = {
       backgroundColor: {
         bta: { light: "#e0e2db", dark: "#0d1b2a" },
         "bta-elevated": { light: "#5f7470", dark: "#172a3a" },
+        "bta-loading-bar": { light: "#5f7470", dark: "#508991" },
       },
       textColor: {
         bta: { light: "#5f7470", dark: "#508991", inverted: "#e0e2db" },
+      },
+      borderColor: {
+        bta: { light: "#5f7470", dark: "#508991" },
       },
     },
   },

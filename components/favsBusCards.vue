@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { Stop as BUS_STOP_TYPE } from "../types/stops";
 
-const favsStops: Ref<BUS_STOP_TYPE[] | []> = useState("favsStops", () => []);
+const favsStops: Ref<BUS_STOP_TYPE[] | null> = useState("favsStops");
 const darkTheme: Ref<boolean> = useState("darkTheme");
 const showEmptyFavsMessage: Ref<boolean> = ref(true);
 
 watch(
     favsStops,
     () => {
-        if (favsStops.value.length > 0) {
+        if (favsStops.value && favsStops.value!!.length > 0) {
             showEmptyFavsMessage.value = false;
         } else {
             showEmptyFavsMessage.value = true;
@@ -23,16 +23,22 @@ watch(
         <transition name="fade" mode="out-in">
             <div
                 v-if="showEmptyFavsMessage"
-                class="flex flex-col justify-center items-center w-[100%] h-[80vh] overflow-hidden justify-self-center"
+                class="flex flex-col justify-center items-center gap-4 w-[100%] h-[80vh] overflow-hidden justify-self-center"
             >
-                <IconsBusStop
-                    :color="darkTheme ? '#e5989b' : '#6d6875'"
-                    :size="{ w: '48px', h: '48px' }"
-                />
-                <p class="text-center tracking-wider text-[#e5989b]">
+                <IconsBusStop :size="{ w: '48px', h: '48px' }" />
+                <p
+                    class="text-center tracking-wider text-bta-light dark:text-bta-dark"
+                >
                     There are no saved Bus Stops.
                 </p>
             </div>
+            <LoadingPage
+                v-else-if="!favsStops"
+                :showBarOnly="true"
+                :location="false"
+                :error="false"
+                :msg="''"
+            />
             <div
                 v-else
                 class="flex flex-col justify-start items-center gap-2 w-full"

@@ -24,7 +24,7 @@ const located: Ref<boolean> = useState("located", () => false);
 const locationError: Ref<string> = useState("locationError", () => "");
 const settings: Ref<boolean> = useState("settings", () => false);
 const currentUser = useCurrentUser();
-const favsStops: Ref<Stop[] | []> = useState("favsStops", () => []);
+const favsStops: Ref<Stop[] | null> = useState("favsStops", () => null);
 const favStopsFromLocal: Ref<string[]> = useState("favs", () => []);
 const filterFavs: Ref<Boolean> = useState("filterFavs", () => false);
 const stops: Ref<Stop[] | null> = useState("locstops", () => null);
@@ -216,7 +216,7 @@ const getData = async (lat: number, lon: number) => {
     const query: StopQuery = {
         nearest: { lat, lon },
     };
-    const res: StopQueryResponse = await $fetch(`/api/get-stop-info`, {
+    const res = await $fetch(`/api/get-stop-info`, {
         method: "POST",
         body: query,
     });
@@ -243,7 +243,7 @@ const getData = async (lat: number, lon: number) => {
         <LoadingPage
             v-if="componentsState[ComponentsStateKeys.LOADING]"
             :darkTheme="darkTheme"
-            :onlyBar="true"
+            :showBarOnly="true"
             :location="false"
         />
         <LazyLocBuses
