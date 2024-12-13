@@ -2,25 +2,59 @@
 import type { RestructuredRoutes } from "../types/routes";
 const props = defineProps<{ title: string; route: RestructuredRoutes }>();
 const hideSearch: Ref<boolean> = useState("hideSearch");
-const darkTheme = useState("darkTheme");
 const handleShowBusRoute = () => {
     hideSearch.value = false;
 };
+
+const switchRouteDirection: Ref<boolean> = ref(false);
+
+const fromToStopName = computed(() => {
+    if (
+        Object.entries(props.route.fromStart).slice(-1)[0][1]["BusStopCode"] ===
+        Object.entries(props.route.fromStart)[0][1]["BusStopCode"]
+    ) {
+        return "Loop: " + props.route.fromStart["1"].Description;
+    } else {
+        if (switchRouteDirection.value) {
+            return "From: " + props.route.fromEnd["1"].Description;
+        } else {
+            return "From: " + props.route.fromStart["1"].Description;
+        }
+    }
+});
+
+const fromToStopList = computed(() => {
+    if (switchRouteDirection.value) {
+        return props.route.fromEnd;
+    } else {
+        return props.route.fromStart;
+    }
+});
+
+const fromToStopListName = computed(() => {
+    if (switchRouteDirection.value) {
+        return "fromEnd";
+    } else {
+        return "fromStart";
+    }
+});
+
+const hideSwitchBtn =
+    Object.entries(props.route.fromStart).slice(-1)[0][1]["BusStopCode"] ===
+    Object.entries(props.route.fromStart)[0][1]["BusStopCode"];
 </script>
 
 <template>
     <div class="flex flex-col justify-center items-start gap-4 w-full">
-        <div
-            class="flex flex-row justify-between items-center p-2 w-full rounded-md bg-bta-elevated-light dark:bg-bta-elevated-dark"
-        >
-            <h2 class="text-xl text-bta-inverted dark:text-bta-dark">
-                Route for Service: {{ props.title }}
+        <div class="flex flex-row justify-between items-center w-full">
+            <h2 class="text-6xl text-bta-light dark:text-bta-dark">
+                {{ props.title }}
             </h2>
             <button @click="handleShowBusRoute">
                 <IconsClose
-                    :colorClass="'stroke-bta-inverted dark:stroke-bta-dark'"
+                    :colorClass="'stroke-bta-light dark:stroke-bta-dark'"
                     :active="true"
-                    :size="{ w: '22px', h: '22px' }"
+                    :size="{ w: '32px', h: '32px' }"
                 />
             </button>
         </div>
@@ -28,41 +62,85 @@ const handleShowBusRoute = () => {
             class="flex flex-col justify-center items-start gap-4 w-full"
             v-if="Object.keys(route.fromStart).length > 0"
         >
-            <p
-                class="py-2 border-b-2 border-black/10 w-screen text-black dark:text-white"
-            >
-                {{
-                    (Object.entries(props.route.fromStart).slice(-1)[0][1][
-                        "BusStopCode"
-                    ] ===
-                    Object.entries(props.route.fromStart)[0][1]["BusStopCode"]
-                        ? "Loop: "
-                        : "From: ") + route.fromStart["1"].Description
-                }}
-            </p>
-
-            <div class="flex flex-col justify-center items-start gap-2 w-full">
-                <CardStopInfo
-                    v-for="(stop, index) in Object.keys(props.route.fromStart)"
-                    :stop-code="props.route.fromStart[stop]['BusStopCode']"
-                    :stop-name="props.route.fromStart[stop]['Description']"
-                    :stop-pos="{
-                        lat: props.route.fromStart[stop]['Latitude'],
-                        lon: props.route.fromStart[stop]['Longitude'],
-                    }"
-                    :street-name="props.route.fromStart[stop]['RoadName']"
-                />
-                <!-- <p
-                    class="line-clamp-1 text-ellipsis text-black dark:text-white"
-                    v-for="(stop, index) in Object.keys(props.route.fromStart)"
+            <div class="flex flex-row justify-between items-center w-full">
+                <p
+                    class="py-2 text-xl line-clamp-1 text-ellipsis text-bta-light dark:text-bta-dark"
                 >
-                    {{ props.route.fromStart[stop]["StopSequence"] }}
-                    {{ props.route.fromStart[stop]["RoadName"] }} /
-                    {{ props.route.fromStart[stop]["Description"] }}
-                </p> -->
+                    {{ fromToStopName }}
+                </p>
+                <button
+                    v-if="!hideSwitchBtn"
+                    @click="
+                        () => (switchRouteDirection = !switchRouteDirection)
+                    "
+                >
+                    <IconsSwitch :size="{ w: '32px', h: '32px' }" />
+                </button>
+            </div>
+
+            <div
+                class="flex flex-col justify-center items-start text-bta-light dark:text-bta-dark w-full"
+            >
+                <div
+                    class="flex flex-row justify-start gap-4 w-full"
+                    v-for="(stop, index) in Object.keys(fromToStopList)"
+                >
+                    <div
+                        :style="{
+                            borderRadius:
+                                index === 0
+                                    ? '4rem 4rem 0 0'
+                                    : index ===
+                                        Object.keys(fromToStopList).length - 1
+                                      ? '0 0 4rem 4rem'
+                                      : '0',
+                        }"
+                        class="relative w-[5%] bg-bta-loading-bar-light/20 dark:bg-bta-loading-bar-dark/20"
+                    >
+                        <span
+                            class="absolute rounded-full w-full h-[1.2rem] md:w-[1.5rem] md:h-[1.5rem] top-[1.1rem] bottom-auto md:left-[0.35rem] right-auto bg-bta-loading-bar-light dark:bg-bta-loading-bar-dark"
+                        ></span>
+
+                        <p
+                            class="absolute w-full top-[4.9rem] md:top-[4.7rem] bottom-auto left-auto right-auto -rotate-90 leading-none"
+                        >
+                            {{
+                                route[fromToStopListName][stop]["Distance"] +
+                                "km"
+                            }}
+                        </p>
+                    </div>
+                    <div class="flex flex-col py-2 w-[95%]">
+                        <h2 class="text-3xl">
+                            {{ route[fromToStopListName][stop]["Description"] }}
+                        </h2>
+                        <p class="text-xl line-clamp-1 text-ellipsis">
+                            {{ route[fromToStopListName][stop]["RoadName"] }}
+                        </p>
+                        <p>
+                            {{ route[fromToStopListName][stop]["BusStopCode"] }}
+                        </p>
+                    </div>
+                </div>
+                <!-- <CardStopInfo
+                    v-for="(stop, index) in Object.keys(fromToStopList)"
+                    :stop-code="
+                        props.route[fromToStopListName][stop]['BusStopCode']
+                    "
+                    :stop-name="
+                        props.route[fromToStopListName][stop]['Description']
+                    "
+                    :stop-pos="{
+                        lat: props.route[fromToStopListName][stop]['Latitude'],
+                        lon: props.route[fromToStopListName][stop]['Longitude'],
+                    }"
+                    :street-name="
+                        props.route[fromToStopListName][stop]['RoadName']
+                    "
+                /> -->
             </div>
         </div>
-        <div
+        <!-- <div
             class="flex flex-col justify-center items-start gap-4 w-full"
             v-if="Object.keys(route.fromEnd).length > 0"
         >
@@ -84,6 +162,6 @@ const handleShowBusRoute = () => {
                     :street-name="props.route.fromEnd[stop]['RoadName']"
                 />
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
