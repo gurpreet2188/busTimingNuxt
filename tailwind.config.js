@@ -15,39 +15,44 @@ module.exports = {
       fill: {
         bta: {
           light: "#5f7470",
-          dark: "#508991",
+          dark: "#ced4da",
           inverted: "#e0e2db",
           "inverted-white": "#ffffff",
           "inverted-black": "#000000",
+        },
+        "bta-on-secondary": {
+          light: "#5f7470",
+          dark: "#ee2e6",
         },
       },
       stroke: {
         bta: {
           light: "#5f7470",
-          dark: "#508991",
+          dark: "#ced4da",
           inverted: "#e0e2db",
           "inverted-white": "#ffffff",
           "inverted-black": "#000000",
         },
+        "bta-on-secondary": {
+          light: "#5f7470",
+          dark: "#ee2e6",
+        },
       },
       backgroundColor: {
-        bta: { light: "#e0e2db", dark: "#0d1b2a" },
-        "bta-elevated": { light: "#5f7470", dark: "#172a3a" },
+        bta: { light: "#e0e2db", dark: "#212529" },
+        "bta-elevated": { light: "#5f7470", dark: "#343a40" },
         "bta-loading-bar": { light: "#5f7470", dark: "#508991" },
+        "bta-secondary": { light: "#d2d4c8", dark: "#495057" },
       },
       textColor: {
-        bta: { light: "#5f7470", dark: "#508991", inverted: "#e0e2db" },
+        bta: { light: "#5f7470", dark: "#ced4da", inverted: "#e0e2db" },
+        "bta-on-secondary": { light: "#5f7470", dark: "#dee2e6" },
       },
       borderColor: {
-        bta: { light: "#5f7470", dark: "#508991" },
+        bta: { light: "#5f7470", dark: "#495057" },
       },
     },
   },
   plugins: [],
-  safelist: [
-    { pattern: /fill-bta(light|dark|inverted|inverted-white|inverted-black)/ },
-    {
-      pattern: /stroke-bta(light|dark|inverted|inverted-white|inverted-black)/,
-    },
-  ],
+  safelist: [],
 };

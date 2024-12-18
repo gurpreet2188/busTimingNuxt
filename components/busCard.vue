@@ -18,7 +18,7 @@ const props = defineProps({
 
 <template>
     <div
-        class="relative flex flex-col justify-center items-start p-4 gap-2 rounded-lg w-[100%] bg-[#e0e2db] dark:bg-[#172a3a]"
+        class="relative flex flex-col justify-center items-start p-4 gap-2 rounded-lg w-[100%]"
     >
         <StopInfo
             :fav="fav"

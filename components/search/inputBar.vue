@@ -41,7 +41,10 @@ const value = computed({
                 class="text-black dark:text-white self-start p-2 px-4 rounded-md"
                 type="submit"
             >
-                <IconsSearch :size="{ w: '42px', h: '42px' }" />
+                <IconsSearch
+                    :size="{ w: '42px', h: '42px' }"
+                    class="fill-bta-light dark:fill-bta-dark"
+                />
             </button>
         </div>
     </form>

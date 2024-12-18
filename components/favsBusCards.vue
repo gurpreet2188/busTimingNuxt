@@ -2,9 +2,10 @@
 import type { Stop as BUS_STOP_TYPE } from "../types/stops";
 
 const favsStops: Ref<BUS_STOP_TYPE[] | null> = useState("favsStops");
-const darkTheme: Ref<boolean> = useState("darkTheme");
 const showEmptyFavsMessage: Ref<boolean> = ref(true);
+const title: Ref<string> = useState("title");
 
+onMounted(() => (title.value = "Saved Stops"));
 watch(
     favsStops,
     () => {
@@ -19,7 +20,7 @@ watch(
 </script>
 
 <template>
-    <div class="flex flex-col justify-start items-center gap-2 w-full">
+    <div class="flex flex-col justify-start items-center gap-2 pb-20 w-full">
         <transition name="fade" mode="out-in">
             <div
                 v-if="showEmptyFavsMessage"

@@ -6,18 +6,9 @@ type SIZE = {
     h: string;
 };
 
-const props = defineProps<{
-    inverted?: boolean;
-    active: boolean;
+defineProps<{
     size: SIZE;
 }>();
-
-const color = (): string => {
-    if (props.inverted) {
-        return "fill-bta-inverted stroke-bta-inverted dark:fill-bta-dark dark:stroke-bta-dark";
-    }
-    return "fill-bta-light stroke-bta-light dark:fill-bta-dark dark:stroke-bta-dark";
-};
 </script>
 
 <template>
@@ -28,10 +19,8 @@ const color = (): string => {
         :height="size?.h"
     >
         <path
-            :class="color()"
-            :fill-opacity="active ? 1 : 0"
             stroke-width="2px"
-            d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"
+            d="M12 19.677q2.82-2.454 4.458-4.991t1.638-4.39q0-2.744-1.737-4.53Q14.62 3.981 12 3.981T7.641 5.766t-1.737 4.53q0 1.852 1.638 4.39T12 19.677m0 .879q-.235 0-.47-.077t-.432-.25q-1.067-.981-2.164-2.185q-1.096-1.203-1.99-2.493t-1.468-2.633t-.572-2.622q0-3.173 2.066-5.234Q9.037 3 12 3t5.03 2.062q2.066 2.061 2.066 5.234q0 1.279-.572 2.613q-.572 1.333-1.458 2.632q-.885 1.3-1.981 2.494T12.92 20.21q-.191.173-.434.26q-.244.086-.487.086m.004-8.825q.667 0 1.14-.476q.472-.475.472-1.143t-.476-1.14t-1.143-.472t-1.14.476t-.472 1.143t.475 1.14t1.144.472"
         />
     </svg>
 </template>

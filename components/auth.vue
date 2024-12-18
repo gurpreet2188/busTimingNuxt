@@ -12,6 +12,10 @@ import {
     signInWithPopup,
 } from "firebase/auth";
 
+const title: Ref<string> = useState("title");
+
+onMounted(() => (title.value = "Login/Register"));
+
 const LOGGEDINSTATE = {
     LOADING: "loading",
     IN: "loggedIn",
@@ -51,7 +55,9 @@ const handleGooglePopupLogin = () => {
             if (d.user.uid) {
                 busStore().initialize(d.user.uid);
                 isLoggedIn.value = LOGGEDINSTATE.IN;
-                componentsState.value = changeComponentState(ComponentsStateKeys.LOCATIONLOADING);
+                componentsState.value = changeComponentState(
+                    ComponentsStateKeys.LOCATIONLOADING,
+                );
             }
         })
         .catch((err) => {
@@ -67,13 +73,16 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="flex flex-col justify-center items-center gap-[2rem] h-full">
+    <div
+        class="flex flex-col justify-center items-center gap-4 pt-10 w-full h-full"
+    >
         <div v-if="isLoggedIn === LOGGEDINSTATE.LOADING" class="loader"></div>
-        <!-- <div v-if="isLoggedIn === true" class="text-[#6d6875] dark:text-[#ffcdb2]"> Welcome {{ currentUser?.displayName
-        }}
-        </div> -->
+        <IconsAccount
+            :size="{ w: '128px', h: '128px' }"
+            class="fill-bta-light dark:fill-bta-dark"
+        />
         <div
-            class="flex flex-col justify-center items-center gap-[1rem]"
+            class="flex flex-col justify-center items-center gap-4 rounded-md p-4 py-8"
             :style="{
                 display:
                     isLoggedIn === LOGGEDINSTATE.OUT
@@ -86,16 +95,21 @@ onMounted(async () => {
             <!-- <div class="flex flex-col justify-center items-center gap-[1rem]" id="firebaseui-auth-container"></div> -->
             <button
                 @click="handleGooglePopupLogin"
-                class="btn-common bg-white text-black"
+                class="flex flex-row justify-center items-center gap-2 text-xl rounded-md bg-white text-black p-2"
             >
-                <IconsGoogle /> Login
+                <IconsGoogle /> <span>Login/Register</span>
             </button>
-            <button @click="cancelHandle" class="btn-common">Cancel</button>
+            <button
+                @click="cancelHandle"
+                class="p-2 text-xl text-bta-light dark:text-bta-dark"
+            >
+                Cancel
+            </button>
         </div>
         <button
             v-if="isLoggedIn === LOGGEDINSTATE.IN"
             @click="handleSignOut"
-            class="btn-common"
+            class="p-2 text-xl text-bta-light dark:text-bta-dark"
         >
             Sign Out
         </button>

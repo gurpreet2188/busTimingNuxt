@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type {
-    Root as BUS_STOP_TYPES,
-    Stop,
-    StopQueryResponse,
-    StopQuery,
-} from "./types/stops";
+import type { Stop, StopQueryResponse, StopQuery } from "./types/stops";
 import type { COMPONENT_STATE } from "./types/components";
 import { ComponentsStateKeys, SubComponentStateKeys } from "./types/components";
 import { useGeolocation } from "@vueuse/core";
@@ -56,12 +51,16 @@ const subComponentState: Ref<COMPONENT_STATE> = useState(
         };
     },
 );
-
+const refreshData = useState("refreshData", () => false);
 const LOGGEDINSTATE = {
     LOADING: "loading",
     IN: "loggedIn",
     OUT: "loggedOut",
 };
+
+const title: Ref<string> = useState("title", () => "");
+
+const hideNav: Ref<boolean> = useState("hdieNav", () => false);
 
 useHead({
     meta: [
@@ -80,7 +79,6 @@ useHead({
 
 onMounted(async () => {
     skipWelcome.value = JSON.parse(localStorage.getItem("skipWelcome")!!);
-    console.log(coords.value);
     watch(
         colorMode,
         () => {
@@ -147,44 +145,56 @@ watch(
     { deep: true },
 );
 
-watchEffect(async () => {
-    if (
-        (favStopsFromLocal.value?.length! > 0 && favStopsFromLocal.value) ||
-        filterFavs.value
-    ) {
-        const tempArr: Stop[] = [];
-        for (const index in favStopsFromLocal.value) {
-            const query: StopQuery = {
-                single: favStopsFromLocal.value[index],
-            };
-            const stopData: StopQueryResponse = await $fetch(
-                "/api/get-stop-info",
-                {
+watch(
+    [favStopsFromLocal, filterFavs, refreshData],
+    async () => {
+        if (
+            (favStopsFromLocal.value?.length! > 0 && favStopsFromLocal.value) ||
+            filterFavs.value
+        ) {
+            console.log("refreshing");
+            const tempArr: Stop[] = [];
+            for (const index in favStopsFromLocal.value) {
+                const query: StopQuery = {
+                    single: favStopsFromLocal.value[index],
+                };
+                const stopData = await $fetch("/api/get-stop-info", {
                     method: "POST",
                     body: JSON.stringify(query),
-                },
-            );
-            if (stopData?.stop) {
-                tempArr[index] = stopData?.stop;
+                });
+                if (stopData?.stop) {
+                    tempArr[index] = stopData?.stop;
+                }
+                tempArr[index].Services = await fetchBusInfo(
+                    favStopsFromLocal.value[index],
+                );
             }
-            tempArr[index].Services = await fetchBusInfo(
-                favStopsFromLocal.value[index],
-            );
+            favsStops.value = tempArr;
         }
-        favsStops.value = tempArr;
-    }
-});
+    },
+    { immediate: true, deep: true },
+);
 
-// initial load
 watch(
-    [componentsState, coords],
-    async () => {
+    [componentsState],
+    () => {
         if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
-            isLocationLoading.value = true;
             subComponentState.value = changeComponentState(
                 SubComponentStateKeys.LOCATION,
                 true,
             );
+        }
+    },
+    { deep: true },
+);
+
+// initial load
+watch(
+    [componentsState, coords, refreshData],
+    async () => {
+        if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
+            isLocationLoading.value = true;
+
             if (
                 coords.value.latitude !== Infinity &&
                 coords.value.longitude !== Infinity &&
@@ -226,49 +236,47 @@ const getData = async (lat: number, lon: number) => {
 
 <template>
     <div
-        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-full justify-start items-center gap-[1rem] w-[100%] p-[1rem] pb-[4rem] overflow-hidden"
+        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-screen justify-start items-center gap-[1rem] w-[100%] p-2 px-4 pb-[4rem]"
     >
-        <Navigation
-            :title="
-                subComponentState[SubComponentStateKeys.LOCATION]
-                    ? 'Near By Stops'
-                    : subComponentState[SubComponentStateKeys.FAVS]
-                      ? 'Saved Stops'
-                      : 'Search'
-            "
-        />
-
+        <Transition>
+            <Navigation
+                v-if="!componentsState[ComponentsStateKeys.WELCOME] && !hideNav"
+                :title="title"
+            />
+        </Transition>
         <Welcome v-if="componentsState[ComponentsStateKeys.WELCOME]" />
-        <LazyAuth v-if="componentsState[ComponentsStateKeys.LOGIN]" />
-        <LoadingPage
-            v-if="componentsState[ComponentsStateKeys.LOADING]"
-            :darkTheme="darkTheme"
-            :showBarOnly="true"
-            :location="false"
-        />
-        <LazyLocBuses
-            v-if="
-                componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
-                subComponentState[SubComponentStateKeys.LOCATION]
-            "
-            :stopsWithServices="stops"
-        />
-        <LazyFavsBusCards
-            v-if="
-                componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
-                subComponentState[SubComponentStateKeys.FAVS]
-            "
-            :stopsWithServices="stops"
-        />
+        <div class="flex flex-col w-full pt-20">
+            <LazyAuth v-if="componentsState[ComponentsStateKeys.LOGIN]" />
+            <LoadingPage
+                v-if="componentsState[ComponentsStateKeys.LOADING]"
+                :darkTheme="darkTheme"
+                :showBarOnly="true"
+                :location="false"
+            />
+            <LazyLocBuses
+                v-if="
+                    componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
+                    subComponentState[SubComponentStateKeys.LOCATION]
+                "
+                :stopsWithServices="stops"
+            />
+            <LazyFavsBusCards
+                v-if="
+                    componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
+                    subComponentState[SubComponentStateKeys.FAVS]
+                "
+                :stopsWithServices="stops"
+            />
 
-        <LazySearch
-            v-if="
-                componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
-                subComponentState[SubComponentStateKeys.ROUTE]
-            "
-        />
+            <LazySearch
+                v-if="
+                    componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
+                    subComponentState[SubComponentStateKeys.ROUTE]
+                "
+            />
+        </div>
         <Footer
-            :class="`fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2 h-[5%]`"
+            :class="`fixed bottom-2 top-auto w-[100%] lg:w-[20%] lg:mb-2`"
             v-if="componentsState[ComponentsStateKeys.LOCATIONLOADING]"
         />
     </div>

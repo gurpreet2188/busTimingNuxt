@@ -9,8 +9,7 @@ type SIZE = {
 const props = defineProps<{
     size: SIZE;
 }>();
-const color =
-    "fill-bta-light stroke-bta-light dark:fill-bta-dark dark:stroke-bta-dark";
+const color = "fill-bta-light dark:fill-bta-dark";
 </script>
 
 <template>

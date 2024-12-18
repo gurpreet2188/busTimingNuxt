@@ -17,10 +17,16 @@ const clickHandle = (component: string) => {
 
 <template>
     <div
-        class="flex justify-center items-center w-[100%] h-[100%] lg:shadow-lg lg:rounded-lg bg-[#e0e2db]/50 dark:bg-[#0d1b2a]/50 backdrop-blur-md"
+        class="flex justify-center items-center w-[95%] py-4 rounded-md lg:shadow-lg lg:rounded-lg bg-bta-secondary-light/80 dark:bg-bta-secondary-dark/80 backdrop-blur-sm shadow-md dark:shadow-none"
     >
         <div class="flex justify-center items-center w-[50%]">
             <button
+                class="rounded-full px-4 py-2"
+                :class="
+                    subComponentsState[SubComponentStateKeys.LOCATION]
+                        ? 'bg-bta-elevated-light dark:bg-bta-elevated-dark'
+                        : ''
+                "
                 @click="
                     () => {
                         clickHandle(SubComponentStateKeys.LOCATION);
@@ -28,14 +34,23 @@ const clickHandle = (component: string) => {
                 "
             >
                 <IconsLocation
-                    :color="darkTheme ? '#508991' : '#5f7470'"
                     :size="size"
-                    :active="subComponentsState[SubComponentStateKeys.LOCATION]"
+                    :class="
+                        subComponentsState[SubComponentStateKeys.LOCATION]
+                            ? 'fill-bta-dark dark:fill-bta-dark'
+                            : 'fill-bta-light dark:fill-bta-dark'
+                    "
                 />
             </button>
         </div>
         <div class="flex justify-center items-center w-[50%]">
             <button
+                class="rounded-full px-4 py-2"
+                :class="
+                    subComponentsState[SubComponentStateKeys.FAVS]
+                        ? 'bg-bta-elevated-light dark:bg-bta-elevated-dark'
+                        : ''
+                "
                 @click="
                     () => {
                         clickHandle(SubComponentStateKeys.FAVS);
@@ -45,21 +60,35 @@ const clickHandle = (component: string) => {
                 <IconsFavs
                     :size="size"
                     :active="subComponentsState[SubComponentStateKeys.FAVS]"
+                    :class="
+                        subComponentsState[SubComponentStateKeys.FAVS]
+                            ? 'fill-bta-dark dark:fill-bta-dark'
+                            : 'fill-bta-light dark:fill-bta-dark'
+                    "
                 />
             </button>
         </div>
         <div class="flex justify-center items-center w-[50%]">
             <button
+                class="rounded-full px-4 py-2"
+                :class="
+                    subComponentsState[SubComponentStateKeys.ROUTE]
+                        ? 'bg-bta-elevated-light dark:bg-bta-elevated-dark'
+                        : ''
+                "
                 @click="
                     () => {
                         clickHandle(SubComponentStateKeys.ROUTE);
                     }
                 "
             >
-                <IconsRoute
-                    :color="darkTheme ? '#508991' : '#5f7470'"
+                <IconsSearch
                     :size="size"
-                    :active="subComponentsState[SubComponentStateKeys.ROUTE]"
+                    :class="
+                        subComponentsState[SubComponentStateKeys.ROUTE]
+                            ? 'fill-bta-dark dark:fill-bta-dark'
+                            : 'fill-bta-light dark:fill-bta-dark'
+                    "
                 />
             </button>
         </div>

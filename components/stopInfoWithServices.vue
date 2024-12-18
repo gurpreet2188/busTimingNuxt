@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type { RestructuredStops } from "~/types/stops";
-const darkTheme = useState("darkTheme");
-const size = { h: "32px", w: "32px" };
 const hideSearch: Ref<boolean> = useState("hideSearch");
-const props = defineProps<{ stopInfo: RestructuredStops }>();
-const noOp = "no op";
+defineProps<{ stopInfo: RestructuredStops }>();
+const title: Ref<string> = useState("title");
 const handleHideSearch = () => {
     hideSearch.value = false;
+    title.value = "Search";
 };
-
+onMounted(() => (title.value = "Stop Info"));
 const checkNoOpBuses = (timing: string) => {
     if (timing === "-") {
         return "No Op";
@@ -43,12 +42,10 @@ const checkNoOpBuses = (timing: string) => {
             :stop-name="''"
         />
         <div
-            class="flex flex-col justify-center items-start gap-4 p-2 w-full rounded-md bg-[#ffe5d9] dark:bg-[#1b263b]"
+            class="flex flex-col justify-center items-start gap-4 text-bta-inverted dark:text-bta-dark p-2 w-full rounded-md bg-bta-elevated-light dark:bg-bta-elevated-dark"
             v-for="service of Object.entries(stopInfo.Service)"
         >
-            <div
-                class="flex flex-col w-full gap-4 text-[#212121] dark:text-[#f1f1f1]"
-            >
+            <div class="flex flex-col w-full gap-4">
                 <div class="grid grid-cols-3 w-full gap-2">
                     <div
                         class="flex flex-col justify-end items-start gap-2 w-full"
@@ -78,13 +75,6 @@ const checkNoOpBuses = (timing: string) => {
                         <p>{{ checkNoOpBuses(service[1].SAT_FirstBus) }}</p>
                         <p>{{ checkNoOpBuses(service[1].SUN_LastBus) }}</p>
                     </div>
-                    <!-- <div
-                        class="flex flex-col justify-center items-center gap-2"
-                    >
-                        <p class="text-xl p-2">Sunday</p>
-
-
-                    </div> -->
                 </div>
             </div>
         </div>

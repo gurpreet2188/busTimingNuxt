@@ -20,15 +20,19 @@ const locateBusStopClickHandle = () => {
 
 <template>
     <div
-        class="flex flex-col justify-center items-center gap-[2rem] w-[100%] text-bta-inverted dark:text-bta-dark h-full"
+        class="flex flex-col justify-center items-center gap-[2rem] w-[100%] text-bta-inverted dark:text-bta-dark h-screen"
     >
-        <!-- title -->
+        <IconsBus
+            class="fill-bta-light dark:fill-bta-dark"
+            :size="{ w: '128px', h: '128px' }"
+        />
         <div
             class="flex flex-col justify-center items-center gap-8 rounded-md p-4 bg-bta-elevated-light dark:bg-bta-elevated-dark w-[100%]"
         >
             <!-- info -->
             <p class="text-center text-xl">
-                Locate nearest Bus Stops and get real-time Bus arrival timings.
+                Locate nearest Bus Stops and get real-time Bus arrival timings
+                in Singapore.
             </p>
             <!-- Account -->
             <div class="flex flex-col justify-center items-center gap-[0.5rem]">
@@ -39,13 +43,12 @@ const locateBusStopClickHandle = () => {
                     /> -->
                     Login / Register
                 </button>
-                <p class="inline-block text-center">
+                <p class="inline-block text-center text-lg">
                     Sync your
                     <span class="inline-block"
                         ><IconsFavs
-                            :inverted="true"
-                            :active="true"
-                            :size="{ w: '16px', h: '16px' }"
+                            class="fill-bta-inverted dark:fill-bta-dark"
+                            :size="{ w: '24px', h: '24px' }"
                     /></span>
                     Bus Stops across devices.
                 </p>
@@ -54,9 +57,8 @@ const locateBusStopClickHandle = () => {
             <!-- locate bus stop -->
             <button @click="locateBusStopClickHandle" class="btn-common w-auto">
                 <IconsLocation
-                    :color="darkTheme ? '#ffcdb2' : '#7f5539'"
-                    :size="{ w: '22px', h: '22px' }"
-                    :active="true"
+                    class="fill-bta-inverted dark:fill-bta-dark"
+                    :size="{ w: '24px', h: '24px' }"
                 />
                 Locate Nearest Bus Stops
             </button>

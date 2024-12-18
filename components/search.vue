@@ -3,7 +3,10 @@ import type { RestructuredRoutes } from "~/types/routes";
 import type { RestructuredStops } from "~/types/stops";
 import Route from "./route.vue";
 
-const props = defineProps<{}>();
+const title: Ref<string> = useState("title");
+
+onMounted(() => (title.value = "Search"));
+
 const searchText: Ref<{ text: string }> = useState("searchText", () => {
     return { text: "" };
 });
@@ -15,7 +18,7 @@ const searchResult: Ref<RestructuredRoutes[] | RestructuredStops[]> = useState(
 );
 const hideSearch: Ref<boolean> = useState("hideSearch", () => false);
 const routeInfo: Ref<RestructuredRoutes | undefined> = useState(
-    "searchResult",
+    "routeInfo",
     () => undefined,
 );
 const stopInfo: Ref<RestructuredStops | undefined> = useState(
@@ -46,9 +49,11 @@ const handleClick = (data: RestructuredRoutes | RestructuredStops) => {
     if (Object.keys(data).includes("ServiceNo")) {
         routeInfo.value = data as RestructuredRoutes;
         stopInfo.value = undefined;
+        title.value = "Bust Route";
     } else {
         stopInfo.value = data as RestructuredStops;
         routeInfo.value = undefined;
+        title.value = "Stop Info";
     }
     hideSearch.value = true;
 };
@@ -58,10 +63,14 @@ watch(hideSearch, () => {
         handleOnSubmit();
     }
 });
+
+console.log(routeInfo.value, stopInfo.value);
 </script>
 
 <template>
-    <div class="flex flex-col justify-center gap-8 items-center w-full">
+    <div
+        class="flex flex-col justify-center gap-8 items-center w-full pb-20 pt-5"
+    >
         <div class="flex flex-col justify-center gap-8 items-center w-full">
             <SearchInputBar
                 v-if="!hideSearch"
@@ -79,7 +88,7 @@ watch(hideSearch, () => {
                 </p>
                 <div class="flex flex-row flex-wrap gap-2 w-full">
                     <button
-                        class="text-[#e0e2db] dark:text-[#172a3a] p-2 rounded-md bg-[#5f7470] dark:bg-[#508991]"
+                        class="text-bta-on-secondary-light dark:text-bta-on-secondary-dark p-2 rounded-md shadow-md dark:shadow-none bg-bta-secondary-light dark:bg-bta-secondary-dark"
                         v-for="result in searchResult"
                         @click="() => handleClick(result)"
                     >
@@ -96,7 +105,7 @@ watch(hideSearch, () => {
             class="flex flex-col justify-center gap-8 items-center w-full"
         >
             <Route
-                :title="routeInfo?.ServiceNo!!"
+                :serviceNo="routeInfo?.ServiceNo!!"
                 :route="routeInfo!! as RestructuredRoutes"
             />
         </div>
@@ -104,7 +113,7 @@ watch(hideSearch, () => {
             v-if="hideSearch && stopInfo"
             class="flex flex-col justify-center gap-8 items-center w-full"
         >
-            <StopInfoWithServices :stop-info="stopInfo" />
+            <StopInfoWithServices :stopInfo="stopInfo" />
         </div>
     </div>
 </template>

@@ -8,6 +8,9 @@ const located: Ref<boolean> = useState("located");
 const favStopsFromLocal: Ref<string[] | null> = useState("favs");
 const isStopsError: Ref<boolean> = useState("isStopsError", () => false);
 const darkTheme: Ref<boolean> = useState("darkTheme");
+const title: Ref<string> = useState("title");
+
+onMounted(() => (title.value = "Near By stops"));
 
 const msg = computed((): string => {
     let m = "";
@@ -28,7 +31,7 @@ const msg = computed((): string => {
 </script>
 
 <template>
-    <div class="flex flex-col justify-start items-center gap-8 w-full">
+    <div class="flex flex-col justify-start items-center gap-8 pb-20 w-full">
         <BusCard
             v-if="stopsWithServices && stopsWithServices!!.length!! > 0"
             v-for="(stop, index) in stopsWithServices!!"
