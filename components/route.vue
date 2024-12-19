@@ -1,11 +1,18 @@
 <script setup lang="ts">
+import type { COMPONENT_STATE } from "~/types/components";
+import { SubComponentStateKeys } from "~/types/components";
 import type { RestructuredRoutes } from "../types/routes";
 const props = defineProps<{ serviceNo: string; route: RestructuredRoutes }>();
 const hideSearch: Ref<boolean> = useState("hideSearch");
 const title: Ref<string> = useState("title");
+const expandNav = useState("expandNav", () => false);
+const expandedNavData = useState("expandedNavData", () => "");
+const subComponentState: Ref<COMPONENT_STATE> = useState("sub_component_state");
 const handleShowBusRoute = () => {
     hideSearch.value = false;
     title.value = "Search";
+    expandNav.value = false;
+    expandedNavData.value = "";
 };
 
 const switchRouteDirection: Ref<boolean> = ref(false);
@@ -82,18 +89,58 @@ const totalDistance = computed(
             ]
         ]["Distance"],
 );
+
+const serviceNameRef: Ref<HTMLElement | null> = ref(null);
+
+const ib = new IntersectionObserver(
+    (entries, observer) => {
+        for (const e of entries) {
+            if (
+                !e.isIntersecting &&
+                subComponentState.value[SubComponentStateKeys.ROUTE]
+            ) {
+                (e.target as HTMLElement).classList.add("hide-service-name");
+                expandNav.value = true;
+                expandedNavData.value = props.serviceNo;
+            } else if (
+                !hideSearch.value ||
+                !subComponentState.value[SubComponentStateKeys.ROUTE] ||
+                e.isIntersecting
+            ) {
+                (e.target as HTMLElement).classList.remove("hide-service-name");
+                expandNav.value = false;
+                expandedNavData.value = "";
+            }
+        }
+
+        return () => observer.disconnect();
+    },
+    { rootMargin: "-100px" },
+);
+
+onMounted(() => {
+    ib.observe(serviceNameRef.value as HTMLElement);
+});
+
+onBeforeUnmount(() => {
+    ib.unobserve(serviceNameRef.value as HTMLElement);
+    expandNav.value = false;
+    expandedNavData.value = "";
+});
 </script>
 
 <template>
-    <div class="flex flex-col justify-center items-start gap-4 w-full">
-        <div class="flex flex-row justify-between items-center w-full">
-            <h2 class="text-6xl text-bta-light dark:text-bta-dark">
+    <div class="relative flex flex-col justify-center items-start gap-4 w-full">
+        <div
+            ref="serviceNameRef"
+            class="flex flex-row justify-between items-center w-full transition-opacity duration-500 delay-500"
+        >
+            <h2 class="text-4xl text-bta-light dark:text-bta-dark">
                 {{ serviceNo }}
             </h2>
             <button @click="handleShowBusRoute">
                 <IconsClose
-                    :colorClass="'stroke-bta-light dark:stroke-bta-dark'"
-                    :active="true"
+                    class="fill-bta-on-secondary-light dark:fill-bta-dark"
                     :size="{ w: '32px', h: '32px' }"
                 />
             </button>
@@ -115,7 +162,10 @@ const totalDistance = computed(
                             () => (switchRouteDirection = !switchRouteDirection)
                         "
                     >
-                        <IconsSwitch :size="{ w: '32px', h: '32px' }" />
+                        <IconsSwitch
+                            :size="{ w: '32px', h: '32px' }"
+                            class="fill-bta-light dark:fill-bta-dark"
+                        />
                     </button>
                 </div>
                 <p class="text-bta-light dark:text-bta-dark">
@@ -176,3 +226,9 @@ const totalDistance = computed(
         </div>
     </div>
 </template>
+
+<style scoped>
+.hide-service-name {
+    opacity: 0;
+}
+</style>

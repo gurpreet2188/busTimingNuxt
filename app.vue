@@ -27,6 +27,7 @@ const darkTheme: Ref<boolean> = useState("darkTheme", () => false);
 const windowBlur: Ref<boolean> = useState("windowBlur", () => false);
 const bodyOverFlow: Ref<string> = ref("overflow:auto");
 const colorMode = useColorMode();
+const animateRefresh: Ref<boolean> = useState("animateRefresh", () => false);
 const componentsState: Ref<COMPONENT_STATE> = useState(
     "component_state",
     () => {
@@ -71,10 +72,10 @@ useHead({
         },
     ],
     bodyAttrs: {
-        class: "min-h-full",
+        class: "min-h-screen",
         style: bodyOverFlow,
     },
-    htmlAttrs: { class: "min-h-full bg-bta-light dark:bg-bta-dark" },
+    htmlAttrs: { class: "min-h-screen bg-bta-light dark:bg-bta-dark" },
 });
 
 onMounted(async () => {
@@ -146,34 +147,53 @@ watch(
 );
 
 watch(
-    [favStopsFromLocal, filterFavs, refreshData],
+    [favStopsFromLocal, filterFavs],
     async () => {
         if (
             (favStopsFromLocal.value?.length! > 0 && favStopsFromLocal.value) ||
             filterFavs.value
         ) {
-            console.log("refreshing");
-            const tempArr: Stop[] = [];
-            for (const index in favStopsFromLocal.value) {
-                const query: StopQuery = {
-                    single: favStopsFromLocal.value[index],
-                };
-                const stopData = await $fetch("/api/get-stop-info", {
-                    method: "POST",
-                    body: JSON.stringify(query),
-                });
-                if (stopData?.stop) {
-                    tempArr[index] = stopData?.stop;
-                }
-                tempArr[index].Services = await fetchBusInfo(
-                    favStopsFromLocal.value[index],
-                );
-            }
-            favsStops.value = tempArr;
+            getFavsBusTiming();
+
+            animateRefresh.value = false;
         }
     },
     { immediate: true, deep: true },
 );
+
+watch(
+    [refreshData],
+    async () => {
+        animateRefresh.value = true;
+        if (subComponentState.value[SubComponentStateKeys.LOCATION]) {
+            await getLocationBusTiming();
+        } else if (subComponentState.value[SubComponentStateKeys.FAVS]) {
+            await getFavsBusTiming();
+        }
+        nextTick(() => (animateRefresh.value = false));
+    },
+    { deep: true },
+);
+
+const getFavsBusTiming = async () => {
+    const tempArr: Stop[] = [];
+    for (const index in favStopsFromLocal.value) {
+        const query: StopQuery = {
+            single: favStopsFromLocal.value[index],
+        };
+        const stopData = await $fetch("/api/get-stop-info", {
+            method: "POST",
+            body: JSON.stringify(query),
+        });
+        if (stopData?.stop) {
+            tempArr[index] = stopData?.stop;
+        }
+        tempArr[index].Services = await fetchBusInfo(
+            favStopsFromLocal.value[index],
+        );
+    }
+    favsStops.value = tempArr;
+};
 
 watch(
     [componentsState],
@@ -194,33 +214,37 @@ watch(
     async () => {
         if (componentsState.value[ComponentsStateKeys.LOCATIONLOADING]) {
             isLocationLoading.value = true;
-
-            if (
-                coords.value.latitude !== Infinity &&
-                coords.value.longitude !== Infinity &&
-                (isLoggedIn.value === LOGGEDINSTATE.IN || skipWelcome.value)
-            ) {
-                isLocationLoading.value = false;
-                located.value = true;
-                pause();
-                // sample loc
-                // stops.value = await getData(1.430786, 103.877458);
-                // stops.value = await getData(1.40276, 103.890896);
-                stops.value = await getData(
-                    coords.value.latitude,
-                    coords.value.longitude,
-                );
-                for (const stop of stops.value!!) {
-                    stop.Services = await fetchBusInfo(stop.BusStopCode!!);
-                }
-            } else if (error.value) {
-                isLocationLoading.value = false;
-                locationError.value = error.value.message;
-            }
+            getLocationBusTiming();
         }
     },
     { deep: true },
 );
+
+const getLocationBusTiming = async () => {
+    // sample loc
+    // stops.value = await getData(1.430786, 103.877458);
+    // stops.value = await getData(1.40276, 103.890896);
+    //
+    if (
+        coords.value.latitude !== Infinity &&
+        coords.value.longitude !== Infinity &&
+        (isLoggedIn.value === LOGGEDINSTATE.IN || skipWelcome.value)
+    ) {
+        pause();
+        isLocationLoading.value = false;
+        located.value = true;
+        stops.value = await getData(
+            coords.value.latitude,
+            coords.value.longitude,
+        );
+        for (const stop of stops.value!!) {
+            stop.Services = await fetchBusInfo(stop.BusStopCode!!);
+        }
+    } else if (error.value) {
+        isLocationLoading.value = false;
+        locationError.value = error.value.message;
+    }
+};
 
 const getData = async (lat: number, lon: number) => {
     const query: StopQuery = {
@@ -239,7 +263,7 @@ const getData = async (lat: number, lon: number) => {
         class="relative flex flex-col lg:w-[40%] md:w-[60%] h-screen justify-start items-center gap-[1rem] w-[100%] p-2 px-4 pb-[4rem]"
     >
         <Transition>
-            <Navigation
+            <Header
                 v-if="!componentsState[ComponentsStateKeys.WELCOME] && !hideNav"
                 :title="title"
             />
@@ -275,14 +299,14 @@ const getData = async (lat: number, lon: number) => {
                 "
             />
         </div>
-        <Footer
+        <BottomNav
             :class="`fixed bottom-2 top-auto w-[100%] lg:w-[20%] lg:mb-2`"
             v-if="componentsState[ComponentsStateKeys.LOCATIONLOADING]"
         />
     </div>
     <div
         v-if="settings"
-        class="absolute top-0 flex justify-center items-center z-10 h-[100vh] bg-black/50 w-[100%]"
+        class="fixed flex justify-center items-center z-20 h-screen bg-black/50 w-[100%]"
     >
         <Settings />
     </div>

@@ -63,8 +63,6 @@ watch(hideSearch, () => {
         handleOnSubmit();
     }
 });
-
-console.log(routeInfo.value, stopInfo.value);
 </script>
 
 <template>

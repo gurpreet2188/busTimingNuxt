@@ -33,6 +33,7 @@
     "nuxt-app": ".",
     "nuxt-component-meta": "",
     "nuxt-vuefire": "^0.3.1",
+    "tailwindcss": "^3.4.17",
     "vue3-touch-events": "^4.2.0",
     "vuefire": "^3.2.0"
   },

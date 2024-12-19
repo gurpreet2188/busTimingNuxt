@@ -54,5 +54,5 @@ module.exports = {
     },
   },
   plugins: [],
-  safelist: [],
+  safelist: ["animate-spin", "scale-150"],
 };

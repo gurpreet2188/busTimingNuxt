@@ -64,9 +64,8 @@ const handleBtnClose = () => {
             <h2 class="text-2xl tracking-wider">Settings</h2>
             <button @click="handleBtnClose">
                 <IconsClose
-                    :colorClass="'fill-bta-inverted stroke-bta-inverted dark:fill-bta-dark dark:stroke-bta-dark'"
-                    :active="true"
-                    :size="{ w: '20px', h: '20px' }"
+                    class="fill-bta-inverted dark:fill-bta-dark"
+                    :size="{ w: '24px', h: '24px' }"
                 />
             </button>
         </div>
