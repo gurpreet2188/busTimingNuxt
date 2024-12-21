@@ -2,7 +2,6 @@
 import type { RestructuredStops } from "~/types/stops";
 import type { COMPONENT_STATE } from "~/types/components";
 import { SubComponentStateKeys } from "~/types/components";
-import { addComponent } from "@nuxt/kit";
 const hideSearch: Ref<boolean> = useState("hideSearch");
 const props = defineProps<{ stopInfo: RestructuredStops }>();
 const title: Ref<string> = useState("title");

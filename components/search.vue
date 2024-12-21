@@ -36,13 +36,21 @@ const handleOnSubmit = async () => {
         searchResult.value = searchResult.value.sort(
             (a, b) => parseInt(a.ServiceNo) - parseInt(b.ServiceNo),
         );
+        return;
     } else if (searchText.value.text.length === 5) {
         searchResult.value = await useBusStopCode(searchText.value.text);
         searchResultMsg.value =
             "Found " + searchResult.value.length + " Bus Stop(s)";
+        return;
     } else {
-        searchResultMsg.value = "No Results";
+        searchResult.value = await useBusStopName(
+            searchText.value.text.toLowerCase(),
+        );
+        searchResultMsg.value =
+            "Found " + searchResult.value.length + " Bus Stop(s)";
     }
+
+    searchResultMsg.value = "No Results";
 };
 
 const handleClick = (data: RestructuredRoutes | RestructuredStops) => {
@@ -86,14 +94,27 @@ watch(hideSearch, () => {
                 </p>
                 <div class="flex flex-row flex-wrap gap-2 w-full">
                     <button
-                        class="text-bta-on-secondary-light dark:text-bta-on-secondary-dark p-2 rounded-md shadow-md dark:shadow-none bg-bta-secondary-light dark:bg-bta-secondary-dark"
+                        class="text-bta-on-secondary-light dark:text-bta-on-secondary-dark p-2 rounded-md shadow-md dark:shadow-none bg-bta-secondary-light dark:bg-bta-secondary-dark w-full"
                         v-for="result in searchResult"
                         @click="() => handleClick(result)"
                     >
-                        {{
-                            // @ts-ignore
-                            result["ServiceNo"]!! || result["BusStopCode"]!!
-                        }}
+                        <div v-if="(result as RestructuredRoutes)['ServiceNo']">
+                            <h2 class="text-3xl font-light p-4">
+                                {{ (result as RestructuredRoutes).ServiceNo }}
+                            </h2>
+                        </div>
+                        <div
+                            v-if="(result as RestructuredStops)['BusStopCode']"
+                            class="flex flex-col justify-center items-start gap-2 p-2 w-full text-bta-light dark:text-bta-dark"
+                        >
+                            <h2 class="text-3xl font-light">
+                                {{ (result as RestructuredStops).BusStopCode }}
+                            </h2>
+                            <p>
+                                {{ (result as RestructuredStops).Description }}
+                            </p>
+                            <p>{{ (result as RestructuredStops).RoadName }}</p>
+                        </div>
                     </button>
                 </div>
             </div>

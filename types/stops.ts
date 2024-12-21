@@ -63,7 +63,9 @@ export interface BusStopsCached {
 export interface RestructuredStops {
   BusStopCode: string;
   RoadName: string;
+  LowerCaseRoadName: string;
   Description: string;
+  LowerCaseDescription: string;
   Latitude: number;
   Longitude: number;
   Services: string[];
