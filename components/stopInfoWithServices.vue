@@ -2,6 +2,7 @@
 import type { RestructuredStops } from "~/types/stops";
 import type { COMPONENT_STATE } from "~/types/components";
 import { SubComponentStateKeys } from "~/types/components";
+import { addComponent } from "@nuxt/kit";
 const hideSearch: Ref<boolean> = useState("hideSearch");
 const props = defineProps<{ stopInfo: RestructuredStops }>();
 const title: Ref<string> = useState("title");
@@ -60,6 +61,15 @@ const checkNoOpBuses = (timing: string) => {
         return timing;
     }
 };
+
+const addColonInTime = (time: string) => {
+    if (time.length === 4) {
+        const hr = time.slice(0, 2);
+        const min = time.slice(2);
+        return hr + ":" + min;
+    }
+    return time;
+};
 </script>
 
 <template>
@@ -104,15 +114,39 @@ const checkNoOpBuses = (timing: string) => {
                 </div>
                 <div class="flex flex-col justify-center items-center gap-2">
                     <p class="text-xl p-2">First Bus</p>
-                    <p>{{ service[1].WD_FirstBus }}</p>
-                    <p>{{ checkNoOpBuses(service[1].SAT_LastBus) }}</p>
-                    <p>{{ checkNoOpBuses(service[1].SUN_FirstBus) }}</p>
+                    <p>{{ addColonInTime(service[1].WD_FirstBus) }}</p>
+                    <p>
+                        {{
+                            addColonInTime(
+                                checkNoOpBuses(service[1].SAT_FirstBus),
+                            )
+                        }}
+                    </p>
+                    <p>
+                        {{
+                            addColonInTime(
+                                checkNoOpBuses(service[1].SUN_FirstBus),
+                            )
+                        }}
+                    </p>
                 </div>
                 <div class="flex flex-col justify-center items-center gap-2">
                     <p class="text-xl p-2">Last Bus</p>
-                    <p>{{ service[1].WD_LastBus }}</p>
-                    <p>{{ checkNoOpBuses(service[1].SAT_FirstBus) }}</p>
-                    <p>{{ checkNoOpBuses(service[1].SUN_LastBus) }}</p>
+                    <p>{{ addColonInTime(service[1].WD_LastBus) }}</p>
+                    <p>
+                        {{
+                            addColonInTime(
+                                checkNoOpBuses(service[1].SAT_LastBus),
+                            )
+                        }}
+                    </p>
+                    <p>
+                        {{
+                            addColonInTime(
+                                checkNoOpBuses(service[1].SUN_LastBus),
+                            )
+                        }}
+                    </p>
                 </div>
             </div>
         </div>
