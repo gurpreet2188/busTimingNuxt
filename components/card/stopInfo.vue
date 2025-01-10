@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const darkTheme = useState("darkTheme");
 const props = defineProps({
     fav: Boolean,
     stopName: String,
@@ -18,27 +17,27 @@ const favClickhandle = () => {
 
 <template>
     <div
-        class="flex flex-col justify-center items-start gap-4 p-2 text-bta-inverted dark:text-bta-dark rounded-lg bg-bta-elevated-light dark:bg-bta-elevated-dark w-full"
+        class="flex flex-col justify-center items-start gap-4 p-2 text-bta-light dark:text-bta-dark w-full border-b-2 border-bta-light/20"
     >
         <div class="flex flex-row justify-between items-center gap-2 w-full">
             <div
-                class="flex flex-row justify-center items-center justify-self-start"
+                class="flex flex-row justify-center items-center justify-self-start gap-2"
             >
-                <h2 class="text-4xl font-light whitespace-nowrap">
+                <p class="text-xl whitespace-nowrap">
                     {{ stopCode }}
-                </h2>
+                </p>
 
                 <a
                     target="_blank"
                     :href="`https://www.google.com/maps/search/?api=1&query=${stopPos?.lat},${stopPos?.lon}`"
-                    class="text-sm p-1 rounded-md font-bold flex justify-center items-center gap-[0.5rem]"
+                    class="p-1 bg-bta-elevated-light/10 rounded-lg"
                 >
                     <p
-                        class="flex flex-row justify-center items-center gap-1 text-lg font-light"
+                        class="flex flex-row justify-center items-center gap-1 text-lg"
                     >
                         <IconsLocation
-                            class="fill-bta-dark"
-                            :size="{ w: '26px', h: '26px' }"
+                            class="fill-bta-light dark:fill-bta-dark"
+                            :size="{ w: '23px', h: '23px' }"
                         />
                         {{
                             distanceToStop
@@ -50,22 +49,24 @@ const favClickhandle = () => {
             </div>
             <button
                 @click="favClickhandle"
-                class="flex justify-center items-center justify-self-end"
+                class="flex justify-center items-center justify-self-end rounded-full bg-bta-elevated-light/10 p-1"
             >
+                <IconsFavsFilled
+                    class="fill-bta-light/50 dark:fill-bta-dark/50"
+                    v-if="fav"
+                    :size="{ w: '24px', h: '24px' }"
+                />
                 <IconsFavs
-                    :class="
-                        fav
-                            ? ' p-1 rounded-full fill-bta-light dark:fill-bta-dark bg-bta-secondary-light dark:bg-bta-secondary-dark'
-                            : 'fill-bta-inverted dark:fill-bta-dark'
-                    "
-                    :size="{ w: '32px', h: '32px' }"
+                    class="fill-bta-light dark:fill-bta-dark"
+                    v-if="!fav"
+                    :size="{ w: '24px', h: '24px' }"
                 />
             </button>
         </div>
         <div class="flex flex-col justify-between items-start w-[100%]">
-            <p class="line-clamp-1 text-lg font-bold">{{ stopName }}</p>
+            <p class="line-clamp-1 text-2xl">{{ stopName }}</p>
             <div class="flex flex-row justify-between items-center w-[100%]">
-                <p class="line-clamp-1 text-sm">{{ streetName }}</p>
+                <p class="line-clamp-1 text-lg">{{ streetName }}</p>
             </div>
         </div>
     </div>

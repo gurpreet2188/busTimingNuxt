@@ -87,13 +87,15 @@ watch(hideSearch, () => {
                 <div class="flex flex-col gap-2 w-full">
                     <h3
                         v-if="routesResults.length > 0"
-                        class="text-2xl font-light text-bta-light dark:text-bta-dark"
+                        class="text-lg text-bta-light dark:text-bta-dark"
                     >
                         Bus Services
                     </h3>
-                    <div class="flex flex-row gap-4 overflow-x-scroll">
+                    <div
+                        class="flex flex-row lg:flex-wrap gap-4 py-2 overflow-x-scroll lg:overflow-auto"
+                    >
                         <button
-                            class="text-2xl font-light p-4 text-bta-on-secondary-light dark:text-bta-on-secondary-dark rounded-md shadow-md dark:shadow-none bg-bta-secondary-light dark:bg-bta-secondary-dark"
+                            class="text-xl p-2 text-bta-light dark:text-bta-dark rounded-md bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10"
                             v-for="res in routesResults"
                             @click="() => handleServiceClick(res.service)"
                         >
@@ -104,23 +106,23 @@ watch(hideSearch, () => {
                 <div class="flex flex-col gap-2 w-full">
                     <h3
                         v-if="stopsResults.length > 0"
-                        class="text-2xl font-light text-bta-light dark:text-bta-dark"
+                        class="text-lg text-bta-light dark:text-bta-dark"
                     >
                         Bus Stops
                     </h3>
                     <div class="flex flex-row flex-wrap gap-4 w-full">
                         <button
-                            class="flex flex-col justify-center items-start p-4 text-bta-on-secondary-light dark:text-bta-on-secondary-dark rounded-md shadow-md dark:shadow-none bg-bta-secondary-light dark:bg-bta-secondary-dark w-full"
+                            class="flex flex-col justify-center items-start p-4 text-bta-light dark:text-bta-dark rounded-md bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 w-full"
                             v-for="res in stopsResults"
                             @click="() => handleStopClick(res)"
                         >
-                            <h2 class="text-2xl">
+                            <h2 class="text-lg">
                                 {{ res.code }}
                             </h2>
-                            <p class="text-xl">
+                            <p class="text-2xl">
                                 {{ res.description }}
                             </p>
-                            <p class="text-xl">{{ res.street }}</p>
+                            <p class="text-lg">{{ res.street }}</p>
                         </button>
                     </div>
                 </div>

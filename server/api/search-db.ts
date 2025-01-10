@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
       });
       const stopsResult = await supabase
         .from("stops")
-        .select("street,code,description")
+        .select("street,code,description,lattitude,longitude")
         .ilike("find_in_stops", `%${searchText?.text}%`);
       return {
         services: servicesResult.data as { service: string }[],

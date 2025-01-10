@@ -263,7 +263,7 @@ const getData = async (lat: number, lon: number) => {
 
 <template>
     <div
-        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-screen justify-start items-center gap-[1rem] w-[100%] p-2 px-4 pb-[4rem]"
+        class="relative flex flex-col lg:w-[40%] md:w-[60%] h-screen justify-start items-center gap-[1rem] w-[100%] px-4 pb-[4rem]"
     >
         <Transition>
             <Header
@@ -302,7 +302,7 @@ const getData = async (lat: number, lon: number) => {
             />
         </div>
         <BottomNav
-            :class="`fixed bottom-2 top-auto w-[100%] lg:w-[20%] lg:mb-2`"
+            :class="`fixed bottom-0 top-auto w-[100%] lg:w-[20%] lg:mb-2`"
             v-if="componentsState[ComponentsStateKeys.LOCATIONLOADING]"
         />
     </div>

@@ -3,63 +3,47 @@ import type { ConcreteComponent } from "vue";
 defineProps<{ title: string }>();
 const settings = useState("settings");
 const refreshData = useState("refreshData");
-const expandNav = useState("expandNav", () => false);
-const expandedNavData = useState("expandedNavData", () => "");
-const hideSearch: Ref<boolean> = useState("hideSearch");
 const animateRefresh: Ref<boolean> = useState("animateRefresh");
-const handleCloseBtn = () => (hideSearch.value = false);
-
+const expandedNavComponent: Ref<string | null> = useState("expandedNavComponent", () => null)
+const expandedNavProps: Ref<{}> = useState("expandedNavProps", () => { return {} })
 const svgIconClass =
     "fill-bta-on-secondary-light dark:fill-bta-dark transition-all duration-300 ease-linear";
 
 const iconRefresh = resolveComponent("IconsRefresh");
 const iconCog = resolveComponent("IconsCog");
+
+const addShadow: Ref<string> = ref('')
+
+onMounted(() => {
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 10 && addShadow.value.length === 0) {
+            addShadow.value = 'shadow-md'   
+        } else if (addShadow.value.length > 0 && window.scrollY === 0) {
+            addShadow.value = ''
+        }
+    })
+})
 </script>
 
 <template>
     <div
-        class="fixed flex flex-col justify-between items-center rounded-md shadow-md p-4 w-[95%] top-2 bottom-auto z-10 bg-bta-secondary-light/80 dark:bg-bta-secondary-dark/80 backdrop-blur-md lg:w-[40%] md:w-[60%]"
-    >
+        :class="addShadow"
+        class="fixed flex flex-col justify-between items-center gap-4 p-4 w-full bottom-auto z-10 lg:w-[40%] md:w-[60%] bg-bta-light dark:bg-bta-dark">
         <div class="flex flex-row justify-between items-center w-full">
-            <h1
-                class="text-3xl self-start font-light text-bta-on-secondary-light dark:text-bta-on-secondary-dark"
-            >
+            <h1 class="text-lg font-bold self-start text-bta-on-secondary-light dark:text-bta-on-secondary-dark mt-1">
                 {{ title }}
             </h1>
 
             <div class="flex flex-row justify-center items-center gap-4">
-                <IconButton
-                    :class="animateRefresh ? 'animate-spin' : ''"
-                    :icon="iconRefresh as ConcreteComponent"
-                    :size="{ w: '28px', h: '28px' }"
-                    :customClass="svgIconClass"
-                    :handle-click="() => (refreshData = !refreshData)"
-                />
-                <IconButton
-                    :icon="iconCog as ConcreteComponent"
-                    :size="{ w: '28px', h: '28px' }"
-                    :customClass="svgIconClass"
-                    :handle-click="() => (settings = !settings)"
-                />
+                <IconButton :class="animateRefresh ? 'animate-spin' : ''" :icon="iconRefresh as ConcreteComponent"
+                    :size="{ w: '24px', h: '24px' }" :customClass="svgIconClass"
+                    :handle-click="() => (refreshData = !refreshData)" />
+                <IconButton :icon="iconCog as ConcreteComponent" :size="{ w: '24px', h: '24px' }"
+                    :customClass="svgIconClass" :handle-click="() => (settings = !settings)" />
             </div>
         </div>
         <Transition>
-            <div
-                v-if="expandNav"
-                class="flex flex-row justify-between items-center pt-10 rounded-md w-full"
-            >
-                <h2
-                    class="text-4xl font-light line-clamp-1 text-ellipsis leading-normal text-bta-light dark:text-bta-dark"
-                >
-                    {{ expandedNavData }}
-                </h2>
-                <button @click="handleCloseBtn">
-                    <IconsClose
-                        class="fill-bta-on-secondary-light dark:fill-bta-dark"
-                        :size="{ w: '32px', h: '32px' }"
-                    />
-                </button>
-            </div>
+            <component :is="expandedNavComponent!" v-bind="expandedNavProps" />
         </Transition>
     </div>
 </template>

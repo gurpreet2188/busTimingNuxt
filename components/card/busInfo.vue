@@ -29,8 +29,8 @@ const showOriginDestination: Ref<boolean> = ref(false);
 const darkTheme: Ref<boolean> = useState("darkTheme");
 
 const size = {
-    w: "20px",
-    h: "20px",
+    w: "24px",
+    h: "24px",
 };
 const busOriginDestination: Ref<{
     origin: string | undefined;
@@ -105,14 +105,14 @@ const busStatusIconColor =
         <div
             class="flex-[70%] grid grid-cols-3 place-items-center gap-8 text-left text-xl w-full"
         >
-            <p class="mr-auto ml-2 text-3xl text-left font-light">
+            <p class="mr-auto ml-2 text-xl text-left">
                 {{ busCode }}
             </p>
 
             <div
                 class="mr-1 ml-auto flex flex-row justify-center items-center gap-2"
             >
-                <p class="text-3xl font-light">
+                <p class="text-xl">
                     {{
                         nextBus?.EstimatedArrival.length!! > 0
                             ? busUTCToMins(nextBus!!.EstimatedArrival)
@@ -123,7 +123,7 @@ const busStatusIconColor =
                     :style="{
                         backgroundColor: busLoadTextColor(nextBus?.Load),
                     }"
-                    class="flex flex-col justify-center items-center p-[2px] rounded-md"
+                    class="flex flex-col justify-center items-center p-1 rounded-md"
                 >
                     <IconsWheelChair
                         v-if="nextBus?.Feature === 'WAB'"
@@ -137,7 +137,7 @@ const busStatusIconColor =
             <div
                 class="mr-1 ml-auto flex flex-row justify-center items-center gap-2"
             >
-                <p class="text-3xl font-light">
+                <p class="text-xl">
                     {{
                         nextBus2?.EstimatedArrival.length!! > 0
                             ? busUTCToMins(nextBus2!!.EstimatedArrival)
@@ -149,7 +149,7 @@ const busStatusIconColor =
                     :style="{
                         backgroundColor: busLoadTextColor(nextBus2?.Load),
                     }"
-                    class="flex flex-col justify-center items-center p-[2px] rounded-md"
+                    class="flex flex-col justify-center items-center p-1 rounded-md"
                 >
                     <IconsWheelChair
                         v-if="nextBus?.Feature === 'WAB'"
