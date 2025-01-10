@@ -1,21 +1,35 @@
 <script setup lang="ts">
-import type { RestructuredStops } from "~/types/stops";
+import type { ServiceTiming, Stop } from "~/types/stops";
 import type { COMPONENT_STATE } from "~/types/components";
 import { SubComponentStateKeys } from "~/types/components";
+
 const hideSearch: Ref<boolean> = useState("hideSearch");
-const props = defineProps<{ stopInfo: RestructuredStops }>();
+const props = defineProps<{ stopInfo: Stop }>();
 const title: Ref<string> = useState("title");
 const expandNav = useState("expandNav", () => false);
 const expandedNavData = useState("expandedNavData", () => "");
 const subComponentState: Ref<COMPONENT_STATE> = useState("sub_component_state");
+const servicesTiming: Ref<ServiceTiming[] | null> = useState(
+    "serviceTiming",
+    () => null,
+);
+const stopNameRef: Ref<HTMLElement | null> = ref(null);
+
+const lastScroll: Ref<number> = useState("searchLastScroll");
+
+onBeforeMount(async () => {
+    servicesTiming.value = await $fetch("/api/get-services", {
+        body: { single: props.stopInfo.code },
+        method: "POST",
+    });
+});
+
 const handleHideSearch = () => {
     hideSearch.value = false;
     title.value = "Search";
     expandNav.value = false;
     expandedNavData.value = "";
 };
-
-const stopNameRef: Ref<HTMLElement | null> = ref(null);
 
 const ib = new IntersectionObserver(
     (entries, observer) => {
@@ -26,7 +40,7 @@ const ib = new IntersectionObserver(
             ) {
                 (e.target as HTMLElement).classList.add("hide-service-name");
                 expandNav.value = true;
-                expandedNavData.value = props.stopInfo.Description;
+                expandedNavData.value = props.stopInfo.description;
             } else if (
                 !hideSearch.value ||
                 !subComponentState.value[SubComponentStateKeys.ROUTE] ||
@@ -81,7 +95,7 @@ const addColonInTime = (time: string) => {
                 class="flex flex-row justify-between items-center w-full"
             >
                 <h2 class="text-4xl tracking-wide">
-                    {{ stopInfo.BusStopCode }}
+                    {{ stopInfo.code }}
                 </h2>
                 <IconsClose
                     @click="handleHideSearch"
@@ -90,13 +104,13 @@ const addColonInTime = (time: string) => {
                 />
             </div>
             <div class="self-start">
-                <p class="text-lg">{{ stopInfo.Description }}</p>
-                <p class="text-lg">{{ stopInfo.RoadName }}</p>
+                <p class="text-lg">{{ stopInfo.description }}</p>
+                <p class="text-lg">{{ stopInfo.street }}</p>
             </div>
         </div>
         <div
             class="flex flex-col justify-center items-start gap-4 text-bta-light dark:text-bta-dark p-2 w-full rounded-md"
-            v-for="service of Object.entries(stopInfo.Service)"
+            v-for="service of servicesTiming!"
         >
             <!-- <div class="flex flex-col w-full gap-4"></div> -->
 
@@ -105,7 +119,7 @@ const addColonInTime = (time: string) => {
                     <button
                         class="text-xl p-2 text-bta-light dark:text-bta-dark"
                     >
-                        {{ service[1].ServiceNo }}
+                        {{ service.service }}
                     </button>
                     <p>Weekday</p>
                     <p>Saturday</p>
@@ -113,38 +127,22 @@ const addColonInTime = (time: string) => {
                 </div>
                 <div class="flex flex-col justify-center items-center gap-2">
                     <p class="text-xl p-2">First Bus</p>
-                    <p>{{ addColonInTime(service[1].WD_FirstBus) }}</p>
+                    <p>{{ addColonInTime(service.wd_first) }}</p>
                     <p>
-                        {{
-                            addColonInTime(
-                                checkNoOpBuses(service[1].SAT_FirstBus),
-                            )
-                        }}
+                        {{ addColonInTime(checkNoOpBuses(service.sat_first)) }}
                     </p>
                     <p>
-                        {{
-                            addColonInTime(
-                                checkNoOpBuses(service[1].SUN_FirstBus),
-                            )
-                        }}
+                        {{ addColonInTime(checkNoOpBuses(service.sun_first)) }}
                     </p>
                 </div>
                 <div class="flex flex-col justify-center items-center gap-2">
                     <p class="text-xl p-2">Last Bus</p>
-                    <p>{{ addColonInTime(service[1].WD_LastBus) }}</p>
+                    <p>{{ addColonInTime(service.wd_last) }}</p>
                     <p>
-                        {{
-                            addColonInTime(
-                                checkNoOpBuses(service[1].SAT_LastBus),
-                            )
-                        }}
+                        {{ addColonInTime(checkNoOpBuses(service.sat_last)) }}
                     </p>
                     <p>
-                        {{
-                            addColonInTime(
-                                checkNoOpBuses(service[1].SUN_LastBus),
-                            )
-                        }}
+                        {{ addColonInTime(checkNoOpBuses(service.sun_last)) }}
                     </p>
                 </div>
             </div>

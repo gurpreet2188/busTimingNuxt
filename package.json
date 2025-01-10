@@ -27,6 +27,7 @@
   "dependencies": {
     "@nuxt/kit": "^3.14.1592",
     "@pinia/nuxt": "^0.4.11",
+    "@supabase/supabase-js": "^2.47.10",
     "firebase": "^10.14.1",
     "firebaseui": "^6.1.0",
     "lucide-vue-next": "^0.263.0",

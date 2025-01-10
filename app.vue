@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
-import type { Stop, StopQueryResponse, StopQuery } from "./types/stops";
+import type { Stop, StopQuery } from "./types/stops";
 import type { COMPONENT_STATE } from "./types/components";
 import { ComponentsStateKeys, SubComponentStateKeys } from "./types/components";
 import { useGeolocation } from "@vueuse/core";
@@ -181,14 +181,15 @@ const getFavsBusTiming = async () => {
         const query: StopQuery = {
             single: favStopsFromLocal.value[index],
         };
-        const stopData = await $fetch("/api/get-stop-info", {
+        const stopData: Stop = await $fetch("/api/get-stops", {
             method: "POST",
             body: JSON.stringify(query),
         });
-        if (stopData?.stop) {
-            tempArr[index] = stopData?.stop;
+        if (stopData?.code) {
+            tempArr[index] = stopData;
+            tempArr[index].services = [];
         }
-        tempArr[index].Services = await fetchBusInfo(
+        tempArr[index].services = await fetchBusInfo(
             favStopsFromLocal.value[index],
         );
     }
@@ -233,12 +234,14 @@ const getLocationBusTiming = async () => {
         pause();
         isLocationLoading.value = false;
         located.value = true;
+
         stops.value = await getData(
             coords.value.latitude,
             coords.value.longitude,
         );
+
         for (const stop of stops.value!!) {
-            stop.Services = await fetchBusInfo(stop.BusStopCode!!);
+            stop.services = await fetchBusInfo(stop.code!!);
         }
     } else if (error.value) {
         isLocationLoading.value = false;
@@ -250,11 +253,11 @@ const getData = async (lat: number, lon: number) => {
     const query: StopQuery = {
         nearest: { lat, lon },
     };
-    const res = await $fetch(`/api/get-stop-info`, {
+    const res = await $fetch(`/api/get-stops`, {
         method: "POST",
         body: query,
     });
-    return res.stops!!;
+    return res!!;
 };
 </script>
 
@@ -289,7 +292,6 @@ const getData = async (lat: number, lon: number) => {
                     componentsState[ComponentsStateKeys.LOCATIONLOADING] &&
                     subComponentState[SubComponentStateKeys.FAVS]
                 "
-                :stopsWithServices="stops"
             />
 
             <LazySearch

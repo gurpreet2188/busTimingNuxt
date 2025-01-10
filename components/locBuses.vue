@@ -35,15 +35,15 @@ const msg = computed((): string => {
         <BusCard
             v-if="stopsWithServices && stopsWithServices!!.length!! > 0"
             v-for="(stop, index) in stopsWithServices!!"
-            :fav="useCheckIfFavStop(stop.BusStopCode!!, favStopsFromLocal!)"
-            :stop-name="stop.Description"
-            :stop-code="stop.BusStopCode"
+            :fav="useCheckIfFavStop(stop.code!!, favStopsFromLocal!)"
+            :stop-name="stop.description"
+            :stop-code="stop.code"
             :bg-color-shift="index"
-            :street-name="stop.RoadName"
-            :services="stop.Services"
-            :distance-to-stop="stop.Distance"
-            :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
-            :key="stop.BusStopCode!! + new Date().getTime()"
+            :street-name="stop.street"
+            :services="stop.services"
+            :distance-to-stop="stop.distance"
+            :stop-pos="{ lat: stop.lattitude, lon: stop.longitude }"
+            :key="stop.code!! + new Date().getTime()"
         />
 
         <LoadingPage

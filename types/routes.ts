@@ -1,3 +1,5 @@
+import type { Stop } from "./stops";
+
 export interface Root {
   value: Value[];
 }
@@ -15,6 +17,21 @@ export interface Value {
   SAT_LastBus: string;
   SUN_FirstBus: string;
   SUN_LastBus: string;
+}
+
+export interface RouteWithStops extends Stop {
+  service: string;
+  code: string;
+  direction: number;
+  sequence: number;
+  distance: number;
+  wd_first: string;
+  wd_last: string;
+  sat_first: string;
+  sat_last: string;
+  sun_first: string;
+  sun_last: string;
+  second_direction: boolean;
 }
 
 export interface StoredValues {

@@ -14,17 +14,18 @@ export interface LTAStop {
   Latitude: number;
   Longitude: number;
 }
+
 export interface Stop {
-  BusStopCode?: string;
-  RoadName?: string;
-  Description?: string;
-  Latitude?: number;
-  Longitude?: number;
-  Services?: Service[];
-  Distance?: number;
+  code: string;
+  street: string;
+  description: string;
+  lattitude: number;
+  longitude: number;
+  distance: number;
+  services: RealtimeService[];
 }
 
-export interface Service {
+export interface RealtimeService {
   ServiceNo: string;
   Operator: string;
   NextBus: NextBus;
@@ -70,6 +71,17 @@ export interface RestructuredStops {
   Longitude: number;
   Services: string[];
   Service: { [key: string]: StopService };
+}
+
+export interface ServiceTiming {
+  service: string;
+  code: string;
+  wd_first: string;
+  wd_last: string;
+  sat_first: string;
+  sat_last: string;
+  sun_first: string;
+  sun_last: string;
 }
 
 export interface StopService {

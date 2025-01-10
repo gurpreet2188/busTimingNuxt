@@ -40,7 +40,11 @@ const favClickhandle = () => {
                             class="fill-bta-dark"
                             :size="{ w: '26px', h: '26px' }"
                         />
-                        {{ distanceToStop ? distanceToStop + " km" : "" }}
+                        {{
+                            distanceToStop
+                                ? distanceToStop.toFixed(2) + " km"
+                                : ""
+                        }}
                     </p>
                 </a>
             </div>

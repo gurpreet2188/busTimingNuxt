@@ -1,81 +1,73 @@
 <script setup lang="ts">
-import type { RestructuredRoutes } from "~/types/routes";
-import type { RestructuredStops } from "~/types/stops";
+import type { Stop } from "~/types/stops";
 import Route from "./route.vue";
 
 const title: Ref<string> = useState("title");
-
-onMounted(() => (title.value = "Search"));
-
+const searchDIV: Ref<HTMLElement | null> = ref(null);
+const lastScroll: Ref<number> = useState("searchLastScroll", () => 0);
 const searchText: Ref<{ text: string }> = useState("searchText", () => {
     return { text: "" };
 });
 
 const searchResultMsg: Ref<string> = useState("searchResultMsg", () => "");
-const searchResult: Ref<RestructuredRoutes[] | RestructuredStops[]> = useState(
-    "searchResult",
+const routesResults: Ref<{ service: string }[]> = useState(
+    "routesResults",
     () => [],
 );
+const stopsResults: Ref<Stop[]> = useState("stopsResults", () => []);
 const hideSearch: Ref<boolean> = useState("hideSearch", () => false);
-const routeInfo: Ref<RestructuredRoutes | undefined> = useState(
-    "routeInfo",
-    () => undefined,
-);
-const stopInfo: Ref<RestructuredStops | undefined> = useState(
-    "stopInfo",
-    () => undefined,
-);
+
+const serviceCode: Ref<string | null> = useState("serviceCode", () => null);
+const stopInfo: Ref<Stop | null> = useState("stopCode", () => null);
+
+onMounted(() => {
+    window.addEventListener("scroll", () => {
+        if (!hideSearch.value) {
+            lastScroll.value = window.scrollY;
+        }
+    });
+    title.value = "Search";
+});
 
 const handleOnSubmit = async () => {
-    if (searchText.value.text.length > 0 && searchText.value.text.length < 5) {
-        searchResult.value = (await useBusRoute(
-            searchText.value.text,
-        )) as RestructuredRoutes[];
-        searchResultMsg.value =
-            "Found " + searchResult.value.length + " Bus Service(s)";
-        searchResult.value = searchResult.value.sort(
-            (a, b) => parseInt(a.ServiceNo) - parseInt(b.ServiceNo),
-        );
-        return;
-    } else if (searchText.value.text.length === 5) {
-        searchResult.value = await useBusStopCode(searchText.value.text);
-        searchResultMsg.value =
-            "Found " + searchResult.value.length + " Bus Stop(s)";
-        return;
-    } else {
-        searchResult.value = await useBusStopName(
-            searchText.value.text.toLowerCase(),
-        );
-        searchResultMsg.value =
-            "Found " + searchResult.value.length + " Bus Stop(s)";
+    const result = await $fetch("/api/search-db", {
+        body: searchText.value,
+        method: "POST",
+    });
+    routesResults.value = result?.services!;
+    stopsResults.value = result?.stops!;
+    if (result?.services.length === 0 && result?.stops.length === 0) {
+        searchResultMsg.value = "No Results";
     }
-
-    searchResultMsg.value = "No Results";
 };
 
-const handleClick = (data: RestructuredRoutes | RestructuredStops) => {
-    if (Object.keys(data).includes("ServiceNo")) {
-        routeInfo.value = data as RestructuredRoutes;
-        stopInfo.value = undefined;
-        title.value = "Bust Route";
-    } else {
-        stopInfo.value = data as RestructuredStops;
-        routeInfo.value = undefined;
-        title.value = "Stop Info";
-    }
+const handleServiceClick = (service: string) => {
+    serviceCode.value = service;
+    title.value = "Bus Route";
+    hideSearch.value = true;
+};
+
+const handleStopClick = (stop: Stop) => {
+    stopInfo.value = stop;
+    title.value = "Stop Info";
     hideSearch.value = true;
 };
 
 watch(hideSearch, () => {
     if (!hideSearch.value) {
         handleOnSubmit();
+        console.log(lastScroll.value);
+        window.scrollBy({ top: lastScroll.value });
+        serviceCode.value = null;
+        stopInfo.value = null;
     }
 });
 </script>
 
 <template>
     <div
-        class="flex flex-col justify-center gap-8 items-center w-full pb-20 pt-5"
+        ref="searchDIV"
+        class="flex flex-col justify-center gap-8 items-center w-full pb-32 pt-5"
     >
         <div class="flex flex-col justify-center gap-8 items-center w-full">
             <SearchInputBar
@@ -87,46 +79,58 @@ watch(hideSearch, () => {
 
             <div
                 v-if="!hideSearch"
-                class="flex flex-col justify-items items-start gap-2 w-full"
+                class="flex flex-col justify-items items-start gap-8 w-full"
             >
                 <p class="text-black dark:text-white">
                     {{ searchResultMsg }}
                 </p>
-                <div class="flex flex-row flex-wrap gap-2 w-full">
-                    <button
-                        class="text-bta-on-secondary-light dark:text-bta-on-secondary-dark p-2 rounded-md shadow-md dark:shadow-none bg-bta-secondary-light dark:bg-bta-secondary-dark w-full"
-                        v-for="result in searchResult"
-                        @click="() => handleClick(result)"
+                <div class="flex flex-col gap-2 w-full">
+                    <h3
+                        v-if="routesResults.length > 0"
+                        class="text-2xl font-light text-bta-light dark:text-bta-dark"
                     >
-                        <div v-if="(result as RestructuredRoutes)['ServiceNo']">
-                            <h2 class="text-3xl font-light p-4">
-                                {{ (result as RestructuredRoutes).ServiceNo }}
-                            </h2>
-                        </div>
-                        <div
-                            v-if="(result as RestructuredStops)['BusStopCode']"
-                            class="flex flex-col justify-center items-start gap-2 p-2 w-full text-bta-light dark:text-bta-dark"
+                        Bus Services
+                    </h3>
+                    <div class="flex flex-row gap-4 overflow-x-scroll">
+                        <button
+                            class="text-2xl font-light p-4 text-bta-on-secondary-light dark:text-bta-on-secondary-dark rounded-md shadow-md dark:shadow-none bg-bta-secondary-light dark:bg-bta-secondary-dark"
+                            v-for="res in routesResults"
+                            @click="() => handleServiceClick(res.service)"
                         >
-                            <h2 class="text-3xl font-light">
-                                {{ (result as RestructuredStops).BusStopCode }}
+                            {{ res.service }}
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 w-full">
+                    <h3
+                        v-if="stopsResults.length > 0"
+                        class="text-2xl font-light text-bta-light dark:text-bta-dark"
+                    >
+                        Bus Stops
+                    </h3>
+                    <div class="flex flex-row flex-wrap gap-4 w-full">
+                        <button
+                            class="flex flex-col justify-center items-start p-4 text-bta-on-secondary-light dark:text-bta-on-secondary-dark rounded-md shadow-md dark:shadow-none bg-bta-secondary-light dark:bg-bta-secondary-dark w-full"
+                            v-for="res in stopsResults"
+                            @click="() => handleStopClick(res)"
+                        >
+                            <h2 class="text-2xl">
+                                {{ res.code }}
                             </h2>
-                            <p>
-                                {{ (result as RestructuredStops).Description }}
+                            <p class="text-xl">
+                                {{ res.description }}
                             </p>
-                            <p>{{ (result as RestructuredStops).RoadName }}</p>
-                        </div>
-                    </button>
+                            <p class="text-xl">{{ res.street }}</p>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
         <div
-            v-if="hideSearch && routeInfo"
+            v-if="hideSearch && serviceCode"
             class="flex flex-col justify-center gap-8 items-center w-full"
         >
-            <Route
-                :serviceNo="routeInfo?.ServiceNo!!"
-                :route="routeInfo!! as RestructuredRoutes"
-            />
+            <Route :serviceCode="serviceCode" />
         </div>
         <div
             v-if="hideSearch && stopInfo"

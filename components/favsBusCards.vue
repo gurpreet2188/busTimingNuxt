@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Stop as BUS_STOP_TYPE } from "../types/stops";
+import type { Stop } from "../types/stops";
 
-const favsStops: Ref<BUS_STOP_TYPE[] | null> = useState("favsStops");
+const favsStops: Ref<Stop[] | null> = useState("favsStops");
 const showEmptyFavsMessage: Ref<boolean> = ref(true);
 const title: Ref<string> = useState("title");
 
@@ -52,14 +52,14 @@ watch(
                     <BusCard
                         v-for="(stop, index) in favsStops"
                         :fav="true"
-                        :stop-name="stop.Description"
-                        :stop-code="stop.BusStopCode"
+                        :stop-name="stop.description"
+                        :stop-code="stop.code"
                         :bg-color-shift="index"
-                        :street-name="stop.RoadName"
-                        :services="stop.Services"
-                        :distance-to-stop="stop.Distance"
-                        :stop-pos="{ lat: stop.Latitude, lon: stop.Longitude }"
-                        :key="stop.BusStopCode + 'f'"
+                        :street-name="stop.street"
+                        :services="stop.services"
+                        :distance-to-stop="stop.distance"
+                        :stop-pos="{ lat: stop.lattitude, lon: stop.longitude }"
+                        :key="stop.code + 'f'"
                     />
                 </TransitionGroup>
             </div>
