@@ -14,7 +14,7 @@ const hideSwitchBtn: Ref<boolean> = ref(true);
 const totalStops: Ref<number> = ref(0);
 const totalDistance: Ref<number> = ref(0);
 const routePath:Ref<{} | null> = useState("routePath", ()=> null)
-const key = process.env.GMAP_KEY!
+const key = useRuntimeConfig()
 onMounted(async () => {
     expandedNavComponent.value = resolveComponent("LazyExpandedServiceInfo") as string
     expandedNavProps.value = { serviceCode: props.serviceCode, handleShowBusRoute: handleShowBusRoute }
@@ -73,7 +73,7 @@ onBeforeUnmount(() => {
 <template>
     <div class="relative flex flex-col justify-center items-start gap-4 w-full">
         <GoogleMap v-if="route" style="width: 100%; height: 20rem;" 
-        :api-key="key" 
+        :api-key="key.public?.GMAP_KEY as string" 
         :center="{lat:route![0].lattitude!,lng:route![0].longitude!}"
         :zoom="12">
             <Polyline :options="routePath!"/>

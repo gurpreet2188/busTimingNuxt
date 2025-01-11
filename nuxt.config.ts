@@ -26,16 +26,10 @@ export default defineNuxtConfig({
   },
 
   tailwindcss: { cssPath: "~/assets/css/tailwind.css" },
-
-  // build: {
-  //   // @ts-ignore
-  //   postcss: {
-  //     postcssOptions: require('./postcss.config.js'),
-  //   },
-  // },
-  // experimental: {
-  //   inlineSSRStyles: false
-  // },
-
+  runtimeConfig:{
+    public: {
+      GMAP_KEY:process.env.GMAP_KEY
+    }
+  },
   compatibilityDate: "2024-11-08",
 });

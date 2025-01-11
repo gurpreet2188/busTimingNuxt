@@ -12,7 +12,7 @@ const servicesTiming: Ref<ServiceTiming[] | null> = useState(
     "serviceTiming",
     () => null,
 );
-const key = process.env.GMAP_KEY!
+const key = useRuntimeConfig()
 const lastScroll: Ref<number> = useState("searchLastScroll");
 
 onBeforeMount(async () => {
@@ -59,23 +59,10 @@ const center = { lat: props.stopInfo.lattitude, lng: props.stopInfo.longitude }
 
 <template>
     <div class="flex flex-col justify-center items-start gap-8 w-full mt-20">
-        <GoogleMap style="width: 100%; height: 20rem;" :api-key="key" :zoom="17"
+        <GoogleMap style="width: 100%; height: 20rem;" :api-key="key.public?.GMAP_KEY as string" :zoom="17"
             :center="center" :zoom-control="false">
             <Marker :options="{ position: center, title: stopInfo.description }" />
         </GoogleMap>
-        <!-- <div class="flex flex-col justify-center items-start gap-2 p-2 w-full text-bta-light dark:text-bta-dark ">
-            <div ref="stopNameRef" class="flex flex-row justify-between items-center w-full">
-                <h2 class="text-lg tracking-wide">
-                    {{ stopInfo.code }}
-                </h2>
-                <IconsClose @click="handleHideSearch" class="fill-bta-dark dark:fill-bta-light"
-                    :size="{ w: '32px', h: '32px' }" />
-            </div>
-            <div class="self-start">
-                <p class="text-2xl">{{ stopInfo.description }}</p>
-                <p class="text-lg">{{ stopInfo.street }}</p>
-            </div>
-        </div> -->
         <div class="flex flex-col justify-center items-start gap-4 text-bta-light dark:text-bta-dark p-2 w-full rounded-md"
             v-for="service of servicesTiming!">
             <!-- <div class="flex flex-col w-full gap-4"></div> -->
