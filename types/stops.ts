@@ -74,6 +74,7 @@ export interface RestructuredStops {
 }
 
 export interface ServiceTiming {
+  id: string;
   service: string;
   code: string;
   wd_first: string;
