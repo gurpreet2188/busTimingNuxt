@@ -25,6 +25,7 @@
     "vue": "latest"
   },
   "dependencies": {
+    "@huggingface/transformers": "^3.2.4",
     "@nuxt/kit": "^3.14.1592",
     "@pinia/nuxt": "^0.4.11",
     "@supabase/supabase-js": "^2.47.10",

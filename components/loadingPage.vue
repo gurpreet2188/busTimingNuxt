@@ -46,7 +46,7 @@ const props = defineProps<{
     </div>
 </template>
 
-<style scoped>
+<style>
 .loading-bar {
     animation: loadingAnimation 2s linear infinite;
 }
