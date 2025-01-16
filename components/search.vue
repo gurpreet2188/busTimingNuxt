@@ -164,9 +164,12 @@ watch(hideSearch, () => {
                             </p>
                             <p class="text-lg">{{ res.street }}</p>
                         </button>
-                        <h2 v-show="embeddedResults?.length! > 0">
-                            Ai based Search Results
-                        </h2>
+                        <h3
+                            class="text-lg text-bta-light dark:text-bta-dark"
+                            v-show="embeddedResults?.length! > 0"
+                        >
+                            Closest Match
+                        </h3>
                         <button
                             class="flex flex-col justify-center items-start p-4 text-bta-light dark:text-bta-dark rounded-md bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 w-full"
                             v-for="res in embeddedResults"
