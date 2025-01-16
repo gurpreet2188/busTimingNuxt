@@ -19,7 +19,7 @@ const lastScroll: Ref<number> = useState("searchLastScroll");
 
 onBeforeMount(async () => {
     servicesTiming.value = await $fetch("/api/get-services", {
-        body: { single: props.stopInfo.code },
+        body: { code: props.stopInfo.code },
         method: "POST",
     });
     expandedNavComponent.value = resolveComponent(

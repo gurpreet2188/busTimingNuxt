@@ -1,27 +1,16 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabaseQuery } from "~/helper/supabaseQuery";
 import type { Stop } from "~/types/stops";
 
-const url = process.env.SUPABASE_URL;
-const key = process.env.SUPABASE_ANON;
-
 export default defineEventHandler(async (event) => {
-  try {
-    const supabase = createClient(url!, key!);
-    const searchText: null | { text: string } = await readBody(event);
-    if (searchText) {
-      const servicesResult = await supabase.rpc("unique_routes", {
-        _search: searchText?.text,
-      });
-      const stopsResult = await supabase
-        .from("stops")
-        .select("street,code,description,lattitude,longitude")
-        .ilike("code", `%${searchText?.text}%`);
-      return {
-        services: servicesResult.data as { service: string }[],
-        stops: stopsResult.data as Stop[],
-      };
-    }
-  } catch (e) {
-    console.error(e);
-  }
+  const searchText: null | { text: string } = await readBody(event);
+  const servicesResult = await supabaseQuery("unique_routes", {
+    _search: searchText?.text,
+  });
+  const stopsResult = await supabaseQuery<Stop[]>("find_stops", {
+    _code: searchText?.text,
+  });
+  return {
+    services: servicesResult as { service: string }[],
+    stops: stopsResult as Stop[],
+  };
 });

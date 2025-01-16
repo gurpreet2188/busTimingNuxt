@@ -178,10 +178,10 @@ watch(
 const getFavsBusTiming = async () => {
     const tempArr: Stop[] = [];
     for (const index in favStopsFromLocal.value) {
-        const query: StopQuery = {
-            single: favStopsFromLocal.value[index],
+        const query = {
+            code: favStopsFromLocal.value[index],
         };
-        const stopData: Stop = await $fetch("/api/get-stops", {
+        const stopData: Stop = await $fetch("/api/get-stop", {
             method: "POST",
             body: JSON.stringify(query),
         });
@@ -250,14 +250,12 @@ const getLocationBusTiming = async () => {
 };
 
 const getData = async (lat: number, lon: number) => {
-    const query: StopQuery = {
-        nearest: { lat, lon },
-    };
-    const res = await $fetch(`/api/get-stops`, {
+    const query = { lat, lon };
+    const res = await $fetch(`/api/get-nearest`, {
         method: "POST",
         body: query,
     });
-    return res!!;
+    return res!! as Stop[];
 };
 </script>
 
