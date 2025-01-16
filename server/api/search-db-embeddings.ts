@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     stops: await supabaseQuery<Stop[]>("similarity_street_description", {
       query_embedding: `[${body!.embedding}]`,
       match_threshold: 0.81,
-      match_count: 10,
+      match_count: 50,
     }),
   };
 });

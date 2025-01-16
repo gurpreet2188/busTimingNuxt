@@ -6,9 +6,12 @@ export default defineEventHandler(async (event) => {
   const servicesResult = await supabaseQuery("unique_routes", {
     _search: searchText?.text,
   });
-  const stopsResult = await supabaseQuery<Stop[]>("find_stops", {
-    _code: searchText?.text,
-  });
+  let stopsResult: Stop[] | undefined = [];
+  if (searchText?.text.length === 5) {
+    stopsResult = await supabaseQuery<Stop[]>("find_stops", {
+      _code: searchText?.text,
+    });
+  }
   return {
     services: servicesResult as { service: string }[],
     stops: stopsResult as Stop[],

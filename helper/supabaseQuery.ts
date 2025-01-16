@@ -7,6 +7,7 @@ export async function supabaseQuery<T>(queryFn: string, queryArgs: {}) {
   try {
     const supabase = createClient(url!, key!);
     const { data, error } = await supabase.rpc(queryFn, queryArgs);
+    // console.log(data);
     error && console.error({ queryError: error });
     return data as T;
   } catch (e) {

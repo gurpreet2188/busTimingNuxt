@@ -42,32 +42,30 @@ const handleOnSubmit = async () => {
     routesResults.value = result?.services!;
     stopsResults.value = result?.stops!;
 
-    if (/[a-zA-Z]/.test(searchText.value?.text!)) {
-        embeddedResults.value = null;
-        const pipe = await pipeline("embeddings", "TaylorAI/gte-tiny");
-        const t = await pipe(searchText.value?.text!, {
-            pooling: "mean",
-            normalize: true,
-        });
-        const res: { stops: Stop[] } = await $fetch(
-            "/api/search-db-embeddings",
-            {
-                method: "POST",
-                body: {
-                    embedding: Array.from(t.ort_tensor.data as Float32Array),
-                },
-            },
-        );
-
-        embeddedResults.value = res?.stops;
-        if (
-            result?.services.length === 0 &&
-            result?.stops.length === 0 &&
-            embeddedResults.value.length === 0
-        ) {
-            searchResultMsg.value = "No Results";
-        }
+    // if (/[a-zA-Z]/.test(searchText.value?.text!)) {
+    embeddedResults.value = null;
+    const pipe = await pipeline("embeddings", "TaylorAI/gte-tiny", {
+        dtype: "fp32",
+    });
+    const t = await pipe(searchText.value?.text!, {
+        pooling: "mean",
+        normalize: true,
+    });
+    const res: { stops: Stop[] } = await $fetch("/api/search-db-embeddings", {
+        method: "POST",
+        body: {
+            embedding: Array.from(t.ort_tensor.data as Float32Array),
+        },
+    });
+    embeddedResults.value = res?.stops;
+    if (
+        result?.services.length === 0 &&
+        result?.stops.length === 0 &&
+        embeddedResults.value.length === 0
+    ) {
+        searchResultMsg.value = "No Results";
     }
+    // }
     showLoading.value = false;
 };
 
@@ -143,9 +141,13 @@ watch(hideSearch, () => {
                         </button>
                     </div>
                 </div>
+
                 <div class="flex flex-col gap-2 w-full">
                     <h3
-                        v-if="stopsResults.length > 0"
+                        v-if="
+                            stopsResults.length > 0 ||
+                            embeddedResults?.length! > 0
+                        "
                         class="text-lg text-bta-light dark:text-bta-dark"
                     >
                         Bus Stops
@@ -156,32 +158,30 @@ watch(hideSearch, () => {
                             v-for="res in stopsResults"
                             @click="() => handleStopClick(res)"
                         >
-                            <h2 class="text-lg">
+                            <h2 class="text-xl">
                                 {{ res.code }}
                             </h2>
-                            <p class="text-2xl">
+                            <p class="text-xl line-clamp-1 text-left">
                                 {{ res.description }}
                             </p>
-                            <p class="text-lg">{{ res.street }}</p>
+                            <p class="text-xl line-clamp-1 text-left">
+                                {{ res.street }}
+                            </p>
                         </button>
-                        <h3
-                            class="text-lg text-bta-light dark:text-bta-dark"
-                            v-show="embeddedResults?.length! > 0"
-                        >
-                            Closest Match
-                        </h3>
                         <button
                             class="flex flex-col justify-center items-start p-4 text-bta-light dark:text-bta-dark rounded-md bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 w-full"
                             v-for="res in embeddedResults"
                             @click="() => handleStopClick(res)"
                         >
-                            <h2 class="text-lg">
+                            <h2 class="text-xl">
                                 {{ res.code }}
                             </h2>
-                            <p class="text-2xl">
+                            <p class="text-xl line-clamp-1 text-left">
                                 {{ res.description }}
                             </p>
-                            <p class="text-lg">{{ res.street }}</p>
+                            <p class="text-xl line-clamp-1 text-left">
+                                {{ res.street }}
+                            </p>
                         </button>
                     </div>
                 </div>
