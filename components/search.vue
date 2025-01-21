@@ -9,10 +9,6 @@ const showLoading: Ref<boolean> = ref(false);
 const searchText: Ref<{ text: string }> = useState("searchText", () => {
     return { text: "" };
 });
-const embeddedResults: Ref<Stop[] | null> = useState(
-    "embeddedSearchText",
-    () => null,
-);
 const searchResultMsg: Ref<string> = useState("searchResultMsg", () => "");
 const routesResults: Ref<{ service: string }[]> = useState(
     "routesResults",
@@ -34,16 +30,18 @@ onMounted(async () => {
 });
 
 const handleOnSubmit = async () => {
+    if (searchText.value?.text.length === 0) {
+        return;
+    }
     showLoading.value = true;
+
     const result = await $fetch("/api/search-db", {
         body: searchText.value,
         method: "POST",
     });
     routesResults.value = result?.services!;
-    stopsResults.value = result?.stops!;
+    stopsResults.value = result.stops ? result.stops : [];
 
-    // if (/[a-zA-Z]/.test(searchText.value?.text!)) {
-    embeddedResults.value = null;
     const pipe = await pipeline("embeddings", "TaylorAI/gte-tiny", {
         dtype: "fp32",
     });
@@ -51,21 +49,28 @@ const handleOnSubmit = async () => {
         pooling: "mean",
         normalize: true,
     });
-    const res: { stops: Stop[] } = await $fetch("/api/search-db-embeddings", {
-        method: "POST",
-        body: {
-            embedding: Array.from(t.ort_tensor.data as Float32Array),
-        },
-    });
-    embeddedResults.value = res?.stops;
+    if (stopsResults.value.length === 0) {
+        const res: { stops: Stop[] } = await $fetch(
+            "/api/search-db-embeddings",
+            {
+                method: "POST",
+                body: {
+                    embedding: Array.from(t.ort_tensor.data as Float32Array),
+                },
+            },
+        );
+
+        stopsResults.value = res?.stops;
+    }
+
+    // console.log(res?.stops);
     if (
         result?.services.length === 0 &&
         result?.stops.length === 0 &&
-        embeddedResults.value.length === 0
+        stopsResults.value!.length === 0
     ) {
         searchResultMsg.value = "No Results";
     }
-    // }
     showLoading.value = false;
 };
 
@@ -83,7 +88,7 @@ const handleStopClick = (stop: Stop) => {
 
 watch(hideSearch, () => {
     if (!hideSearch.value) {
-        handleOnSubmit();
+        // handleOnSubmit();
         console.log(lastScroll.value);
         window.scrollBy({ top: lastScroll.value });
         serviceCode.value = null;
@@ -144,10 +149,7 @@ watch(hideSearch, () => {
 
                 <div class="flex flex-col gap-2 w-full">
                     <h3
-                        v-if="
-                            stopsResults.length > 0 ||
-                            embeddedResults?.length! > 0
-                        "
+                        v-if="stopsResults.length > 0"
                         class="text-lg text-bta-light dark:text-bta-dark"
                     >
                         Bus Stops
@@ -167,21 +169,14 @@ watch(hideSearch, () => {
                             <p class="text-xl line-clamp-1 text-left">
                                 {{ res.street }}
                             </p>
-                        </button>
-                        <button
-                            class="flex flex-col justify-center items-start p-4 text-bta-light dark:text-bta-dark rounded-md bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 w-full"
-                            v-for="res in embeddedResults"
-                            @click="() => handleStopClick(res)"
-                        >
-                            <h2 class="text-xl">
-                                {{ res.code }}
-                            </h2>
-                            <p class="text-xl line-clamp-1 text-left">
-                                {{ res.description }}
-                            </p>
-                            <p class="text-xl line-clamp-1 text-left">
-                                {{ res.street }}
-                            </p>
+                            <h3 class="text-sm mt-4">Services:</h3>
+                            <div
+                                class="flex flex-row flex-wrap gap-2 w-full text-bta-light/90 dark:text-bta-dark/90"
+                            >
+                                <p v-for="service in res.services">
+                                    {{ service }}
+                                </p>
+                            </div>
                         </button>
                     </div>
                 </div>
