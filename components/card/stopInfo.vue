@@ -7,8 +7,16 @@ const props = defineProps({
     stopPos: Object,
     distanceToStop: Number,
 });
-
+const thisDiv = ref(null);
 const favClickhandle = () => {
+    if (props.fav) {
+        (
+            (thisDiv.value!! as HTMLElement).parentNode as HTMLElement
+        ).style.height = "0px";
+        (
+            (thisDiv.value!! as HTMLElement).parentNode as HTMLElement
+        ).style.opacity = "0";
+    }
     if (props.stopCode) {
         useFavStop(props.stopCode, !props.fav);
     }
@@ -17,6 +25,7 @@ const favClickhandle = () => {
 
 <template>
     <div
+        ref="thisDiv"
         class="flex flex-col justify-center items-start gap-4 p-2 text-bta-light dark:text-bta-dark w-full border-b-2 border-bta-light/20"
     >
         <div class="flex flex-row justify-between items-center gap-2 w-full">

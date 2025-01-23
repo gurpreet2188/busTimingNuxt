@@ -1,39 +1,50 @@
 <script setup lang="ts">
-import type { RouteWithStops } from "../types/routes";
+import type { ServiceWithStops } from "~/types/services";
 import { GoogleMap, Polyline } from "vue3-google-map";
 
-const props = defineProps<{ serviceCode: string }>();
-
+const route = useRouter().currentRoute.value;
+const showNav: Ref<boolean> = useState("showNav");
 const expandedNavComponent: Ref<string | null> = useState(
     "expandedNavComponent",
 );
 const expandedNavProps: Ref<{}> = useState("expandedNavProps");
-const hideSearch: Ref<boolean> = useState("hideSearch");
 const title: Ref<string> = useState("title");
-const route: Ref<RouteWithStops[] | null> = ref(null);
+const services: Ref<ServiceWithStops[] | null> = ref(null);
 const fromToStopName: Ref<string> = ref("");
 const hideSwitchBtn: Ref<boolean> = ref(true);
 const totalStops: Ref<number> = ref(0);
 const totalDistance: Ref<number> = ref(0);
-const routePath: Ref<{} | null> = useState("routePath", () => null);
 const key = useRuntimeConfig();
-onMounted(async () => {
+const routePath: Ref<{} | null> = useState("routePath", () => null);
+const errorMsg: Ref<string | null> = ref(null);
+definePageMeta({
+  scrollToTop: true,
+})
+onBeforeMount(async () => {
+  title.value ="Service Info"
+    showNav.value = true;
+    if (!route.params.service) {
+        return;
+    }
     expandedNavComponent.value = resolveComponent(
         "LazyExpandedServiceInfo",
     ) as string;
     expandedNavProps.value = {
-        serviceCode: props.serviceCode,
+        serviceCode: route.params.service,
         handleShowBusRoute: handleShowBusRoute,
     };
-    route.value = await $fetch("/api/get-route", {
-        body: { service: props.serviceCode, direction: 1 },
+    const res:{data:ServiceWithStops[]|null,error:any} = await $fetch("/api/get-route", {
+        body: { service: route.params.service, direction: 1 },
         method: "POST",
     });
-
-    const routeCoordinates = route.value?.flatMap((v) => [
+    if(res.error) {
+      errorMsg.value = res.error;
+      return
+    }
+    services.value = res.data
+    const routeCoordinates = services.value?.flatMap((v) => [
         { lat: v.lattitude, lng: v.longitude },
     ]);
-
     routePath.value = {
         path: routeCoordinates,
         geodesic: true,
@@ -42,37 +53,41 @@ onMounted(async () => {
         strokeWeight: 2,
     };
 });
+
 const handleShowBusRoute = () => {
-    hideSearch.value = false;
+    navigateTo(SEARCH);
     title.value = "Search";
 };
 
 const handleSwitchDirection = async () => {
-    route.value = await $fetch("/api/get-route", {
+    services.value = await $fetch("/api/get-route", {
         body: {
-            service: props.serviceCode,
-            direction: route.value![0].direction === 1 ? 2 : 1,
+            service: route.params.service,
+            direction: services.value![0].direction === 1 ? 2 : 1,
         },
         method: "POST",
     });
 };
 
-watch(route, () => {
-    if (!route.value) {
+watch(services, () => {
+    if (!services.value) {
         return;
     }
 
-    if (route.value![0].code === route.value![route.value!.length - 1].code) {
-        fromToStopName.value = `Loop: ${route.value![0].description}`;
+    if (
+        services.value![0].code ===
+        services.value![services.value!.length - 1].code
+    ) {
+        fromToStopName.value = `Loop: ${services.value![0].description}`;
     } else {
-        fromToStopName.value = `From: ${route.value![0].description} \nTo: ${route.value![route.value!.length - 1].description}`;
+        fromToStopName.value = `From: ${services.value![0].description} \nTo: ${services.value![services.value!.length - 1].description}`;
     }
-    hideSwitchBtn.value = !route.value![0].second_direction;
-    totalStops.value = route.value!.length ? route.value!.length : 0;
-    totalDistance.value = route.value![route.value!.length - 1].distance;
+    hideSwitchBtn.value = !services.value![0].second_direction;
+    totalStops.value = services.value!.length ? services.value!.length : 0;
+    totalDistance.value = services.value![services.value!.length - 1].distance;
 });
 
-onBeforeUnmount(() => {
+onBeforeUnmount(async () => {
     expandedNavComponent.value = null;
     expandedNavProps.value = {};
     routePath.value = null;
@@ -80,12 +95,17 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="relative flex flex-col justify-center items-start gap-4 w-full">
+    <div
+        v-if="services"
+        class="relative flex flex-col justify-center items-start mt-32 pb-24 gap-4 w-full"
+    >
         <GoogleMap
-            v-if="route"
             style="width: 100%; height: 20rem"
             :api-key="key.public?.GMAP_KEY as string"
-            :center="{ lat: route![0].lattitude!, lng: route![0].longitude! }"
+            :center="{
+                lat: services![0].lattitude!,
+                lng: services![0].longitude!,
+            }"
             :zoom="12"
         >
             <Polyline :options="routePath!" />
@@ -124,14 +144,14 @@ onBeforeUnmount(() => {
             >
                 <div
                     class="flex flex-row justify-start gap-4 w-full"
-                    v-for="(stop, index) in route!"
+                    v-for="(stop, index) in services!"
                 >
                     <div
                         :style="{
                             borderRadius:
                                 index === 0
                                     ? '4rem 4rem 0 0'
-                                    : index === route!.length - 1
+                                    : index === services!.length - 1
                                       ? '0 0 4rem 4rem'
                                       : '0',
                         }"
@@ -162,6 +182,9 @@ onBeforeUnmount(() => {
             </div>
         </div>
     </div>
+  <div v-else>
+    <Error :msg="errorMsg!" />
+  </div>
 </template>
 
 <style scoped>

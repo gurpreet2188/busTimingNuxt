@@ -1,16 +1,8 @@
 <script setup lang="ts">
-import type { COMPONENT_STATE } from "~/types/components";
-import { SubComponentStateKeys } from "../types/components";
-import changeComponentState from "../helper/componentsState";
+import { navigateTo } from "#build/imports";
+import { LOCATION_BASED, SAVED, SEARCH } from "#build/imports";
+const bottomNavRoute: Ref<string> = useState("bottomNavRoute");
 const size = { h: "24px", w: "24px" };
-
-const subComponentsState: Ref<COMPONENT_STATE> = useState(
-    "sub_component_state",
-);
-
-const clickHandle = (component: string) => {
-    subComponentsState.value = changeComponentState(component, true);
-};
 </script>
 
 <template>
@@ -21,13 +13,13 @@ const clickHandle = (component: string) => {
             <button
                 class="rounded-full px-4 py-2"
                 :class="
-                    subComponentsState[SubComponentStateKeys.LOCATION]
+                    bottomNavRoute === (LOCATION_BASED as string)
                         ? 'bg-bta-elevated-light/30 dark:bg-bta-elevated-dark/30'
                         : ''
                 "
                 @click="
-                    () => {
-                        clickHandle(SubComponentStateKeys.LOCATION);
+                    async () => {
+                        await navigateTo(LOCATION_BASED);
                     }
                 "
             >
@@ -41,19 +33,18 @@ const clickHandle = (component: string) => {
             <button
                 class="rounded-full px-4 py-2"
                 :class="
-                    subComponentsState[SubComponentStateKeys.FAVS]
+                    bottomNavRoute === SAVED
                         ? 'bg-bta-elevated-light/30 dark:bg-bta-elevated-dark/30'
                         : ''
                 "
                 @click="
-                    () => {
-                        clickHandle(SubComponentStateKeys.FAVS);
+                    async () => {
+                        await navigateTo(SAVED);
                     }
                 "
             >
                 <IconsFavs
                     :size="size"
-                    :active="subComponentsState[SubComponentStateKeys.FAVS]"
                     class="fill-bta-light dark:fill-bta-dark"
                 />
             </button>
@@ -62,13 +53,13 @@ const clickHandle = (component: string) => {
             <button
                 class="rounded-full px-4 py-2"
                 :class="
-                    subComponentsState[SubComponentStateKeys.ROUTE]
+                    bottomNavRoute === SEARCH
                         ? 'bg-bta-elevated-light/30 dark:bg-bta-elevated-dark/30'
                         : ''
                 "
                 @click="
-                    () => {
-                        clickHandle(SubComponentStateKeys.ROUTE);
+                    async () => {
+                        await navigateTo(SEARCH);
                     }
                 "
             >

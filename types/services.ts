@@ -19,7 +19,7 @@ export interface Value {
   SUN_LastBus: string;
 }
 
-export interface RouteWithStops extends Stop {
+export interface ServiceWithStops extends Stop {
   service: string;
   code: string;
   direction: number;
@@ -50,7 +50,7 @@ export interface StoredValues {
   SUN_LastBus: string;
 }
 
-export interface RestructuredRoutes {
+export interface RestructuredServices {
   ServiceNo: string;
   Operator: string;
   fromStart: { [key: string]: StoredValues };

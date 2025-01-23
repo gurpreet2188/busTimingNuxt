@@ -1,25 +1,32 @@
 <script setup lang="ts">
-import type { COMPONENT_STATE } from "../types/components";
-import { ComponentsStateKeys } from "../types/components";
-import changeComponentState from "~/helper/componentsState";
-const darkTheme = useState("darkTheme");
+const showLoading = ref(true)
 const skipWelcome = useState("skipWelcome");
-const componentsState: Ref<COMPONENT_STATE> = useState("component_state");
-const loginBtnClickHandle = () => {
-    componentsState.value = changeComponentState(ComponentsStateKeys.LOGIN);
-};
 
-const locateBusStopClickHandle = () => {
-    componentsState.value = changeComponentState(
-        ComponentsStateKeys.LOCATIONLOADING,
-    );
+onMounted(async()=>{
+  if(localStorage.getItem('skipWelcome')){
+    skipWelcome.value = true
+    return navigateTo(LOCATION_BASED);
+  }
+  showLoading.value = false
+})
+
+const loginBtnClickHandle = async () => {
+    await navigateTo(AUTH);
+};
+const locateBusStopClickHandle = async () => {
+    // componentsState.value = changeComponentState(
+    //     ComponentsStateKeys.LOCATIONLOADING,
+    // );
+    await navigateTo(LOCATION_BASED);
     skipWelcome.value = true;
     localStorage.setItem("skipWelcome", JSON.stringify(true));
 };
 </script>
 
 <template>
+ <LoadingPage v-if="showLoading" :showBarOnly="true" :location="false" />
     <div
+        v-else
         class="flex flex-col justify-center items-center gap-[2rem] w-[100%] text-bta-light dark:text-bta-dark h-screen"
     >
         <IconsBus
@@ -27,7 +34,7 @@ const locateBusStopClickHandle = () => {
             :size="{ w: '128px', h: '128px' }"
         />
         <div
-            class="flex flex-col justify-center items-center gap-8 rounded-md p-4  w-[100%]"
+            class="flex flex-col justify-center items-center gap-8 rounded-md p-4 w-[100%]"
         >
             <!-- info -->
             <p class="text-center text-lg">
@@ -36,7 +43,10 @@ const locateBusStopClickHandle = () => {
             </p>
             <!-- Account -->
             <div class="flex flex-col justify-center items-center gap-[0.5rem]">
-                <button @click="loginBtnClickHandle" class="bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 rounded-md p-2">
+                <button
+                    @click="loginBtnClickHandle"
+                    class="bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 rounded-md p-2"
+                >
                     <!-- <IconsAccount
                         :color="darkTheme ? '#ffcdb2' : '#7f5539'"
                         :size="{ w: '24px', h: '24px' }"
@@ -55,7 +65,10 @@ const locateBusStopClickHandle = () => {
             </div>
             <p class="text-lg">Or</p>
             <!-- locate bus stop -->
-            <button @click="locateBusStopClickHandle" class="flex flex-row rounded-md bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 p-2 ">
+            <button
+                @click="locateBusStopClickHandle"
+                class="flex flex-row rounded-md bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 p-2"
+            >
                 <IconsLocation
                     class="fill-bta-light dark:fill-bta-dark"
                     :size="{ w: '24px', h: '24px' }"

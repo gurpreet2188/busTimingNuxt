@@ -22,8 +22,8 @@ export interface Stop {
   lattitude: number;
   longitude: number;
   distance: number;
-  services: string[];
-  servicesInfo: RealtimeService[];
+  services?: string[];
+  servicesInfo?: RealtimeService[];
 }
 
 export interface RealtimeService {

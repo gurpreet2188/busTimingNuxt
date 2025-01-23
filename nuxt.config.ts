@@ -3,13 +3,19 @@
 export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: [
+    "nuxt-api-shield",
     "nuxt-component-meta",
     "@nuxtjs/tailwindcss",
     "@vueuse/nuxt",
     "nuxt-vuefire",
     "@pinia/nuxt",
     "@nuxtjs/color-mode",
+    "@vite-pwa/nuxt",
   ],
+  nuxtApiShield: {
+    limit: { max: 250, duration: 60, ban: 10 },
+  },
+  pwa: {},
   ssr: false,
 
   vuefire: {
@@ -26,10 +32,13 @@ export default defineNuxtConfig({
   },
 
   tailwindcss: { cssPath: "~/assets/css/tailwind.css" },
-  runtimeConfig:{
+  runtimeConfig: {
     public: {
-      GMAP_KEY:process.env.GMAP_KEY
-    }
+      GMAP_KEY: process.env.GMAP_KEY,
+    },
   },
   compatibilityDate: "2024-11-08",
+  app:{
+    pageTransition:{name:'page', mode:'out-in'},
+  }
 });
