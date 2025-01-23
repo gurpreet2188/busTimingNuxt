@@ -17,6 +17,12 @@ export function busStore() {
     }
   }
 
+  async function checkTotalSavedStops(uid:string):Promise<number>{
+    const db = useFirestore();
+    const saved = (await getDoc(doc(db, "users", uid))).data() as FAVS;
+    return saved.favs.length
+  }
+
   async function checkForFavsInLocalStorage(
     favsFromStore: string[],
     uid: string,

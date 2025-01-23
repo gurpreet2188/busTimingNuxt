@@ -1,8 +1,9 @@
 <script setup lang="ts">
 const showLoading = ref(true)
 const skipWelcome = useState("skipWelcome");
-
+const showNav: Ref<boolean> = useState("showNav");
 onMounted(async()=>{
+  showNav.value = false;
   if(localStorage.getItem('skipWelcome')){
     skipWelcome.value = true
     return navigateTo(LOCATION_BASED);

@@ -3,7 +3,6 @@ import type {Stop} from "~/types/stops";
 import {pipeline} from "@huggingface/transformers";
 
 const title: Ref<string> = useState("title");
-const router = useRouter();
 const showNav: Ref<boolean> = useState("showNav");
 const bottomNavRoute: Ref<string> = useState("bottomNavRoute");
 const searchDIV: Ref<HTMLElement | null> = ref(null);
@@ -41,7 +40,7 @@ const handleOnSubmit = async () => {
         body: searchText.value,
         method: "POST",
       });
-
+  console.log(result);
   if (result.servicesError || result.stopsError) {
     errorMsg.value = result.stopsError + " " + result.servicesError;
     showLoading.value = false;
@@ -78,8 +77,8 @@ const handleOnSubmit = async () => {
 
   // console.log(res?.stops);
   if (
-      result?.services.length === 0 &&
-      result?.stops.length === 0 &&
+      result.services?.length === 0 &&
+      result.stops?.length === 0 &&
       stopsResults.value!.length === 0
   ) {
     searchResultMsg.value = "No Results";

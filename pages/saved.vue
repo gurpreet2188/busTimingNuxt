@@ -42,7 +42,6 @@ const loadFromBusStore = () => {
 };
 
 const getFavsBusTiming = async () => {
-  console.log("loading....");
   showEmptyFavsMessage.value = true;
   favLoadingMsg.value = "Loading Saved Bus Stops"
   let tempArr: Stop[] = [];

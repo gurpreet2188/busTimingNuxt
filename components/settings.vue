@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { getAuth, signOut } from "firebase/auth";
-import type { COMPONENT_STATE } from "../types/components";
-import type { Root as BUS_INFO_TYPE } from "~/types/bus";
-import changeComponentState from "~/helper/componentsState";
-import { ComponentsStateKeys } from "../types/components";
+
+import useCheckTotalStops from "~/composables/useCheckTotalStops";
 const settings: Ref<boolean> = useState("settings");
 const authBtnText: Ref<string> = ref("Logout");
-const darkTheme = useState("darkTheme");
-const darkModeState: Ref<string> = useState("darkModeState", () => "auto");
 const currentUser = useCurrentUser();
 const authMessage: Ref<boolean> = ref(false);
-const componentsState: Ref<COMPONENT_STATE> = useState("component_state");
-const favsStops: Ref<BUS_INFO_TYPE[] | []> = useState("favsStops");
+const savedStops:Ref<number |null> = ref(null)
 const mode = useColorMode();
+onMounted(async()=>{
+  if(currentUser?.value){
+    savedStops.value = await useCheckTotalStops(currentUser?.value.uid)
+  }
+})
 const handleAuth = () => {
     if (currentUser.value?.uid) {
         signOut(getAuth())
@@ -20,13 +20,13 @@ const handleAuth = () => {
                 console.log("signed out");
             })
             .catch((err) => console.error(err));
-        authMessage.value = false;
-        settings.value = false;
-        componentsState.value = changeComponentState(
-            ComponentsStateKeys.WELCOME,
-        );
+        setTimeout(()=>{
+          authMessage.value = false;
+          settings.value = false;
+          navigateTo(LOCATION_BASED)
+        },2000)
     } else {
-        componentsState.value = changeComponentState(ComponentsStateKeys.LOGIN);
+        navigateTo(AUTH)
         settings.value = false;
     }
 };
@@ -85,7 +85,7 @@ const handleBtnClose = () => {
             >
                 <p>Name: {{ currentUser?.displayName }}</p>
                 <p>Email: {{ currentUser?.email }}</p>
-                <p>Saved BusStops: {{ favsStops.length }}</p>
+                <p>Saved BusStops: {{ savedStops }}</p>
             </div>
             <p v-if="!currentUser">Not Logged In</p>
             <button class="self-end rounded-md text-bta-light  dark:text-bta-dark p-2 bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10" @click="handleAuth">
@@ -117,7 +117,7 @@ const handleBtnClose = () => {
                     value="light"
                     v-model="mode.preference"
                 />
-                <label for="tlight">Light</label>
+                <label for="light">Light</label>
                 <input
                     type="radio"
                     id="dark"

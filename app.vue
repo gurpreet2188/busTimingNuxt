@@ -82,7 +82,7 @@ watch(settings, () => {
 <template>
   <!--  <NuxtLoadingIndicator />-->
   <div
-      class="relative flex flex-col lg:w-[40%] md:w-[60%] h-screen justify-start items-center gap-[1rem] w-[100%] px-4 pb-[4rem]"
+      class="relative flex flex-col lg:w-[40rem] md:w-[50rem] h-screen justify-start items-center gap-[1rem] w-[100%] px-4 pb-[4rem]"
   >
     <Header v-if="showNav" :title="title"/>
     <NuxtPage/>

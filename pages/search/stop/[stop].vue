@@ -13,6 +13,7 @@ const expandedNavComponent: Ref<string | null> = useState(
 const expandedNavProps: Ref<{}> = useState("expandedNavProps");
 const stop: Ref<Stop | null> = useState("singleStop", () => null);
 const title: Ref<string> = useState("title");
+const bottomNavRoute: Ref<string> = useState("bottomNavRoute");
 const servicesTiming: Ref<ServiceTiming[] | null> = useState(
     "serviceTiming",
     () => null,
@@ -21,6 +22,7 @@ definePageMeta({
   scrollToTop: true,
 })
 onBeforeMount(async () => {
+  bottomNavRoute.value = SEARCH;
   title.value = "Stop Info";
   showNav.value = true;
 

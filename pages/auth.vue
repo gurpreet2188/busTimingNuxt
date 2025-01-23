@@ -11,7 +11,8 @@ import {
 
 const router = useRouter();
 const title: Ref<string> = useState("title");
-
+const currentUser = useCurrentUser();
+const showNav: Ref<boolean> = useState("showNav");
 onMounted(() => (title.value = "Login/Register"));
 
 const LOGGEDINSTATE = {
@@ -20,7 +21,7 @@ const LOGGEDINSTATE = {
     OUT: "loggedOut",
 };
 
-const isLoggedIn: Ref<string> = useState("isLoggedIn");
+const isLoggedIn: Ref<string> = useState("isLoggedIn",()=> currentUser.value ? LOGGEDINSTATE.IN : LOGGEDINSTATE.OUT);
 
 let auth = null;
 const cancelHandle = async () => {
@@ -53,6 +54,7 @@ const handleGooglePopupLogin = () => {
             if (d.user.uid) {
                 busStore().initialize(d.user.uid);
                 isLoggedIn.value = LOGGEDINSTATE.IN;
+                navigateTo(LOCATION_BASED)
             }
         })
         .catch((err) => {
@@ -62,6 +64,7 @@ const handleGooglePopupLogin = () => {
 };
 
 onMounted(async () => {
+    showNav.value = false;
     auth = useFirebaseAuth();
     // props?.firebaseUi?.start("#firebaseui-auth-container", config)
 });
