@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useFirebaseAuth } from "vuefire";
 import { getAuth, signOut } from "firebase/auth";
-import "firebaseui/dist/firebaseui.css";
 import { busStore } from "../busFirebase/busStore";
 import {
     EmailAuthProvider,
@@ -21,7 +20,9 @@ const LOGGEDINSTATE = {
     OUT: "loggedOut",
 };
 
-const isLoggedIn: Ref<string> = useState("isLoggedIn",()=> currentUser.value ? LOGGEDINSTATE.IN : LOGGEDINSTATE.OUT);
+const isLoggedIn: Ref<string> = useState("isLoggedIn", () =>
+    currentUser.value ? LOGGEDINSTATE.IN : LOGGEDINSTATE.OUT,
+);
 
 let auth = null;
 const cancelHandle = async () => {
@@ -54,7 +55,7 @@ const handleGooglePopupLogin = () => {
             if (d.user.uid) {
                 busStore().initialize(d.user.uid);
                 isLoggedIn.value = LOGGEDINSTATE.IN;
-                navigateTo(LOCATION_BASED)
+                navigateTo(LOCATION_BASED);
             }
         })
         .catch((err) => {
@@ -90,7 +91,6 @@ onMounted(async () => {
                           : 'none',
             }"
         >
-            <!-- <div class="flex flex-col justify-center items-center gap-[1rem]" id="firebaseui-auth-container"></div> -->
             <button
                 @click="handleGooglePopupLogin"
                 class="flex flex-row justify-center items-center gap-2 text-xl rounded-md bg-white text-black p-2"

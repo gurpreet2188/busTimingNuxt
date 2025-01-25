@@ -8,7 +8,7 @@ const props = defineProps({
     distanceToStop: Number,
 });
 const thisDiv = ref(null);
-const favClickhandle = () => {
+const favClickhandle = async () => {
     if (props.fav) {
         (
             (thisDiv.value!! as HTMLElement).parentNode as HTMLElement
@@ -18,7 +18,8 @@ const favClickhandle = () => {
         ).style.opacity = "0";
     }
     if (props.stopCode) {
-        useFavStop(props.stopCode, !props.fav);
+        const { useFavStop } = await import("#imports");
+        await useFavStop(props.stopCode, !props.fav);
     }
 };
 </script>

@@ -1,25 +1,31 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-
 export default defineNuxtConfig({
   devtools: { enabled: false },
+  nitro: {
+    compressPublicAssets: true,
+  },
   modules: [
+    "@vueuse/nuxt",
     "nuxt-api-shield",
     "nuxt-component-meta",
     "@nuxtjs/tailwindcss",
-    "@vueuse/nuxt",
     "nuxt-vuefire",
-    "@pinia/nuxt",
     "@nuxtjs/color-mode",
-    "@vite-pwa/nuxt",
   ],
+  routeRules: {
+    "/": { prerender: true },
+  },
   nuxtApiShield: {
     limit: { max: 250, duration: 60, ban: 10 },
   },
-  pwa: {},
+  // pwa: {},
   ssr: false,
 
   vuefire: {
-    auth: true,
+    auth: {
+      enabled: true,
+      sesssionCookie: true,
+    },
     config: {
       apiKey: process.env.API_KEY_FIREBASE,
       authDomain: process.env.APP_NAME_FIREBASE + ".firebaseapp.com",
@@ -38,7 +44,7 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: "2024-11-08",
-  app:{
-    pageTransition:{name:'page', mode:'out-in'},
-  }
+  app: {
+    pageTransition: { name: "page", mode: "out-in" },
+  },
 });

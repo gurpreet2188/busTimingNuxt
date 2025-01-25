@@ -12,18 +12,21 @@ const colorMode = useColorMode();
 const title: Ref<string> = useState("title", () => "");
 
 useHead({
+  title:"Bus Timing",
   meta: [
     {
       name: "theme-color",
       content: darkTheme ? "#0d1b2a" : "#ffe5d9",
       media: "(prefers-color-scheme: light)",
+
     },
+    {name:"description", content:"Get Realtime Singapore Bus Timings."}
   ],
   bodyAttrs: {
     class: "min-h-screen",
     style: bodyOverFlow,
   },
-  htmlAttrs: {class: "min-h-screen bg-bta-light dark:bg-bta-dark"},
+  htmlAttrs: {class: "min-h-screen bg-bta-light dark:bg-bta-dark", lang: "en-US" },
 });
 
 onMounted(async () => {
@@ -47,7 +50,7 @@ onMounted(async () => {
           ).matches;
         } else {
           darkTheme.value =
-              colorMode.preference === "dark" ? true : false;
+              colorMode.preference === "dark";
         }
       },
       {deep: true},
@@ -80,7 +83,6 @@ watch(settings, () => {
 </script>
 
 <template>
-  <!--  <NuxtLoadingIndicator />-->
   <div
       class="relative flex flex-col lg:w-[40rem] md:w-[50rem] h-screen justify-start items-center gap-[1rem] w-[100%] px-4 pb-[4rem]"
   >

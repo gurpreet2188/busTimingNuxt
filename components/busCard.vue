@@ -2,7 +2,6 @@
 import BusInfo from "./card/busInfo.vue";
 import StopInfo from "./card/stopInfo.vue";
 import type { Service as BUS_SERVICE_TYPES } from "../types/bus";
-// import { browser } from 'process';
 
 const props = defineProps({
     fav: Boolean,

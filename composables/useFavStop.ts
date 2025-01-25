@@ -1,4 +1,4 @@
-import type { _RefFirestore } from "vuefire";
+// import type { _RefFirestore } from "vuefire";
 
 export default async function useFavStop(stopCode: string, addNew: boolean) {
   const currentUser = useCurrentUser().value && useCurrentUser().value?.uid;

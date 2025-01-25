@@ -1,4 +1,6 @@
 <script setup lang="ts">
+
+
 const showLoading = ref(true)
 const skipWelcome = useState("skipWelcome");
 const showNav: Ref<boolean> = useState("showNav");
@@ -26,8 +28,7 @@ const locateBusStopClickHandle = async () => {
 
 <template>
  <LoadingPage v-if="showLoading" :showBarOnly="true" :location="false" />
-    <div
-        v-else
+    <div v-else
         class="flex flex-col justify-center items-center gap-[2rem] w-[100%] text-bta-light dark:text-bta-dark h-screen"
     >
         <IconsBus
@@ -37,21 +38,16 @@ const locateBusStopClickHandle = async () => {
         <div
             class="flex flex-col justify-center items-center gap-8 rounded-md p-4 w-[100%]"
         >
-            <!-- info -->
             <p class="text-center text-lg">
                 Locate nearest Bus Stops and get real-time Bus arrival timings
                 in Singapore.
             </p>
-            <!-- Account -->
+
             <div class="flex flex-col justify-center items-center gap-[0.5rem]">
                 <button
                     @click="loginBtnClickHandle"
-                    class="bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 rounded-md p-2"
+                    class="bg-bta-elevated-light/20 dark:bg-bta-elevated-dark/20 rounded-md p-2"
                 >
-                    <!-- <IconsAccount
-                        :color="darkTheme ? '#ffcdb2' : '#7f5539'"
-                        :size="{ w: '24px', h: '24px' }"
-                    /> -->
                     Login / Register
                 </button>
                 <p class="inline-block text-center text-lg">
@@ -65,10 +61,10 @@ const locateBusStopClickHandle = async () => {
                 </p>
             </div>
             <p class="text-lg">Or</p>
-            <!-- locate bus stop -->
+
             <button
                 @click="locateBusStopClickHandle"
-                class="flex flex-row rounded-md bg-bta-elevated-light/10 dark:bg-bta-elevated-dark/10 p-2"
+                class="flex flex-row rounded-md bg-bta-elevated-light/20 dark:bg-bta-elevated-dark/20 p-2"
             >
                 <IconsLocation
                     class="fill-bta-light dark:fill-bta-dark"
@@ -76,10 +72,6 @@ const locateBusStopClickHandle = async () => {
                 />
                 Locate Nearest Bus Stops
             </button>
-
-            <!-- credit -->
         </div>
-        <!-- LTA -->
-        <!-- Github -->
     </div>
 </template>
