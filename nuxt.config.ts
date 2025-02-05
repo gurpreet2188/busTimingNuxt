@@ -29,21 +29,15 @@ export default defineNuxtConfig({
     limit: { max: 250, duration: 60, ban: 10 },
   },
   ssr: false,
-  supabase: {
-    url: process.env.SUPABASE_URL,
-    key: process.env.SUPABASE_KEY,
-    redirect: false,
-  },
   tailwindcss: { cssPath: "~/assets/css/tailwind.css" },
   runtimeConfig: {
     public: {
       GMAP_KEY: process.env.GMAP_KEY,
       APP_BASE_URL: process.env.APP_BASE_URL,
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      SUPABASE_PUBLIC_KEY: process.env.SUPABASE_KEY,
       supabase: {
         url: process.env.NUXT_PUBLIC_SUPABASE_URL,
         key: process.env.NUXT_PUBLIC_SUPABAS_ANON,
+        redirect: false,
       },
     },
   },
