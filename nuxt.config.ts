@@ -30,6 +30,8 @@ export default defineNuxtConfig({
   },
   ssr: false,
   supabase: {
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY,
     redirect: false,
   },
   tailwindcss: { cssPath: "~/assets/css/tailwind.css" },
