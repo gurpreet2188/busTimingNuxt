@@ -1,25 +1,22 @@
 <script setup lang="ts">
+import { SIGNIN } from "#imports";
 
-
-const showLoading = ref(true)
+const showLoading = ref(true);
 const skipWelcome = useState("skipWelcome");
 const showNav: Ref<boolean> = useState("showNav");
-onMounted(async()=>{
-  showNav.value = false;
-  if(localStorage.getItem('skipWelcome')){
-    skipWelcome.value = true
-    return navigateTo(LOCATION_BASED);
-  }
-  showLoading.value = false
-})
+onMounted(async () => {
+    showNav.value = false;
+    if (localStorage.getItem("skipWelcome")) {
+        skipWelcome.value = true;
+        return navigateTo(LOCATION_BASED);
+    }
+    showLoading.value = false;
+});
 
 const loginBtnClickHandle = async () => {
-    await navigateTo(AUTH);
+    await navigateTo(SIGNIN);
 };
 const locateBusStopClickHandle = async () => {
-    // componentsState.value = changeComponentState(
-    //     ComponentsStateKeys.LOCATIONLOADING,
-    // );
     await navigateTo(LOCATION_BASED);
     skipWelcome.value = true;
     localStorage.setItem("skipWelcome", JSON.stringify(true));
@@ -27,8 +24,9 @@ const locateBusStopClickHandle = async () => {
 </script>
 
 <template>
- <LoadingPage v-if="showLoading" :showBarOnly="true" :location="false" />
-    <div v-else
+    <LoadingPage v-if="showLoading" :showBarOnly="true" :location="false" />
+    <div
+        v-else
         class="flex flex-col justify-center items-center gap-[2rem] w-[100%] text-bta-light dark:text-bta-dark h-screen"
     >
         <IconsBus

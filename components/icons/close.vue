@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { PropType } from "vue";
-
 type SIZE = {
     w: string;
     h: string;

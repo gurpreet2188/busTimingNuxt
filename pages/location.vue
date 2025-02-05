@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Stop } from "~/types/stops";
-import { useCheckIfFavStop } from "~/composables/useCheckIfFavStop";
 import { useGeolocation } from "@vueuse/core";
 import fetchBusInfo from "~/helper/fetchData";
 
@@ -13,16 +12,22 @@ const stops: Ref<Stop[] | null> = useState("stopsArr", () => null);
 const isLocationLoading: Ref<boolean> = useState("isLocationLoading");
 const locationError: Ref<string> = useState("locationError", () => "");
 const located: Ref<boolean> = useState("located");
-const favStopsFromLocal: Ref<string[] | null> = useState("favs");
+const savedStopsFromLocal: Ref<string[] | null> = useState(
+    "savedStopsFromLocal",
+);
 const isStopsError: Ref<boolean> = useState("isStopsError", () => false);
 const darkTheme: Ref<boolean> = useState("darkTheme");
 const title: Ref<string> = useState("title");
 const errorMsg: Ref<string> = ref("");
-
+const initialLoadTimeout: Ref<number> = ref(0);
 // definePageMeta({
 //   scrollToTop: true,
 //   pageTransition: {name:"fade"}
 // })
+
+onBeforeMount(async () => {
+    await useGetSavedStops();
+});
 
 onMounted(async () => {
     bottomNavRoute.value = LOCATION_BASED;
@@ -32,12 +37,17 @@ onMounted(async () => {
     if (stops.value && stops.value.length > 0) {
         return;
     }
-    await getLocationBusTiming();
+    if (localStorage.getItem("saved")) {
+        await getLocationBusTiming();
+    }
 });
 
 const getLocationBusTiming = async () => {
     // sample loc
-    // stops.value = await getData(1.430786, 103.877458);
+    // stops.value = (await getData(1.40276, 103.890896)).data;
+    // for (const stop of stops.value!) {
+    //     stop.servicesInfo = await fetchBusInfo(stop.code!!);
+    // }
     // stops.value = await getData(1.40276, 103.890896);
     if (
         coords.value.latitude !== Infinity &&
@@ -107,6 +117,10 @@ const msg = computed((): string => {
     }
     return m;
 });
+
+onBeforeUnmount(() => {
+    window.clearTimeout(initialLoadTimeout.value);
+});
 </script>
 
 <template>
@@ -116,7 +130,6 @@ const msg = computed((): string => {
         <BusCard
             v-if="stops && stops.length > 0"
             v-for="(stop, index) in stops!!"
-            :fav="useCheckIfFavStop(stop.code!!, favStopsFromLocal!)"
             :stop-name="stop.description"
             :stop-code="stop.code"
             :bg-color-shift="index"
@@ -124,7 +137,7 @@ const msg = computed((): string => {
             :services="stop.servicesInfo"
             :distance-to-stop="stop.distance"
             :stop-pos="{ lat: stop.lattitude, lon: stop.longitude }"
-            :key="stop.code!! + new Date().getTime()"
+            :key="stop.code!"
         />
 
         <LoadingPage

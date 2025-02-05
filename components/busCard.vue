@@ -17,10 +17,9 @@ const props = defineProps({
 
 <template>
     <div
-        class="relative flex flex-col justify-center items-start gap-2 p-2 w-[100%] bg-bta-elevated-light/5"
+        class="relative flex flex-col justify-center items-start gap-2 p-2 w-[100%] bg-bta-elevated-light/5 transition-all ease-linear duration-700"
     >
         <StopInfo
-            :fav="fav"
             :stop-name="stopName"
             :stop-code="stopCode"
             :street-name="streetName"

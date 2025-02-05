@@ -3,8 +3,17 @@ interface FAVS {
   favs: string[];
 }
 export default async function useCheckTotalStops(uid: string): Promise<number> {
-  const { doc, getDoc } = await import("firebase/firestore");
-  const db = useFirestore();
-  const saved = (await getDoc(doc(db, "users", uid))).data() as FAVS;
-  return saved.favs.length;
+  const res: { data: { stops: string[] }; error: any } = await $fetch(
+    "/api/get-saved-stops",
+    {
+      method: "POST",
+      body: { id: uid },
+    },
+  );
+
+  if (res?.data?.stops) {
+    return res?.data?.stops.length;
+  }
+
+  return 0;
 }

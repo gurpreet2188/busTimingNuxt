@@ -1,5 +1,6 @@
 export const HOME = "/";
-export const AUTH = "/auth";
+export const SIGNIN = "/auth/signin";
+export const PROFILE = "/auth/profile";
 export const LOCATION_BASED = "/location";
 export const SAVED = "/saved";
 export const SEARCH = "/search";

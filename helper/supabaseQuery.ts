@@ -1,22 +1,18 @@
-import { createClient } from "@supabase/supabase-js";
+import { serverSupabaseClient } from "#supabase/server";
 
-const url = process.env.SUPABASE_URL;
-const key = process.env.SUPABASE_ANON;
-if (!url || !key) {
-  throw new Error("Missing Supabase environment variables.");
-}
-
+import { H3Event } from "h3";
 export async function supabaseQuery<T>(
+  event: H3Event | null = null,
   queryFn: string,
   queryArgs: {},
 ): Promise<{ data: T | null; error: any | null }> {
   try {
-    const supabase = createClient(url!, key!);
+    const supabase = await serverSupabaseClient(event!!);
     const { data, error } = await supabase.rpc(queryFn, queryArgs);
-    // console.log(data);
     error && console.error({ queryError: error });
     return { data: data, error: error?.message };
   } catch (e) {
+    console.log(e);
     return { data: null, error: e };
   }
 }
