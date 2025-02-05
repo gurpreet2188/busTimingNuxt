@@ -28,17 +28,15 @@ export default defineNuxtConfig({
   nuxtApiShield: {
     limit: { max: 250, duration: 60, ban: 10 },
   },
+  supabase: {
+    redirect: false,
+  },
   ssr: false,
   tailwindcss: { cssPath: "~/assets/css/tailwind.css" },
   runtimeConfig: {
     public: {
       GMAP_KEY: process.env.GMAP_KEY,
       APP_BASE_URL: process.env.APP_BASE_URL,
-      supabase: {
-        url: process.env.NUXT_PUBLIC_SUPABASE_URL,
-        key: process.env.NUXT_PUBLIC_SUPABAS_ANON,
-        redirect: false,
-      },
     },
   },
   app: {

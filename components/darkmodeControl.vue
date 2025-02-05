@@ -2,7 +2,9 @@
 const mode = useColorMode();
 </script>
 <template>
-    <div class="flex flex-col justify-center items-start gap-4 w-full">
+    <div
+        class="flex flex-col justify-center items-start gap-4 w-full text-bta-light dark:text-bta-dark"
+    >
         <div class="flex flex-row gap-2 w-full text-lg">
             <input
                 type="radio"
