@@ -20,6 +20,7 @@ const errorMsg: Ref<string | null> = ref(null);
 const bottomNavRoute: Ref<string> = useState("bottomNavRoute");
 definePageMeta({
     scrollToTop: true,
+    key: "service",
 });
 onBeforeMount(async () => {
     bottomNavRoute.value = SEARCH;

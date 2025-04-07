@@ -1,7 +1,9 @@
+import type { RealtimeService } from "./stops";
+
 export interface Root {
   error: boolean;
   BusStopCode?: string;
-  Services?: Service[];
+  Services?: RealtimeService[];
 }
 
 export interface Service {
@@ -17,7 +19,7 @@ export interface NextBus {
   Origin: string;
   DestinationCode: string;
   Destination: string;
-  EstimatedArrival: string;
+  EstimatedArrival?: string;
   Latitude: string;
   Longitude: string;
   VisitNumber: string;

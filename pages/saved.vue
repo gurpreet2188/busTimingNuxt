@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import fetchBusInfo from "~/helper/fetchData";
 import type { Stop } from "../types/stops";
 import { SAVED } from "#build/imports";
 import useGetSavedStops from "../composables/useGetSavedStops";
@@ -58,7 +57,7 @@ const getFavsBusTiming = async () => {
         tempArr[index] = stopData.data![0];
         tempArr[index].servicesInfo = [];
 
-        tempArr[index].servicesInfo = await fetchBusInfo(
+        tempArr[index].servicesInfo = await useFetchRealtimeBusInfo(
             savedStopsFromLocal.value[index],
         );
     }

@@ -1,4 +1,4 @@
-import { supabaseQuery } from "~/helper/supabaseQuery";
+import { supabaseQuery } from "../utils/supabaseQuery";
 
 export default defineEventHandler(async (event) => {
   const body: null | { id: string; stops: string[] } = await readBody(event);

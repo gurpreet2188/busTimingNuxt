@@ -1,5 +1,5 @@
-import { supabaseQuery } from "~/helper/supabaseQuery";
 import type { Stop } from "~/types/stops";
+import { supabaseQuery } from "../utils/supabaseQuery";
 
 export default defineEventHandler(async (event) => {
   const body: null | { embedding: string } = await readBody(event);

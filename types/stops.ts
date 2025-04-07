@@ -29,9 +29,12 @@ export interface Stop {
 export interface RealtimeService {
   ServiceNo: string;
   Operator: string;
-  NextBus: NextBus;
-  NextBus2: NextBus;
-  NextBus3: NextBus;
+  NextBus?: NextBus;
+  NextBus2?: NextBus;
+  NextBus3?: NextBus;
+  distance?: number;
+  show?: boolean;
+  pinned?: boolean;
 }
 
 export interface NextBus {
@@ -39,7 +42,8 @@ export interface NextBus {
   Origin: string;
   DestinationCode: string;
   Destination: string;
-  EstimatedArrival: string;
+  EstimatedArrival?: string | number;
+  EstimatedArrivalMinutes?: number | undefined;
   Latitude: string;
   Longitude: string;
   VisitNumber: string;
@@ -60,6 +64,17 @@ export interface BusStop {
 export interface BusStopsCached {
   created: string;
   stops: BusStop[];
+}
+
+export interface BusService {
+  id: string;
+  serviceNo: string;
+  bus?: RealtimeService;
+  stopCode: string;
+  stopName: string;
+  show?: boolean;
+  pinned?: boolean;
+  distance: number;
 }
 
 export interface RestructuredStops {

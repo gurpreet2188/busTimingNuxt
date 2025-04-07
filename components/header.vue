@@ -15,7 +15,7 @@ const expandedNavProps: Ref<{}> = useState("expandedNavProps", () => {
     return {};
 });
 const svgIconClass =
-    "fill-bta-on-secondary-light dark:fill-bta-dark transition-all duration-300 ease-linear";
+    "fill-bta-900 dark:fill-bta-50 transition-all duration-300 ease-linear";
 
 const iconRefresh = resolveComponent("IconsRefresh");
 const iconCog = resolveComponent("IconsCog");
@@ -52,11 +52,11 @@ const settingsBtnHandle = async () => {
 <template>
     <div
         :class="addShadow"
-        class="fixed flex flex-col justify-between items-center gap-4 p-4 w-full bottom-auto z-10 lg:w-[40%] md:w-[60%] bg-bta-light dark:bg-bta-dark"
+        class="fixed flex flex-col justify-between items-center gap-4 p-4 w-full bottom-auto z-10 lg:w-[40%] md:w-[60%] bg-bta-50 dark:bg-bta-900"
     >
         <div class="flex flex-row justify-between items-center w-full">
             <h1
-                class="text-lg font-bold self-start text-bta-on-secondary-light dark:text-bta-on-secondary-dark mt-1"
+                class="self-start text-2xl font-extrabold line-clamp-1 text-bta-900 dark:text-bta-50 mt-1"
             >
                 {{ title }}
             </h1>
@@ -66,7 +66,7 @@ const settingsBtnHandle = async () => {
                     :class="animateRefresh ? 'animate-spin' : ''"
                     :icon="iconRefresh as ConcreteComponent"
                     :size="{ w: '24px', h: '24px' }"
-                    :customClass="svgIconClass"
+                    :iconClass="svgIconClass"
                     :handle-click="() => (refreshData = !refreshData)"
                 />
                 <button
@@ -80,7 +80,7 @@ const settingsBtnHandle = async () => {
                     v-if="!user"
                     :icon="iconCog as ConcreteComponent"
                     :size="{ w: '24px', h: '24px' }"
-                    :customClass="svgIconClass"
+                    :iconClass="svgIconClass"
                     :handle-click="settingsBtnHandle"
                 />
             </div>

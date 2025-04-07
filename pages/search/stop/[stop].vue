@@ -31,20 +31,21 @@ onBeforeMount(async () => {
         return;
     }
 
-    const stopRes: { data: Stop[] | null; error: any | null } = await $fetch(
-        "/api/get-stop",
-        {
-            method: "POST",
-            body: { code: route.params.stop },
-        },
-    );
+    // const stopRes: { data: Stop[] | null; error: any | null } = await $fetch(
+    //     "/api/get-stop",
+    //     {
+    //         method: "POST",
+    //         body: JSON.stringify({ code: route.params.stop }),
+    //     },
+    // );
 
-    if (stopRes.error) {
-        errorMsg.value = stopRes.error;
+    const stopInfo = await useGetCachedStopInfo(route.params.stop as string);
+    if (!stopInfo) {
+        errorMsg.value = "Error getting Stop info";
         return;
     }
 
-    stop.value = stopRes.data![0];
+    stop.value = stopInfo;
 
     const serviceTimingRes: {
         data: ServiceTiming[] | null;

@@ -5,6 +5,7 @@ import type {
 } from "../../types/bus";
 import type { StopQuery, StopQueryResponse } from "~/types/stops";
 import type { PropType } from "vue";
+import Btn from "../base/btn.vue";
 
 const props = defineProps({
     busCode: String,
@@ -105,17 +106,26 @@ const busStatusIconColor =
         <div
             class="flex-[70%] grid grid-cols-3 place-items-center gap-8 text-left text-xl w-full"
         >
-            <p class="mr-auto ml-2 text-xl text-left">
+            <!-- <p class="mr-auto ml-2 text-xl text-left">
                 {{ busCode }}
-            </p>
+            </p> -->
 
+            <Btn
+                class="ml-0 mr-auto"
+                :btn-text="busCode!"
+                :label="'explore bus service ' + busCode!"
+                :elevated="true"
+                :handle-click="
+                    async () => await navigateTo(SERVICE + '/' + busCode!)
+                "
+            />
             <div
                 class="mr-1 ml-auto flex flex-row justify-center items-center gap-2"
             >
                 <p class="text-xl">
                     {{
-                        nextBus?.EstimatedArrival.length!! > 0
-                            ? busUTCToMins(nextBus!!.EstimatedArrival)
+                        nextBus?.EstimatedArrival!.length!! > 0
+                            ? busUTCToMins(nextBus!!.EstimatedArrival!)
                             : "--"
                     }}
                 </p>
@@ -139,13 +149,13 @@ const busStatusIconColor =
             >
                 <p class="text-xl">
                     {{
-                        nextBus2?.EstimatedArrival.length!! > 0
-                            ? busUTCToMins(nextBus2!!.EstimatedArrival)
+                        nextBus2?.EstimatedArrival!.length!! > 0
+                            ? busUTCToMins(nextBus2!!.EstimatedArrival!)
                             : "--"
                     }}
                 </p>
                 <div
-                    v-show="nextBus2?.EstimatedArrival.length!! > 0"
+                    v-show="nextBus2?.EstimatedArrival!.length!! > 0"
                     :style="{
                         backgroundColor: busLoadTextColor(nextBus2?.Load),
                     }"

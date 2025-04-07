@@ -1,5 +1,5 @@
-import { supabaseQuery } from "~/helper/supabaseQuery";
 import type { ServiceTiming } from "~/types/stops";
+import { supabaseQuery } from "../utils/supabaseQuery";
 
 export default defineEventHandler(async (event) => {
   const body: { code: string } | null = await readBody(event);

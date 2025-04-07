@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { SIGNIN } from "#imports";
+import type { ConcreteComponent } from "vue";
+import Btn from "~/components/base/btn.vue";
 
 const showLoading = ref(true);
 const skipWelcome = useState("skipWelcome");
 const showNav: Ref<boolean> = useState("showNav");
+const iconAccount = resolveComponent("IconsAccount");
+const iconLocation = resolveComponent("IconsLocation");
 onMounted(async () => {
     showNav.value = false;
     if (localStorage.getItem("skipWelcome")) {
@@ -42,12 +46,12 @@ const locateBusStopClickHandle = async () => {
             </p>
 
             <div class="flex flex-col justify-center items-center gap-[0.5rem]">
-                <button
-                    @click="loginBtnClickHandle"
-                    class="bg-bta-elevated-light/20 dark:bg-bta-elevated-dark/20 rounded-md p-2"
-                >
-                    Login / Register
-                </button>
+                <Btn
+                    btn-text="Login / Register"
+                    label="Register or Sign into existing account."
+                    :with-icon="iconAccount as ConcreteComponent"
+                    :handle-click="loginBtnClickHandle"
+                />
                 <p class="inline-block text-center text-lg">
                     Sync your
                     <span class="inline-block"
@@ -59,17 +63,12 @@ const locateBusStopClickHandle = async () => {
                 </p>
             </div>
             <p class="text-lg">Or</p>
-
-            <button
-                @click="locateBusStopClickHandle"
-                class="flex flex-row rounded-md bg-bta-elevated-light/20 dark:bg-bta-elevated-dark/20 p-2"
-            >
-                <IconsLocation
-                    class="fill-bta-light dark:fill-bta-dark"
-                    :size="{ w: '24px', h: '24px' }"
-                />
-                Locate Nearest Bus Stops
-            </button>
+            <Btn
+                btn-text="Locate Nearest Bus Stops"
+                label="Skip Signing in  and locate Nearest Bus Stops."
+                :with-icon="iconLocation as ConcreteComponent"
+                :handle-click="locateBusStopClickHandle"
+            />
         </div>
     </div>
 </template>

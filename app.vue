@@ -26,7 +26,7 @@ useHead({
         style: bodyOverFlow,
     },
     htmlAttrs: {
-        class: "min-h-screen bg-bta-light dark:bg-bta-dark",
+        class: "min-h-screen bg-bta-50 dark:bg-bta-900",
         lang: "en-US",
     },
 });

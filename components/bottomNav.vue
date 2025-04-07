@@ -7,14 +7,14 @@ const size = { h: "24px", w: "24px" };
 
 <template>
     <div
-        class="flex justify-center items-center w-full py-4 lg:p-2 rounded-md border-t-[1px] border-bta-light/50 dark:border-bta-dark/50 lg:shadow-lg lg:rounded-lg bg-bta-light dark:bg-bta-dark"
+        class="flex justify-center items-center w-full py-4 border-t-[1px] border-bta-500 dark:border-bta-500 lg:p-2 lg:shadow-lg lg:rounded-lg lg:border-none bg-bta-50 dark:bg-bta-900"
     >
         <div class="flex justify-center items-center w-[50%]">
             <button
                 class="rounded-full px-4 py-2"
                 :class="
                     bottomNavRoute === (LOCATION_BASED as string)
-                        ? 'bg-bta-elevated-light/30 dark:bg-bta-elevated-dark/30'
+                        ? 'bg-bta-300 dark:bg-bta-700'
                         : ''
                 "
                 @click="
@@ -25,7 +25,7 @@ const size = { h: "24px", w: "24px" };
             >
                 <IconsLocation
                     :size="size"
-                    class="fill-bta-light dark:fill-bta-dark"
+                    class="fill-bta-900 dark:fill-bta-50"
                 />
             </button>
         </div>
@@ -33,9 +33,7 @@ const size = { h: "24px", w: "24px" };
             <button
                 class="rounded-full px-4 py-2"
                 :class="
-                    bottomNavRoute === SAVED
-                        ? 'bg-bta-elevated-light/30 dark:bg-bta-elevated-dark/30'
-                        : ''
+                    bottomNavRoute === SAVED ? 'bg-bta-300 dark:bg-bta-700' : ''
                 "
                 @click="
                     async () => {
@@ -43,10 +41,7 @@ const size = { h: "24px", w: "24px" };
                     }
                 "
             >
-                <IconsFavs
-                    :size="size"
-                    class="fill-bta-light dark:fill-bta-dark"
-                />
+                <IconsFavs :size="size" class="fill-bta-900 dark:fill-bta-50" />
             </button>
         </div>
         <div class="flex justify-center items-center w-[50%]">
@@ -54,7 +49,7 @@ const size = { h: "24px", w: "24px" };
                 class="rounded-full px-4 py-2"
                 :class="
                     bottomNavRoute === SEARCH
-                        ? 'bg-bta-elevated-light/30 dark:bg-bta-elevated-dark/30'
+                        ? 'bg-bta-300 dark:bg-bta-700'
                         : ''
                 "
                 @click="
@@ -65,7 +60,7 @@ const size = { h: "24px", w: "24px" };
             >
                 <IconsSearch
                     :size="size"
-                    class="fill-bta-light dark:fill-bta-dark"
+                    class="fill-bta-900 dark:fill-bta-50"
                 />
             </button>
         </div>

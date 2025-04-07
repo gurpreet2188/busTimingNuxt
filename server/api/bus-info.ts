@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
       BusStopCode: body["stopCode"],
     }).toString();
     data = await $fetch(
-      "http://datamall2.mytransport.sg/ltaodataservice/BusArrivalv2?" +
+      "http://datamall2.mytransport.sg/ltaodataservice/v3/BusArrival?" +
         searchParams,
       {
         headers: {

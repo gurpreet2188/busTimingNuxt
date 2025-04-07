@@ -80,7 +80,7 @@ const handleCloseBtn = () => {
                 :handle-click="handleCloseBtn"
                 :icon="iconClose as ConcreteComponent"
                 :size="{ w: '24px', h: '24px' }"
-                :custom-class="svgIconClass"
+                :icon-class="svgIconClass"
             />
         </div>
 

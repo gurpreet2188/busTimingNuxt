@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { ConcreteComponent } from "vue";
+import Btn from "../base/btn.vue";
 import SaveBtn from "./saveBtn.vue";
-
+const busStopIcon = resolveComponent("IconsBusStop") as ConcreteComponent;
 defineProps({
     stopName: String,
     stopCode: String,
@@ -18,29 +20,18 @@ defineProps({
             <div
                 class="flex flex-row justify-center items-center justify-self-start gap-2"
             >
-                <p class="text-xl whitespace-nowrap">
-                    {{ stopCode }}
+                <Btn
+                    :btn-text="stopCode!"
+                    :label="'explore bus stop ' + stopCode!"
+                    :elevated="true"
+                    :with-icon="busStopIcon"
+                    :handle-click="
+                        async () => await navigateTo(STOP + '/' + stopCode!)
+                    "
+                />
+                <p v-if="distanceToStop" class="text-sm">
+                    {{ distanceToStop.toFixed(2) + " km" }}
                 </p>
-
-                <a
-                    target="_blank"
-                    :href="`https://www.google.com/maps/search/?api=1&query=${stopPos?.lat},${stopPos?.lon}`"
-                    class="p-1 bg-bta-elevated-light/10 rounded-lg"
-                >
-                    <p
-                        class="flex flex-row justify-center items-center gap-1 text-lg"
-                    >
-                        <IconsLocation
-                            class="fill-bta-light dark:fill-bta-dark"
-                            :size="{ w: '23px', h: '23px' }"
-                        />
-                        {{
-                            distanceToStop
-                                ? distanceToStop.toFixed(2) + " km"
-                                : ""
-                        }}
-                    </p>
-                </a>
             </div>
             <SaveBtn :code="stopCode!" />
         </div>
