@@ -33,7 +33,7 @@ const serviceButtons: Ref<{ [key: string]: boolean }> = useState(
     },
 );
 const activeService: Ref<string> = ref("");
-
+const loadingServicesStatus: Ref<string | null> = ref(null);
 const sampleLocation: { lat: number; lon: number } = SAMPLE_LOCATION.woodlands;
 onBeforeMount(async () => {
     await useGetSavedStops();
@@ -43,9 +43,10 @@ onMounted(async () => {
     bottomNavRoute.value = LOCATION_BASED;
     showNav.value = true;
     title.value = "Near By";
-    if (localStorage.getItem("saved")) {
-        await getLocationBusTiming();
-    }
+    loadingServicesStatus.value = "Searching for active services...";
+    // if (localStorage.getItem("saved")) {
+    //     await getLocationBusTiming();
+    // }
 });
 
 const getLocationBusTiming = async (onlyRefresh?: boolean) => {
@@ -61,7 +62,6 @@ const getLocationBusTiming = async (onlyRefresh?: boolean) => {
         getServices(tempStops!);
         getActiveServices(tempStops!);
         refreshFilteredStops(tempStops!);
-        console.log(tempStops);
         allStops.value = tempStops;
         return;
     }
@@ -170,15 +170,28 @@ watch(
         if (!allStops.value) {
             await getLocationBusTiming();
         }
+        // const locInfo = await useGetLocationInfo(
+        //     sampleLocation.lat,
+        //     sampleLocation.lon,
+        // );
+        // console.log(locInfo);
+        // if (locInfo && locInfo.status === "OK") {
+        //     title.value = locInfo.results[0].formatted_address.split(",")[0];
+        // }
         if (coords.value.latitude !== Infinity) {
             const locInfo = await useGetLocationInfo(
-                sampleLocation.lat,
-                sampleLocation.lon,
+                coords.value.latitude,
+                coords.value.longitude,
             );
             if (locInfo && locInfo.status === "OK") {
                 title.value =
                     locInfo.results[0].formatted_address.split(",")[0];
             }
+        }
+        if (Object.entries(activeService).length === 0) {
+            loadingServicesStatus.value = "No Active Service found near by.";
+        } else {
+            loadingServicesStatus.value = null;
         }
     },
     { deep: true },
@@ -325,7 +338,14 @@ onBeforeUnmount(() => {
         ref="thisDiv"
         class="flex flex-col justify-center items-center gap-8 mt-20 pb-20 w-full"
     >
+        <p
+            v-if="loadingServicesStatus"
+            class="text-bta-950 dark:text-bta-50 font-extrabold"
+        >
+            {{ loadingServicesStatus }}
+        </p>
         <ServiceCard
+            v-else-if="!loadingServicesStatus && allStops"
             @service-event="handleServiceEvent"
             :stops="allStops?.length!"
             :services="serviceButtons"
