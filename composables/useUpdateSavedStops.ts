@@ -1,40 +1,41 @@
-export default async function useUpdateSavedStops(stop: string) {
+export default async function useUpdateSavedStops(
+  service: string,
+  stop: string,
+) {
   const user = useSupabaseUser();
-  const savedStopsFromLocal = useState("savedStopsFromLocal");
-  const stops = updateLocalStorage(stop);
-
-  if (user.value?.id && stops) {
+  const savedServicesFromLocal = useState("savedServicesFromLocal");
+  const serviceStops = updateLocalStorage(`${service}-${stop}`);
+  if (user.value?.id && serviceStops) {
     const res: { data: boolean; error: any } = await $fetch(
-      "/api/update-saved-stops",
+      "/api/update-saved-services-stop",
       {
         method: "POST",
-        body: { id: user.value?.id, stops: stops },
+        body: { id: user.value?.id, serviceStops: serviceStops },
       },
     );
-
     if (res.error) {
-      updateLocalStorage(stop);
+      updateLocalStorage(`${service}-${stop}`);
       return false;
     }
-    savedStopsFromLocal.value = stops;
+    savedServicesFromLocal.value = serviceStops;
     return res.data;
   }
-  savedStopsFromLocal.value = JSON.parse(localStorage.getItem("saved")!);
+  savedServicesFromLocal.value = JSON.parse(localStorage.getItem("saved")!);
   return true;
 }
 
-function updateLocalStorage(stop: string) {
+function updateLocalStorage(servicesStop: string) {
   if (!localStorage.getItem("saved")) {
     localStorage.setItem("saved", JSON.stringify([]));
   }
   const localSaved: string[] = JSON.parse(localStorage.getItem("saved")!);
-  let stops: null | string[] = null;
-  if (localSaved && localSaved.includes(stop)) {
-    stops = localSaved.filter((s) => s !== stop);
-    localStorage.setItem("saved", JSON.stringify(stops));
+  let servicesStops: null | string[] = null;
+  if (localSaved && localSaved.includes(servicesStop)) {
+    servicesStops = localSaved.filter((s) => s !== servicesStop);
+    localStorage.setItem("saved", JSON.stringify(servicesStops));
   } else if (localSaved) {
-    stops = [...localSaved, stop];
-    localStorage.setItem("saved", JSON.stringify(stops));
+    servicesStops = [...localSaved, servicesStop];
+    localStorage.setItem("saved", JSON.stringify(servicesStops));
   }
-  return stops;
+  return servicesStops;
 }

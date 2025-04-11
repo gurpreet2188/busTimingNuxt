@@ -6,7 +6,7 @@ export default async function useGetLocationInfo(
   lon: number,
 ): Promise<Geocode | undefined> {
   const runtime = useRuntimeConfig();
-  const app = useNuxtApp();
+  // const app = useNuxtApp();
   const query = new URLSearchParams({
     key: runtime.public.GMAP_KEY! as string,
     result_type: "street_address",
@@ -14,7 +14,6 @@ export default async function useGetLocationInfo(
     latlng: `${lat},${lon}`,
   }).toString();
   if (locationNameCache.has((lat + lon).toString())) {
-    console.log(locationNameCache.get((lat + lon).toString()));
     return locationNameCache.get((lat + lon).toString());
   }
   try {

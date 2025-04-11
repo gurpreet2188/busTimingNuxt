@@ -5,6 +5,7 @@ import Arrival from "./base/busCard/arrival.vue";
 import type { BusService } from "~/types/stops";
 import ArrivalWithInfo from "./base/busCard/arrivalWithInfo.vue";
 import InActiveService from "./base/busCard/inActiveService.vue";
+import Save from "./base/busCard/save.vue";
 
 const props = defineProps<{
     busService: BusService;
@@ -19,8 +20,13 @@ const props = defineProps<{
     />
     <div
         v-else
-        class="flex flex-col justify-center items-start gap-2 rounded-xl bg-bta-100 dark:bg-bta-800 overflow-hidden shadow-md w-full"
+        class="relative flex flex-col justify-center items-start gap-2 rounded-xl bg-bta-100 dark:bg-bta-800 overflow-hidden shadow-md w-full"
     >
+        <Save
+            class="absolute top-[23%] right-[2%]"
+            :code="busService.stopCode"
+            :service="busService.serviceNo"
+        />
         <Service
             class="self-center"
             :service-code="busService.bus.ServiceNo"

@@ -9,7 +9,7 @@ const showCancel: Ref<boolean> = ref(false);
 const spanRight: Ref<number> = ref(0);
 
 onBeforeMount(() => {
-    isSaved.value = useCheckIfSavedStop(props.code);
+    isSaved.value = useCheckIfSavedStop(`${props.service}-${props.code}`);
 });
 const handleClick = async () => {
     showCancel.value = isSaved.value ? !showCancel.value : false;
@@ -27,7 +27,7 @@ const handleClick = async () => {
         }, 300);
 
         timeoutCounter.value = window.setTimeout(async () => {
-            await useUpdateSavedStops(props.code);
+            await useUpdateSavedStops(props.service, props.code);
             removedCode.value = isSaved.value && props.code;
             isSaved.value = !isSaved.value;
             showCancel.value = false;
@@ -35,7 +35,7 @@ const handleClick = async () => {
     }
 
     if (!isSaved.value) {
-        await useUpdateSavedStops(props.code);
+        await useUpdateSavedStops(props.service, props.code);
         isSaved.value = !isSaved.value;
     }
 };
@@ -49,7 +49,7 @@ onBeforeUnmount(() => {
 <template>
     <button
         @click="handleClick"
-        class="relative flex justify-center items-center gap-1 justify-self-end rounded-full bg-bta-elevated-light/10 p-1 transition-all ease-linear duration-200 overflow-hidden"
+        class="flex justify-center items-center gap-1 justify-self-end rounded-full bg-bta-200 dark:bg-bta-800 shadow-lg p-1 transition-all ease-linear duration-200 overflow-hidden"
     >
         <IconsFavsFilled
             class="fill-bta-light/50 dark:fill-bta-dark/50"
@@ -58,14 +58,16 @@ onBeforeUnmount(() => {
         />
         <IconsFavs
             v-if="!isSaved && !showCancel"
-            class="fill-bta-light dark:fill-bta-dark"
+            class="fill-bta-900 dark:fill-bta-100"
             :size="size"
         />
+        <!-- <div  class="relative w-full h-full"> -->
         <span
             v-if="showCancel"
             :style="{ right: spanRight + '%' }"
-            class="absolute top-0 bg-bta-elevated-light/20 w-full h-full transition-all ease-linear duration-200"
+            class="absolute top-0 bg-bta-500/60 w-full h-full transition-all ease-linear duration-200"
         ></span>
+        <!-- </div> -->
         <p v-if="showCancel">Cancel</p>
     </button>
 </template>

@@ -16,7 +16,6 @@ const textCss =
 onMounted(async () => {
     isLoop.value = props.origin === props.destination;
 });
-console.log(props);
 </script>
 <template>
     <button

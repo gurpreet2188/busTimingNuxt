@@ -56,7 +56,7 @@ const settingsBtnHandle = async () => {
     >
         <div class="flex flex-row justify-between items-center w-full">
             <h1
-                class="self-start text-2xl font-extrabold line-clamp-1 text-bta-900 dark:text-bta-50 mt-1"
+                class="self-start text-2xl font-extrabold line-clamp-1 text-ellipsis text-bta-900 dark:text-bta-50 mt-1"
             >
                 {{ title }}
             </h1>
