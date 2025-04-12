@@ -18,27 +18,27 @@ export default async function useGetCachedStopInfo(
     localStorage.setItem("stopInfo", JSON.stringify({}));
   }
 
-  const f = await fetch("/api/get-stop", {
+  const f = await $fetch("/api/get-stop", {
     method: "POST",
-    body: JSON.stringify({ code: stopCode }),
+    body: { code: stopCode },
   });
 
-  const res: { data: Stop[]; error: any } = await f.json();
+  // const res: { data: Stop[]; error: any } = await f.json();
 
   getFromLocal = JSON.parse(
     localStorage.getItem("stopInfo")!,
   )! as LocalStopInfo;
 
-  if (!res.error) {
+  if (f.data) {
     localStorage.setItem(
       "stopInfo",
       JSON.stringify({
         ...getFromLocal,
-        [stopCode]: res.data[0],
+        [stopCode]: f.data[0],
       }),
     );
 
-    return res.data[0];
+    return f.data[0];
   }
   return undefined;
 }

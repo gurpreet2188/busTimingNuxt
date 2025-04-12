@@ -34,7 +34,7 @@ const serviceButtons: Ref<{ [key: string]: boolean }> = useState(
 );
 const activeService: Ref<string> = ref("");
 const loadingServicesStatus: Ref<string | null> = ref(null);
-const sampleLocation: { lat: number; lon: number } = SAMPLE_LOCATION.woodlands;
+const sampleLocation: { lat: number; lon: number } = SAMPLE_LOCATION.waterway;
 onBeforeMount(async () => {
     await useGetSavedStops();
 });

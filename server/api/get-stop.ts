@@ -3,6 +3,7 @@ import { supabaseQuery } from "../utils/supabaseQuery";
 
 export default defineEventHandler(async (event) => {
   const body: { code: string } | null = await readBody(event);
+  console.log(body, typeof body);
   return await supabaseQuery<Stop[]>(event, "find_stop", {
     _code: body!.code,
   });

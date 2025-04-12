@@ -28,7 +28,7 @@ const handleClick = async () => {
 
         timeoutCounter.value = window.setTimeout(async () => {
             await useUpdateSavedStops(props.service, props.code);
-            removedCode.value = isSaved.value && props.code;
+            removedCode.value = isSaved.value && props.service + props.code;
             isSaved.value = !isSaved.value;
             showCancel.value = false;
         }, 3200);

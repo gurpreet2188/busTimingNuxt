@@ -98,14 +98,13 @@ const getFavsBusTiming = async () => {
     }
 
     savedServices.value = tempArr;
-    console.log(savedServices.value);
     if (tempArr.length === 0) {
         favLoadingMsg.value = "Found 0 saved Bus Stops";
     }
 };
 
 watch(
-    [refreshData, savedServicesFromLocal],
+    [refreshData],
     async () => {
         animateRefresh.value = true;
         await getFavsBusTiming();
@@ -122,9 +121,9 @@ watch(
         }
         let index = -1;
         for (let i = 0; i < savedServices.value!.length; i++) {
-            // if (savedServices.value![i].code === removedCode.value!) {
-            //     index = i;
-            // }
+            if (savedServices.value![i].id === removedCode.value!) {
+                index = i;
+            }
         }
 
         savedServices.value!.splice(index, 1);
