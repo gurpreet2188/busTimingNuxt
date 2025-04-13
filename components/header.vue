@@ -66,12 +66,14 @@ const settingsBtnHandle = async () => {
                     :class="animateRefresh ? 'animate-spin' : ''"
                     :icon="iconRefresh as ConcreteComponent"
                     :size="{ w: '24px', h: '24px' }"
+                    label="refresh"
                     :iconClass="svgIconClass"
                     :handle-click="() => (refreshData = !refreshData)"
                 />
                 <button
                     @click="settingsBtnHandle"
                     v-if="user"
+                    aria-label="user profile"
                     class="rounded-full overflow-hidden"
                 >
                     <img :src="avatar!" width="36px" />
@@ -80,6 +82,7 @@ const settingsBtnHandle = async () => {
                     v-if="!user"
                     :icon="iconCog as ConcreteComponent"
                     :size="{ w: '24px', h: '24px' }"
+                    label="settings"
                     :iconClass="svgIconClass"
                     :handle-click="settingsBtnHandle"
                 />

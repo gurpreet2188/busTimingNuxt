@@ -12,6 +12,7 @@ const size = { h: "24px", w: "24px" };
         <div class="flex justify-center items-center w-[50%]">
             <button
                 class="rounded-full px-4 py-2"
+                aria-label="Location based bus timing"
                 :class="
                     bottomNavRoute === (LOCATION_BASED as string)
                         ? 'bg-bta-300 dark:bg-bta-700'
@@ -32,6 +33,7 @@ const size = { h: "24px", w: "24px" };
         <div class="flex justify-center items-center w-[50%]">
             <button
                 class="rounded-full px-4 py-2"
+                aria-label="Saved Bus Services"
                 :class="
                     bottomNavRoute === SAVED ? 'bg-bta-300 dark:bg-bta-700' : ''
                 "
@@ -47,6 +49,7 @@ const size = { h: "24px", w: "24px" };
         <div class="flex justify-center items-center w-[50%]">
             <button
                 class="rounded-full px-4 py-2"
+                aria-label="Search Bus Services and Stops"
                 :class="
                     bottomNavRoute === SEARCH
                         ? 'bg-bta-300 dark:bg-bta-700'

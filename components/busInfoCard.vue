@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import OD from "./base/busCard/originAndDestination.vue";
 import Service from "./base/busCard/service.vue";
 import Arrival from "./base/busCard/arrival.vue";
 import type { BusService } from "~/types/stops";
@@ -74,12 +73,12 @@ const props = defineProps<{
             >
                 <div class="flex flex-col justify-center items-start">
                     <p
-                        class="font-extrabold line-clamp-1 text-bta-700 dark:text-bta-100 text-sm"
+                        class="font-extrabold line-clamp-1 text-bta-900 dark:text-bta-100 text-sm"
                     >
                         {{ busService.stopName }}
                     </p>
                     <p
-                        class="self-start flex justify-center items-center gap-2 font-extrabold text-bta-700 dark:text-bta-100 text-sm"
+                        class="self-start flex justify-center items-center gap-2 font-extrabold text-bta-900/80 dark:text-bta-100/80 text-sm"
                     >
                         <!-- <IconsWalk
                             :size="{ w: '18px', h: '18px' }"

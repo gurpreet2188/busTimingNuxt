@@ -3,7 +3,7 @@ import type { Stop, BusService } from "~/types/stops";
 import { useGeolocation } from "@vueuse/core";
 import BusInfoCard from "~/components/busInfoCard.vue";
 import ServiceCard from "../components/serviceCard.vue";
-import Pin from "~/components/base/busCard/pin.vue";
+// import Pin from "~/components/base/busCard/pin.vue";
 import useConvertUTCToMin from "~/composables/useConvertUTCToMin";
 import useGetLocationInfo from "~/composables/useGetLocationInfo";
 import useGetStopServices from "~/composables/useGetStopServices";
@@ -19,13 +19,13 @@ const isLocationLoading: Ref<boolean> = useState("isLocationLoading");
 const locationError: Ref<string> = useState("locationError", () => "");
 const located: Ref<boolean> = useState("located");
 const isStopsError: Ref<boolean> = useState("isStopsError", () => false);
-const darkTheme: Ref<boolean> = useState("darkTheme");
+// const darkTheme: Ref<boolean> = useState("darkTheme");
 const title: Ref<string> = useState("title");
 const errorMsg: Ref<string> = ref("");
 const initialLoadTimeout: Ref<number> = ref(0);
 const isDev = import.meta.dev;
 const thisDiv: Ref<HTMLElement | null> = ref(null);
-const stopItemRefs: Ref<HTMLElement[] | null> = ref(null);
+// const stopItemRefs: Ref<HTMLElement[] | null> = ref(null);
 const serviceButtons: Ref<{ [key: string]: boolean }> = useState(
     "serviceButtons",
     () => {
@@ -34,7 +34,7 @@ const serviceButtons: Ref<{ [key: string]: boolean }> = useState(
 );
 const activeService: Ref<string> = ref("");
 const loadingServicesStatus: Ref<string | null> = ref(null);
-const sampleLocation: { lat: number; lon: number } = SAMPLE_LOCATION.waterway;
+const sampleLocation: { lat: number; lon: number } = SAMPLE_LOCATION.whitesands;
 onBeforeMount(async () => {
     await useGetSavedStops();
 });
@@ -197,21 +197,21 @@ watch(
     { deep: true },
 );
 
-const msg = computed((): string => {
-    let m = "";
-    if (isLocationLoading.value) {
-        m = "Finding nearest Bus Stops...";
-    } else if (locationError.value) {
-        m = locationError.value;
-    } else if (
-        located.value &&
-        Object.keys(serviceButtons.value).length === 0
-    ) {
-        isStopsError.value = true;
-        m = "No stops found within 1km range.";
-    }
-    return m;
-});
+// const msg = computed((): string => {
+//     let m = "";
+//     if (isLocationLoading.value) {
+//         m = "Finding nearest Bus Stops...";
+//     } else if (locationError.value) {
+//         m = locationError.value;
+//     } else if (
+//         located.value &&
+//         Object.keys(serviceButtons.value).length === 0
+//     ) {
+//         isStopsError.value = true;
+//         m = "No stops found within 1km range.";
+//     }
+//     return m;
+// });
 
 const handleServiceEvent = (serviceNo: string) => {
     filteredStops.value = [];

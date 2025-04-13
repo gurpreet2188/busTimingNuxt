@@ -38,8 +38,8 @@ onBeforeMount(async () => {
 });
 
 const getFavsBusTiming = async () => {
-    showEmptyFavsMessage.value = true;
-    favLoadingMsg.value = "Loading Saved Bus Stops";
+    // showEmptyFavsMessage.value = true;
+    // favLoadingMsg.value = "Loading Saved Bus Stops";
 
     let stops: string[] = [];
 
@@ -104,7 +104,7 @@ const getFavsBusTiming = async () => {
 };
 
 watch(
-    [refreshData],
+    refreshData,
     async () => {
         animateRefresh.value = true;
         await getFavsBusTiming();

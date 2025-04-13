@@ -5,6 +5,7 @@ const props = defineProps<{
     iconClass: string;
     bgClass?: string;
     handleClick: () => void;
+    label?: string;
     size: { w: string; h: string };
 }>();
 
@@ -15,6 +16,7 @@ const btnClass = props.bgClass ? props.bgClass : "bg-bta-300 dark:bg-bta-700";
     <button
         :class="btnClass"
         class="rounded-full p-2"
+        :aria-label="label ? label : 'button'"
         @click="handleClick"
         @touchstart="
             (e: TouchEvent) => {

@@ -24,7 +24,7 @@ const handleClick = async () => {
             :handle-click="handleClick"
         /> -->
         <p
-            class="text-ellipsis text-sm font-bold text-bta-light dark:text-bta-dark line-clamp-1 w-full"
+            class="text-ellipsis text-sm font-bold text-bta-900 dark:text-bta-dark line-clamp-1 w-full"
         >
             {{ stopName }}
         </p>
