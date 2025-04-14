@@ -7,6 +7,7 @@ import ServiceCard from "../components/serviceCard.vue";
 import useConvertUTCToMin from "~/composables/useConvertUTCToMin";
 import useGetLocationInfo from "~/composables/useGetLocationInfo";
 import useGetStopServices from "~/composables/useGetStopServices";
+import Weather from "~/components/weather.vue";
 
 const { coords, locatedAt, error, resume, pause } = useGeolocation();
 const showNav: Ref<boolean> = useState("showNav");
@@ -25,6 +26,7 @@ const errorMsg: Ref<string> = ref("");
 const initialLoadTimeout: Ref<number> = ref(0);
 const isDev = import.meta.dev;
 const thisDiv: Ref<HTMLElement | null> = ref(null);
+const weatherInfo: Ref<string | undefined> = ref(undefined);
 // const stopItemRefs: Ref<HTMLElement[] | null> = ref(null);
 const serviceButtons: Ref<{ [key: string]: boolean }> = useState(
     "serviceButtons",
@@ -179,6 +181,13 @@ watch(
         //     title.value = locInfo.results[0].formatted_address.split(",")[0];
         // }
         if (coords.value.latitude !== Infinity) {
+            weatherInfo.value = await $fetch("/api/weather-info", {
+                method: "POST",
+                body: {
+                    lat: coords.value.latitude,
+                    lon: coords.value.longitude,
+                },
+            });
             const locInfo = await useGetLocationInfo(
                 coords.value.latitude,
                 coords.value.longitude,
@@ -338,6 +347,7 @@ onBeforeUnmount(() => {
         ref="thisDiv"
         class="flex flex-col justify-center items-center gap-8 mt-20 pb-20 w-full"
     >
+        <Weather v-if="weatherInfo" :weather-conditon="weatherInfo" />
         <p
             v-if="loadingServicesStatus"
             class="text-bta-950 dark:text-bta-50 font-extrabold"
