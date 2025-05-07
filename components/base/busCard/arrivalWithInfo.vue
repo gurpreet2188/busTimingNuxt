@@ -6,6 +6,7 @@ const props = defineProps<{
     arrivalEstimate?: number;
     load: string;
     type: string;
+    isTracked: number;
 }>();
 const commonTextCss = "text-bta-900 dark:text-bta-100 font-extrabold";
 const darkTheme: Ref<boolean> = useState("darkTheme");
@@ -43,6 +44,8 @@ const handleShowWheelchairIcon = () => {
     }
     return;
 };
+
+console.log(props.load);
 </script>
 <template>
     <div class="flex flex-col justify-center items-start gap-2 w-full">
@@ -83,6 +86,11 @@ const handleShowWheelchairIcon = () => {
                 </TransitionGroup>
             </button>
         </div>
+        <p
+            class="font-extrabold text-center text-bta-700/80 dark:text-bta-200/80"
+        >
+            {{ isTracked === 1 ? "Live" : "" }}
+        </p>
     </div>
 </template>
 <style>

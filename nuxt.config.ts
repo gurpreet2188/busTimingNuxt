@@ -9,6 +9,8 @@ export default defineNuxtConfig({
 
   modules: [
     "@vueuse/nuxt",
+    "@nuxtjs/robots",
+    "@nuxtjs/sitemap",
     "nuxt-api-shield",
     "nuxt-component-meta",
     "@nuxtjs/tailwindcss",
@@ -23,6 +25,10 @@ export default defineNuxtConfig({
   sourcemap: {
     server: false,
     client: true,
+  },
+  site: {
+    url: "https://bus-timing-nuxt.vercel.app",
+    name: "Singapore Bus Timing",
   },
 
   routeRules: {

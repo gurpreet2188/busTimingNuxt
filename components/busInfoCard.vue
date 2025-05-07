@@ -43,6 +43,7 @@ const props = defineProps<{
                     :arrival-estimate="
                         busService.bus.NextBus!.EstimatedArrivalMinutes
                     "
+                    :is-tracked="busService.bus.NextBus!.Monitored"
                 />
                 <Arrival
                     v-if="busService.bus.NextBus2"
@@ -52,6 +53,7 @@ const props = defineProps<{
                     "
                     :type="busService.bus.NextBus2.Type"
                     :wab="busService.bus.NextBus2.Feature === 'WAB'"
+                    :is-tracked="busService.bus.NextBus2.Monitored"
                 />
 
                 <Arrival
@@ -62,6 +64,7 @@ const props = defineProps<{
                     "
                     :type="busService.bus.NextBus3.Type"
                     :wab="busService.bus.NextBus3.Feature === 'WAB'"
+                    :is-tracked="busService.bus.NextBus3.Monitored"
                 />
             </div>
             <button

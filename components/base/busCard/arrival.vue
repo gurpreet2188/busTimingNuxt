@@ -7,6 +7,7 @@ const props = defineProps<{
     type: string;
     load: string;
     wab: boolean;
+    isTracked: number;
 }>();
 const darkTheme: Ref<boolean> = useState("darkTheme");
 const showWA: Ref<boolean> = ref(false);
@@ -76,6 +77,11 @@ const handleShowWheelchairIcon = () => {
                 <BusType key="busTypeIcon" v-else :bus-type="type" />
             </TransitionGroup>
         </button>
+        <p
+            class="text-[0.6rem] font-extrabold text-center text-bta-700/60 dark:text-bta-200/60"
+        >
+            {{ isTracked === 1 ? "Live" : "" }}
+        </p>
     </div>
 </template>
 <style>

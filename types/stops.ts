@@ -46,6 +46,7 @@ export interface NextBus {
   EstimatedArrivalMinutes?: number | undefined;
   Latitude: string;
   Longitude: string;
+  Monitored: number;
   VisitNumber: string;
   Load: string;
   Feature: string;
