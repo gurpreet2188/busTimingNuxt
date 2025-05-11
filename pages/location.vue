@@ -37,8 +37,13 @@ const serviceButtons: Ref<{ [key: string]: boolean }> = useState(
 const activeService: Ref<string> = ref("");
 const loadingServicesStatus: Ref<string | null> = ref(null);
 const sampleLocation: { lat: number; lon: number } = SAMPLE_LOCATION.whitesands;
+const refreshInterval: Ref<number> = ref(0);
+const startRefreshInterval: Ref<boolean> = ref(false);
 onBeforeMount(async () => {
     await useGetSavedStops();
+    if (allStops.value?.length! > 0) {
+        startRefreshInterval.value = true;
+    }
 });
 
 onMounted(async () => {
@@ -52,6 +57,7 @@ onMounted(async () => {
 });
 
 const getLocationBusTiming = async (onlyRefresh?: boolean) => {
+    startRefreshInterval.value = true;
     // sample loc
     if (isDev) {
         let tempStops: Stop[] | null;
@@ -102,6 +108,19 @@ const getLocationBusTiming = async (onlyRefresh?: boolean) => {
         locationError.value = error.value.message;
     }
 };
+
+watch(
+    startRefreshInterval,
+    () => {
+        console.log(startRefreshInterval.value);
+        if (startRefreshInterval.value) {
+            refreshInterval.value = window.setInterval(async () => {
+                await getLocationBusTiming(true);
+            }, 25000);
+        }
+    },
+    { deep: true },
+);
 
 const getServices = async (stops: Stop[]) => {
     let tempServices: { [key: string]: boolean } = {};
@@ -339,6 +358,7 @@ const refreshFilteredStops = (stops: Stop[]) => {
 
 onBeforeUnmount(() => {
     window.clearTimeout(initialLoadTimeout.value);
+    window.clearInterval(refreshInterval.value);
 });
 </script>
 

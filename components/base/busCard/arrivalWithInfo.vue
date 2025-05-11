@@ -56,7 +56,7 @@ console.log(props.load);
             <p
                 :style="{ color: busLoadColor }"
                 :class="commonTextCss"
-                class="text-4xl line-clamp-1"
+                class="text-6xl line-clamp-1"
             >
                 {{
                     arrivalEstimate! >= 2
@@ -89,7 +89,7 @@ console.log(props.load);
         <p
             class="font-extrabold text-center text-bta-700/80 dark:text-bta-200/80"
         >
-            {{ isTracked === 1 ? "Live" : "" }}
+            {{ isTracked === 1 ? "Live" : "Scheduled" }}
         </p>
     </div>
 </template>

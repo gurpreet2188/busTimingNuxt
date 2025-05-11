@@ -21,6 +21,8 @@ const showEmptyFavsMessage: Ref<boolean> = ref(false);
 const title: Ref<string> = useState("title");
 const errorMsg: Ref<string> = ref("");
 const favLoadingMsg: Ref<string> = ref("Loading Saved Bus Stops");
+const refreshInterval: Ref<number> = ref(0);
+const startRefreshInterval: Ref<boolean> = ref(false);
 bottomNavRoute.value = SAVED;
 
 onBeforeMount(async () => {
@@ -35,6 +37,7 @@ onBeforeMount(async () => {
         await useGetSavedStops();
         await getFavsBusTiming();
     }
+    startRefreshInterval.value = true;
 });
 
 const getFavsBusTiming = async () => {
@@ -132,6 +135,19 @@ watch(
 );
 
 watch(
+    startRefreshInterval,
+    () => {
+        console.log(startRefreshInterval.value);
+        if (startRefreshInterval.value) {
+            refreshInterval.value = window.setInterval(async () => {
+                await getFavsBusTiming();
+            }, 25000);
+        }
+    },
+    { deep: true },
+);
+
+watch(
     savedServices,
     () => {
         showEmptyFavsMessage.value =
@@ -139,6 +155,10 @@ watch(
     },
     { deep: true, immediate: true },
 );
+
+onBeforeUnmount(() => {
+    window.clearInterval(refreshInterval.value);
+});
 </script>
 
 <template>

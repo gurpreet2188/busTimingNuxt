@@ -51,14 +51,11 @@ const handleShowWheelchairIcon = () => {
         v-if="arrvivalEstMin"
         class="flex flex-col justify-center items-center gap-0"
     >
-        <p :style="{ color: busLoadColor }" class="font-extrabold text-lg">
+        <p :style="{ color: busLoadColor }" class="text-sm">
             {{ arrvivalEstMin! <= 1 ? "Arr" : arrvivalEstMin }}
         </p>
 
-        <p
-            :style="{ color: busLoadColor }"
-            class="text-extrabold font-extrabold"
-        >
+        <p :style="{ color: busLoadColor }" class="text-[0.7rem]">
             {{ arrvivalEstMin! <= 1 ? "--" : "mins" }}
         </p>
         <button
@@ -77,10 +74,8 @@ const handleShowWheelchairIcon = () => {
                 <BusType key="busTypeIcon" v-else :bus-type="type" />
             </TransitionGroup>
         </button>
-        <p
-            class="text-[0.6rem] font-extrabold text-center text-bta-700/60 dark:text-bta-200/60"
-        >
-            {{ isTracked === 1 ? "Live" : "" }}
+        <p class="text-[0.6rem] text-center text-bta-700 dark:text-bta-200">
+            {{ isTracked === 1 ? "Live" : "Scheduled" }}
         </p>
     </div>
 </template>
