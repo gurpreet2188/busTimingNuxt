@@ -7,7 +7,7 @@ const showNav: Ref<boolean> = useState("showNav");
 const errorMsg: Ref<string | null> = ref(null);
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
-// const url = useRuntimeConfig();
+const url = useRuntimeConfig();
 onBeforeMount(() => {
     showNav.value = false;
 });
@@ -21,15 +21,14 @@ onMounted(async () => {
 const handleSignIn = async () => {
     loading.value = true;
 
-    // if (!url.public.APP_BASE_URL) {
-    //     return;
-    // }
+    if (!url.public.APP_BASE_URL) {
+        return;
+    }
     try {
         const { data, error } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo:
-                    "https://bustimingnuxt.pages.dev" + PROFILE + "?rd=true",
+                redirectTo: url.public.APP_BASE_URL + PROFILE + "?rd=true",
             },
         });
 
