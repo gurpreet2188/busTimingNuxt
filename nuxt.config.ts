@@ -27,7 +27,7 @@ export default defineNuxtConfig({
     client: true,
   },
   site: {
-    url: "https://bus-timing-nuxt.vercel.app",
+    url: process.env.APP_BASE_URL,
     name: "Singapore Bus Timing",
   },
 
