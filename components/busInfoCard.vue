@@ -9,6 +9,34 @@ import Save from "./base/busCard/save.vue";
 const props = defineProps<{
     busService: BusService;
 }>();
+
+const stnStops: Ref<string[]> = ref([]);
+const route = await useGetBusRoute(
+    props.busService.serviceNo,
+    props.busService.stopCode,
+    props.busService.bus!.NextBus!.Origin,
+    props.busService.bus!.NextBus!.Destination,
+);
+
+let tempStops = [];
+let rIndex = 0;
+for (let r = 0; r <= route.length - 1; r++) {
+    if (route[r].code === props.busService.stopCode) {
+        rIndex = r;
+    }
+}
+const updatedRoutes = route.slice(rIndex, route.length - 1);
+
+for (const r of updatedRoutes) {
+    if (
+        r.description.toLowerCase().includes("stn") ||
+        r.description.toLowerCase().includes("station")
+    ) {
+        tempStops.push(r.description);
+    }
+}
+
+stnStops.value = tempStops;
 </script>
 <template>
     <InActiveService
@@ -31,6 +59,7 @@ const props = defineProps<{
             :service-code="busService.bus.ServiceNo"
             :origin="busService.bus.NextBus!.Origin"
             :destination="busService.bus.NextBus!.Destination"
+            :stops="stnStops"
         />
 
         <div class="flex flex-col justify-center items-center gap-4 w-full">

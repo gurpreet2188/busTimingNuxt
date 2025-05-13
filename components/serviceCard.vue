@@ -14,11 +14,12 @@ const runningServices = computed(() =>
         .filter((s) => s[1])
         .flatMap((v) => v[0]),
 );
-const notRunningServices = computed(() =>
-    Object.entries(props.services)
-        .filter((s) => !s[1])
-        .flatMap((v) => v[0]),
-);
+
+// const notRunningServices = computed(() =>
+//     Object.entries(props.services)
+//         .filter((s) => !s[1])
+//         .flatMap((v) => v[0]),
+// );
 </script>
 <template>
     <div class="flex flex-col justify-center items-center gap-2 w-full">

@@ -56,7 +56,7 @@ console.log(props.load);
             <p
                 :style="{ color: busLoadColor }"
                 :class="commonTextCss"
-                class="text-6xl line-clamp-1"
+                class="text-4xl line-clamp-1"
             >
                 {{
                     arrivalEstimate! >= 2
