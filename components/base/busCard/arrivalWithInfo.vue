@@ -44,8 +44,6 @@ const handleShowWheelchairIcon = () => {
     }
     return;
 };
-
-console.log(props.load);
 </script>
 <template>
     <div class="flex flex-col justify-center items-start gap-2 w-full">

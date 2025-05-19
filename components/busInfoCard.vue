@@ -5,6 +5,7 @@ import type { BusService } from "~/types/stops";
 import ArrivalWithInfo from "./base/busCard/arrivalWithInfo.vue";
 import InActiveService from "./base/busCard/inActiveService.vue";
 import Save from "./base/busCard/save.vue";
+import UpcomingStnStops from "./base/busCard/upcomingStnStops.vue";
 
 const props = defineProps<{
     busService: BusService;
@@ -26,14 +27,17 @@ for (let r = 0; r <= route.length - 1; r++) {
     }
 }
 const updatedRoutes = route.slice(rIndex, route.length - 1);
-
+let count = 0;
 for (const r of updatedRoutes) {
     if (
-        r.description.toLowerCase().includes("stn") ||
-        r.description.toLowerCase().includes("station")
+        (r.description.toLowerCase().includes(" stn") ||
+            r.description.toLowerCase().includes(" station")) &&
+        count >= 1
     ) {
+        tempStops.push(count.toString() + (count === 1 ? " Stop" : " Stops"));
         tempStops.push(r.description);
     }
+    count++;
 }
 
 stnStops.value = tempStops;
@@ -50,7 +54,7 @@ stnStops.value = tempStops;
         class="relative flex flex-col justify-center items-start gap-2 rounded-xl bg-bta-100 dark:bg-bta-800 overflow-hidden shadow-md w-full"
     >
         <Save
-            class="absolute top-[23%] right-[2%]"
+            class="absolute top-[3.2rem] right-[2%]"
             :code="busService.stopCode"
             :service="busService.serviceNo"
         />
@@ -61,6 +65,9 @@ stnStops.value = tempStops;
             :destination="busService.bus.NextBus!.Destination"
             :stops="stnStops"
         />
+        <div v-if="stnStops.length > 0" class="w-full p-2 mt-6">
+            <UpcomingStnStops :stops="stnStops" />
+        </div>
 
         <div class="flex flex-col justify-center items-center gap-4 w-full">
             <div class="flex justify-center items-center gap-4 p-4 w-full">

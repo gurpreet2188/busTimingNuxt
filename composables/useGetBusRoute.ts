@@ -12,7 +12,6 @@ export default async function useGetBusRoute(
   if (origin === destination) {
     for (let r = 0; r <= Math.round(routeOne.data?.length! / 2); r++) {
       if (routeOne.data![r].code === stop) {
-        console.log("r1");
         return routeOne.data!.slice(0, routeOne.data?.length! / 2);
       }
     }
@@ -22,7 +21,6 @@ export default async function useGetBusRoute(
       r++
     ) {
       if (routeOne.data![r].code === stop) {
-        console.log("r2");
         return routeOne.data!.slice(
           routeOne.data?.length! / 2,
           routeOne.data?.length! - 1,
