@@ -27,14 +27,20 @@ for (let r = 0; r <= route.length - 1; r++) {
     }
 }
 const updatedRoutes = route.slice(rIndex, route.length - 1);
-let count = 0;
+let count = -1;
 for (const r of updatedRoutes) {
     if (
         (r.description.toLowerCase().includes(" stn") ||
             r.description.toLowerCase().includes(" station")) &&
-        count >= 1
+        count >= 0
     ) {
-        tempStops.push(count.toString() + (count === 1 ? " Stop" : " Stops"));
+        tempStops.push(
+            count === 0
+                ? " Next Stop"
+                : count === 1
+                  ? count + " Stop"
+                  : count + " Stops",
+        );
         tempStops.push(r.description);
     }
     count++;

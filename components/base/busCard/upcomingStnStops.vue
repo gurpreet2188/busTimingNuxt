@@ -20,13 +20,13 @@ const stopsName: Ref<string[]> = computed(() =>
     props.stops.filter((v) => !v.includes("Stop")),
 );
 
-const cleanStnText = (name: string) => {
-    return name
-        .toLowerCase()
-        .replace(/\b(aft|bef|opp)\b/gi, "")
-        .trim()
-        .replace(/\s+/g, " ");
-};
+// const cleanStnText = (name: string) => {
+//     return name
+//         .toLowerCase()
+//         .replace(/\b(aft|bef|opp)\b/gi, "")
+//         .trim()
+//         .replace(/\s+/g, " ");
+// };
 </script>
 <template>
     <div

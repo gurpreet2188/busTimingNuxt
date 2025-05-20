@@ -19,7 +19,11 @@ definePageMeta({ key: "location" });
             class="relative flex flex-col justify-start items-start gap-4 w-full max-h-16 overflow-y-auto text-bta-800 dark:text-bta-100"
         >
             <p class="flex justify-center items-center gap-2 font-bold text-lg">
-                -> {{ destination }}
+                <IconsArrowRight
+                    class="fill-bta-800 dark:fill-bta-300 scale-[-1]"
+                    :size="{ w: '24px', h: '24px' }"
+                />
+                {{ destination }}
             </p>
         </div>
 
