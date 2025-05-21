@@ -30,22 +30,23 @@ const stopsName: Ref<string[]> = computed(() =>
 </script>
 <template>
     <div
-        class="flex flex-col justify-end gap-2 overflow-x-auto scrollbar-none w-auto p-2 min-h-[5rem]"
+        class="flex flex-col justify-end gap-2 overflow-x-auto scrollbar-none w-auto p-2 min-h-[5.5rem]"
     >
         <div
-            class="flex gap-6 border-dashed border-t-4 border-bta-800/30 dark:border-bta-200/40 min-w-fit"
+            class="flex gap-8 border-dashed border-t-4 border-bta-800/30 dark:border-bta-200/40 min-w-fit"
         >
             <p
-                class="relative whitespace-nowrap text-bta-800 dark:text-bta-300 font-extrabold text-xs capitalize py-2"
+                class="relative whitespace-nowrap text-bta-800 dark:text-bta-300 font-extrabold text-xs capitalize py-4"
                 v-for="(name, i) of stopsName"
             >
-                <span
+                <!-- <span
                     class="absolute bottom-[3rem] text-xs text-bta-800/50 dark:text-bta-300/60"
+                    ></span
+                > -->
+                <span
+                    class="absolute inline-block font-extrabold text-sm text-bta-800/80 px-2 py-0.5 bottom-[2.7rem] left-0 border-2 border-bta-800/50 bg-bta-100 dark:bg-bta-300 rounded-full"
                     >{{ stopsNum[i] }}</span
                 >
-                <span
-                    class="absolute block bottom-[1.98rem] left-[42%] w-[1rem] h-[1rem] bg-bta-800 dark:bg-bta-300 rounded-full"
-                ></span>
                 {{ name }}
             </p>
         </div>

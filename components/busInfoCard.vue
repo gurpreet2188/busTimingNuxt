@@ -32,7 +32,8 @@ for (const r of updatedRoutes) {
     if (
         (r.description.toLowerCase().includes(" stn") ||
             r.description.toLowerCase().includes(" station")) &&
-        count >= 0
+        count >= 0 &&
+        !r.description.toLowerCase().includes("police")
     ) {
         tempStops.push(
             count === 0
