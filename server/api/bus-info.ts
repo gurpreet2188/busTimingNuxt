@@ -2,14 +2,15 @@ const API_KEY: string | undefined = process.env.API_KEY;
 import type { Root as BUS_INFO_TYPE } from "../../types/bus";
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
+  const body = JSON.parse(await readBody(event));
   let data: BUS_INFO_TYPE = { error: true };
-  if (body["stopCode"]) {
+  if (body['stopCode']) {
+
     const searchParams = new URLSearchParams({
       BusStopCode: body["stopCode"],
     }).toString();
     data = await $fetch(
-      "http://datamall2.mytransport.sg/ltaodataservice/v3/BusArrival?" +
+      "https://datamall2.mytransport.sg/ltaodataservice/v3/BusArrival?" +
         searchParams,
       {
         headers: {
@@ -18,6 +19,7 @@ export default defineEventHandler(async (event) => {
         },
       },
     );
+    console.log(data)
     data.error = false;
     return data;
   }

@@ -3,11 +3,11 @@ import type { RealtimeService } from "~/types/stops";
 export default async function useFetchRealtimeBusInfo(
   stopCode: string,
 ): Promise<RealtimeService[]> {
-  const data = await $fetch("/api/bus-info", {
+  const res = await fetch("/api/bus-info", {
     method: "POST",
     body: JSON.stringify({ stopCode: stopCode }),
   });
-
+  const data = await res.json()
   if (!data.error) {
     for (const service of data.Services!) {
       if (service.NextBus) {
