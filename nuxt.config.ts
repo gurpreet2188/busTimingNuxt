@@ -9,7 +9,6 @@ export default defineNuxtConfig({
 
   modules: [
     "@vueuse/nuxt",
-    "@nuxtjs/robots",
     "@nuxtjs/sitemap",
     "nuxt-api-shield",
     "nuxt-component-meta",
@@ -17,6 +16,15 @@ export default defineNuxtConfig({
     "@nuxtjs/supabase",
     "@nuxtjs/color-mode",
   ],
+  // vite: {
+  //   build: {
+  //     rollupOptions: {
+  //       output: {
+  //         inlineDynamicImports: true,
+  //       },
+  //     },
+  //   },
+  // },
 
   build: {
     analyze: {},

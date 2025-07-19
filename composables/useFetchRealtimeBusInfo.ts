@@ -8,6 +8,7 @@ export default async function useFetchRealtimeBusInfo(
     body: JSON.stringify({ stopCode: stopCode }),
   });
   const data = await res.json()
+
   if (!data.error) {
     for (const service of data.Services!) {
       if (service.NextBus) {

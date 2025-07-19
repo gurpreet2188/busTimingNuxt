@@ -19,7 +19,6 @@ export default defineEventHandler(async (event) => {
         },
       },
     );
-    console.log(data)
     data.error = false;
     return data;
   }

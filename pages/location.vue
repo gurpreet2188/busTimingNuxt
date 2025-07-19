@@ -57,6 +57,7 @@ onMounted(async () => {
 });
 
 const getLocationBusTiming = async (onlyRefresh?: boolean) => {
+  console.log('running')
     startRefreshInterval.value = true;
     // sample loc
     if (isDev) {
